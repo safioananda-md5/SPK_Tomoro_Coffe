@@ -7,7 +7,11 @@
         <ol class="breadcrumb border-0">
             <li class="breadcrumb-item"><a href="{{ route(Auth::user()->role . '.dashboard') }}">Dashboard</a></li>
             <li class="breadcrumb-item"><a href="{{ route('admin.kriteria.index') }}">Kriteria</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Tambah Kriteria</li>
+            @if ($edit)
+                <li class="breadcrumb-item active" aria-current="page">Edit Kriteria</li>
+            @else
+                <li class="breadcrumb-item active" aria-current="page">Tambah Kriteria</li>
+            @endif
         </ol>
     </nav>
     <div class="row mt-3">

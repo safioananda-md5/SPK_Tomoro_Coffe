@@ -23,7 +23,8 @@ class CriteriaController extends Controller
 
     public function create()
     {
-        return view('admin.kriteria_create');
+        $edit = false;
+        return view('admin.kriteria_create', compact(['edit']));
     }
 
     public function store(Request $request)
