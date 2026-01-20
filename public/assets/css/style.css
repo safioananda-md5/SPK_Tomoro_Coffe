@@ -10831,7 +10831,7 @@ textarea.form-control-lg {
     display: block;
     width: 100%;
     padding: 0.375rem 2.25rem 0.375rem 0.75rem;
-    font-size: 1rem;
+    font-size: 0.875rem;
     font-weight: 400;
     line-height: 1.5;
     color: var(--bs-body-color);
@@ -12998,6 +12998,7 @@ fieldset:disabled .btn {
     align-items: center;
     justify-content: space-between;
     padding: var(--bs-navbar-padding-y) var(--bs-navbar-padding-x);
+    z-index: 999 !important;
 }
 .navbar > .container,
 .navbar > .container-fluid,
@@ -21685,7 +21686,7 @@ button:focus {
 }
 
 textarea {
-    resize: none;
+    resize: vertical;
     overflow-x: hidden;
 }
 
@@ -27428,7 +27429,7 @@ select.tt-hint,
     outline: 1px solid #dee2e6;
     color: #c9c8c8;
     appearance: none;
-    background: url("../../images/arrow-down.svg");
+    background: url("../images/arrow-down.svg");
     background-repeat: no-repeat;
     background-position: 99% center;
 }
@@ -27650,11 +27651,16 @@ select.form-select {
     padding: 0.4375rem 0.75rem;
     border: 0;
     outline: 1px solid #dee2e6;
-    color: #c9c8c8;
+    /* color: #c9c8c8; */
+    color: black;
     appearance: none;
-    background: url("../../images/arrow-down.svg");
+    background: url("../images/arrow-down.svg");
     background-repeat: no-repeat;
     background-position: 99% center;
+}
+select:invalid,
+select option[value=""] {
+    color: #c9c8c8; /* Warna abu-abu untuk petunjuk */
 }
 select.form-select:focus {
     outline: 1px solid #dee2e6;
@@ -29284,7 +29290,7 @@ dl li {
     height: 1.9rem;
 }
 .material-form .form-group textarea {
-    resize: none;
+    resize: vertical;
 }
 .material-form .form-group select {
     width: 100%;

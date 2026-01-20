@@ -6,6 +6,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>@stack('title') || SPK Tomoro Coffe</title>
+    {{-- CSRF TOKEN --}}
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- plugins:css -->
     <link rel="stylesheet" href="{{ asset('assets/vendors/feather/feather.css') }}">
     <link rel="stylesheet" href="{{ asset('assets/vendors/mdi/css/materialdesignicons.min.css') }}">
@@ -20,10 +22,15 @@
     <link rel="stylesheet" href="{{ asset('assets/vendors/datatables.net-bs4/dataTables.bootstrap4.css') }}">
     <link rel="stylesheet" type="text/css" href="{{ asset('assets/js/select.dataTables.min.css') }}">
     <!-- End plugin css for this page -->
+    {{-- Datatables --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendors/datatables/css/dataTables.bootstrap5.css') }}" />
+    {{-- Sweetalert2 --}}
+    <link rel="stylesheet" href="{{ asset('assets/vendors/sweetalert2/dist/sweetalert2.css') }}" />
     <!-- inject:css -->
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <!-- endinject -->
     <link rel="shortcut icon" href="{{ asset('assets/images/logo-mini.webp') }}" />
+    @yield('css')
 </head>
 
 <body class="with-welcome-text">
@@ -78,7 +85,7 @@
             <nav class="sidebar sidebar-offcanvas" id="sidebar">
                 <ul class="nav">
                     <li class="nav-item">
-                        <a class="nav-link" href="index.html">
+                        <a class="nav-link" href="{{ route(Auth::user()->role . '.dashboard') }}">
                             <i class="mdi mdi-grid-large menu-icon"></i>
                             <span class="menu-title">Dashboard</span>
                         </a>
@@ -93,9 +100,11 @@
                         </a>
                         <div class="collapse" id="ui-basic">
                             <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"> <a class="nav-link" href="pages/ui-features/buttons.html">Data
+                                <li class="nav-item"> <a class="nav-link"
+                                        href="{{ route('admin.kriteria.index') }}">Data
                                         Kriteria</a></li>
-                                <li class="nav-item"> <a class="nav-link" href="pages/ui-features/dropdowns.html">Data
+                                <li class="nav-item"> <a class="nav-link"
+                                        href="pages/ui-features/dropdowns.html">Data
                                         Alternatif</a></li>
                             </ul>
                         </div>
@@ -217,6 +226,45 @@
     <script src="{{ asset('assets/vendors/chart.js/chart.umd.js') }}"></script>
     <script src="{{ asset('assets/vendors/progressbar.js/progressbar.min.js') }}"></script>
     <!-- End plugin js for this page -->
+    {{-- Datatables --}}
+    <script src="{{ asset('assets/vendors/datatables/js/dataTables.js') }}"></script>
+    <script src="{{ asset('assets/vendors/datatables/js/dataTables.bootstrap5.js') }}"></script>
+    <script>
+        $(document).ready(function() {
+            $.extend(true, $.fn.dataTable.defaults, {
+                language: {
+                    "sEmptyTable": "Tidak ada data yang tersedia pada tabel ini",
+                    "sProcessing": "Sedang memproses...",
+                    "sLengthMenu": "Tampilkan _MENU_ entri",
+                    "sZeroRecords": "Tidak ditemukan data yang sesuai",
+                    "sInfo": "Menampilkan _START_ sampai _END_ dari _TOTAL_ entri",
+                    "sInfoEmpty": "Menampilkan 0 sampai 0 dari 0 entri",
+                    "sInfoFiltered": "(disaring dari _MAX_ entri keseluruhan)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Cari:",
+                    "sUrl": "",
+                    "sInfoThousands": ",",
+                    "sLoadingRecords": "Sedang memuat...",
+                    "oPaginate": {
+                        "sFirst": "Pertama",
+                        "sLast": "Terakhir",
+                        "sNext": "Selanjutnya",
+                        "sPrevious": "Sebelumnya"
+                    },
+                    "oAria": {
+                        "sSortAscending": ": aktifkan untuk mengurutkan kolom secara ascending",
+                        "sSortDescending": ": aktifkan untuk mengurutkan kolom secara descending"
+                    }
+                }
+            });
+
+            if ($('.no-active').hasClass('active')) {
+                $('.no-active').removeClass('active');
+            }
+        });
+    </script>
+    {{-- Sweetalert2 --}}
+    <script src="{{ asset('assets/vendors/sweetalert2/dist/sweetalert2.js') }}"></script>
     <!-- inject:js -->
     <script src="{{ asset('assets/js/off-canvas.js') }}"></script>
     <script src="{{ asset('assets/js/template.js') }}"></script>
@@ -228,6 +276,7 @@
     <script src="{{ asset('assets/js/jquery.cookie.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/js/dashboard.js') }}"></script>
     <!-- <script src="{{ asset('assets/js/Chart.roundedBarCharts.js') }}"></script> -->
+    @yield('scripts')
     <!-- End custom js for this page-->
 </body>
 
