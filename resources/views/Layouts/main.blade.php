@@ -30,6 +30,20 @@
     <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
     <!-- endinject -->
     <link rel="shortcut icon" href="{{ asset('assets/images/logo-mini.webp') }}" />
+    <style>
+        .hidden{
+            display: none !important;
+        }
+        .custom-loader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: rgba(255, 255, 255, 0.8);
+            width: 100%;
+            height: 100%;
+            z-index: 99999;
+        }
+    </style>
     @yield('css')
 </head>
 
@@ -104,7 +118,7 @@
                                         href="{{ route('admin.kriteria.index') }}">Data
                                         Kriteria</a></li>
                                 <li class="nav-item"> <a class="nav-link"
-                                        href="pages/ui-features/dropdowns.html">Data
+                                        href="{{ route('admin.alternatif.index') }}">Data
                                         Alternatif</a></li>
                             </ul>
                         </div>

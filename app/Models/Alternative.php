@@ -5,19 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
-class Criteria extends Model
+class Alternative extends Model
 {
     use SoftDeletes;
-    protected $table = 'criterias';
+
+    protected $table = 'alternatives';
     protected $fillable = [
-        'name',
-        'type',
-        'weight',
-        'description',
+        'name'
     ];
 
     public function alternativecriteria()
     {
-        return $this->hasMany(AlternativeCriteria::class, 'criteria_id', 'id');
+        return $this->hasMany(AlternativeCriteria::class, 'alternative_id', 'id');
     }
 }

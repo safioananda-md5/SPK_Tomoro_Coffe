@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AlternatifController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\CriteriaController;
 use App\Http\Controllers\DashboardController;
@@ -31,5 +32,14 @@ Route::group([
         Route::get('/{id}/edit-kriteria', [CriteriaController::class, 'edit'])->name('edit');
         Route::put('/{id}/edit-kriteria', [CriteriaController::class, 'update'])->name('update');
         Route::delete('/{id}/hapus-kriteria', [CriteriaController::class, 'delete'])->name('delete');
+    });
+
+    Route::group([
+        'prefix' => '/alternatif',
+        'as' => 'alternatif.',
+    ], function () {
+        Route::get('/', [AlternatifController::class, 'index'])->name('index');
+        Route::get('/tambah-alternatif', [AlternatifController::class, 'create'])->name('create');
+        Route::post('/tambah-alternatif', [AlternatifController::class, 'store'])->name('store');
     });
 });

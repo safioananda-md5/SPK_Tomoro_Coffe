@@ -1,6 +1,10 @@
 @extends('layouts.main')
 @push('title')
-    Tambah Kriteria
+    @if ($edit)
+        Edit Kriteria
+    @else
+        Tambah Kriteria
+    @endif
 @endpush
 @section('content')
     <nav aria-label="breadcrumb">
