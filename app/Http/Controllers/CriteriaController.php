@@ -125,12 +125,14 @@ class CriteriaController extends Controller
         } catch (ValidationException $e) {
             $errors = $e->errors();
             $allErrors = collect($errors)->flatten()->implode('<br> • ');
-            flash()->error('Inputan Gagal! Periksa kembali isian Anda. <br> • ' . $allErrors);
-            return redirect()->back();
+            return response()->json([
+                'message' => 'Inputan Gagal! Periksa kembali isian Anda. <br> • ' . $allErrors
+            ], 400);
         } catch (Throwable $e) {
             DB::rollback();
-            flash()->error('Inputan Gagal! Periksa kembali isian Anda. <br> ' . $e->getMessage());
-            return redirect()->back();
+            return response()->json([
+                'message' => 'Inputan Gagal! Periksa kembali isian Anda. <br> ' . $e->getMessage()
+            ], 500);
         }
     }
 }

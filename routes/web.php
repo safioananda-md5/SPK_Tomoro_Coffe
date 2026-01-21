@@ -41,5 +41,7 @@ Route::group([
         Route::get('/', [AlternatifController::class, 'index'])->name('index');
         Route::get('/tambah-alternatif', [AlternatifController::class, 'create'])->name('create');
         Route::post('/tambah-alternatif', [AlternatifController::class, 'store'])->name('store');
+        Route::delete('/{id}/hapus-alternatif', [AlternatifController::class, 'delete'])->name('delete');
+        Route::delete('/hapus-seluruh-alternatif', [AlternatifController::class, 'alldelete'])->name('alldelete');
     });
 });

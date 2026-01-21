@@ -94,4 +94,53 @@ class AlternatifController extends Controller
             return redirect()->back();
         }
     }
+
+    public function delete($id)
+    {
+        try {
+            DB::beginTransaction();
+            Alternative::where('id', $id)->delete();
+            AlternativeCriteria::where('alternative_id', $id)->delete();
+            DB::commit();
+            // flash()->success('Data alternatif berhasil dihapus.');
+            return response()->json([
+                'message' => 'success'
+            ], 200);
+        } catch (ValidationException $e) {
+            $errors = $e->errors();
+            $allErrors = collect($errors)->flatten()->implode('<br> • ');
+            return response()->json([
+                'message' => 'Inputan Gagal! Periksa kembali isian Anda. <br> • ' . $allErrors
+            ], 400);
+        } catch (Throwable $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Inputan Gagal! Periksa kembali isian Anda. <br> ' . $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function alldelete()
+    {
+        try {
+            DB::beginTransaction();
+            Alternative::query()->delete();
+            AlternativeCriteria::query()->delete();
+            DB::commit();
+            return response()->json([
+                'message' => 'Data seluruh alternatif berhasil dihapus.'
+            ], 200);
+        } catch (ValidationException $e) {
+            $errors = $e->errors();
+            $allErrors = collect($errors)->flatten()->implode('<br> • ');
+            return response()->json([
+                'message' => 'Inputan Gagal! Periksa kembali isian Anda. <br> • ' . $allErrors
+            ], 400);
+        } catch (Throwable $e) {
+            DB::rollback();
+            return response()->json([
+                'message' => 'Inputan Gagal! Periksa kembali isian Anda. <br> ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
