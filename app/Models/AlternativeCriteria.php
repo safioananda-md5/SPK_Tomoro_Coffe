@@ -15,7 +15,7 @@ class AlternativeCriteria extends Model
         'value',
     ];
 
-    public function alternativecriteria()
+    public function alternative()
     {
         return $this->belongsTo(Alternative::class, 'alternative_id', 'id');
     }

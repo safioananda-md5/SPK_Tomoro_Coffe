@@ -8790,7 +8790,8 @@ sup {
 }
 
 a {
-    color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1));
+    /* color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1)); */
+    color: #EB7746;
     text-decoration: underline;
 }
 a:hover {
@@ -30623,7 +30624,7 @@ dl li {
 .sidebar .nav .nav-item.active > .nav-link i,
 .sidebar .nav .nav-item.active > .nav-link .menu-title,
 .sidebar .nav .nav-item.active > .nav-link .menu-arrow {
-    color: #1f3bb3;
+    color: #eb7746;
 }
 .purple .sidebar .nav .nav-item.active > .nav-link i,
 .purple .sidebar .nav .nav-item.active > .nav-link .menu-title,
@@ -30648,7 +30649,7 @@ dl li {
 .sidebar .nav .nav-item:hover > .nav-link i,
 .sidebar .nav .nav-item:hover > .nav-link .menu-title,
 .sidebar .nav .nav-item:hover > .nav-link .menu-arrow {
-    color: #1f3bb3;
+    color: #eb7746;
 }
 .sidebar .nav .nav-item.nav-category {
     color: #404040;
@@ -30738,7 +30739,7 @@ dl li {
     color: #000;
 }
 .sidebar .nav.sub-menu .nav-item .nav-link.active {
-    color: #1f3bb3;
+    color: #eb7746;
     background: transparent;
 }
 .purple .sidebar .nav.sub-menu .nav-item .nav-link.active {

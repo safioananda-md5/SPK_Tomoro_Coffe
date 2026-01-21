@@ -36,7 +36,7 @@
                             </div>
                             <h4>Hallo! Selamat Datang</h4>
                             <h6 class="fw-light">Silahkan login untuk melanjutkan.</h6>
-                            <form class="pt-3" action="{{ route('store.login') }}" method="POST">
+                            <form class="pt-3" action="{{ route('store.login') }}" method="POST" id="LoginForm">
                                 @csrf
                                 <div class="form-group">
                                     <input type="email" name="email" class="form-control form-control-lg"
@@ -47,8 +47,9 @@
                                         id="password" placeholder="Password">
                                 </div>
                                 <div class="mt-3 d-grid gap-2">
-                                    <button type="submit"
-                                        class="btn btn-block btn-primary btn-lg fw-medium auth-form-btn">LOGIN</button>
+                                    <button type="button" id="SubmitForm"
+                                        class="btn btn-block btn-lg fw-medium auth-form-btn"
+                                        style="background-color: #EB7746; color: #fff">LOGIN</button>
                                 </div>
                             </form>
                         </div>
@@ -73,6 +74,17 @@
     <script src="{{ asset('assets/js/hoverable-collapse.js') }}"></script>
     <script src="{{ asset('assets/js/todolist.js') }}"></script>
     <!-- endinject -->
+
+    <script>
+        $(document).ready(function() {
+            $('#SubmitForm').on('click', function() {
+                const Form = $('#LoginForm');
+                const Button = $(this);
+                Button.prop('disabled', true).html('Autentikasi...');
+                Form.submit();
+            })
+        });
+    </script>
 </body>
 
 </html>
