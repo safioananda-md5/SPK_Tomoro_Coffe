@@ -5,8 +5,10 @@ namespace App\Http\Controllers;
 use Carbon\Carbon;
 use App\Models\Criteria;
 use App\Models\Alternative;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\AlternativeCriteria;
+use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
@@ -93,6 +95,6 @@ class DashboardController extends Controller
 
         $sorted = collect($ArrNilaiAkhir)->sortDesc();
 
-        return view('Admin.dashboard', compact(['greeting', 'CountAlternative', 'CountCriteria', 'sorted']));
+        return view(Str::title(Auth::user()->role) . '.dashboard', compact(['greeting', 'CountAlternative', 'CountCriteria', 'sorted']));
     }
 }

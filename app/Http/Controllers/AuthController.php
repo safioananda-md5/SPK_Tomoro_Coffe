@@ -28,11 +28,7 @@ class AuthController extends Controller
             $request->session()->regenerate();
             flash()->success('Login berhasil, Selamat datang!');
 
-            if (Auth::user()->role == 'admin') {
-                return redirect()->route('admin.dashboard');
-            } else {
-                // return redirect()->route('user.dashboard');
-            }
+            return redirect()->route(Auth::user()->role . '.dashboard');
         } else {
             flash()->error('Login gagal, Kredensial akun tidak valid!');
             return back()->onlyInput('email');

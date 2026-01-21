@@ -8791,7 +8791,7 @@ sup {
 
 a {
     /* color: rgba(var(--bs-link-color-rgb), var(--bs-link-opacity, 1)); */
-    color: #EB7746;
+    color: #eb7746;
     text-decoration: underline;
 }
 a:hover {
@@ -30484,7 +30484,7 @@ dl li {
 }
 @media (max-width: 767px) {
     .content-wrapper {
-        padding: 0 1.5rem 1.5rem 1.5rem;
+        padding: 1.5rem 1.5rem 1.5rem 1.5rem;
     }
 }
 
@@ -30851,7 +30851,7 @@ dl li {
     .sidebar-offcanvas {
         position: fixed;
         max-height: calc(100vh - 97px);
-        top: 97px;
+        top: 70px;
         bottom: 0;
         overflow: auto;
         right: -220px;

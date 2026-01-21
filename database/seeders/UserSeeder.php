@@ -26,6 +26,15 @@ class UserSeeder extends Seeder
                 'created_at' => Carbon::now(),
                 'updated_at' => Carbon::now(),
             ],
+            [
+                'name' => "Owner Tomoro Coffe",
+                'email' => 'owner@tomoro.com',
+                'email_verified_at' => Carbon::now(),
+                'password' => Hash::make('Owner_123'),
+                'role' => 'owner',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now(),
+            ],
         ]);
     }
 }

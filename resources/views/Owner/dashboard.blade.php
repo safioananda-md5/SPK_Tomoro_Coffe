@@ -35,13 +35,13 @@
                                             <div class="card-body">
                                                 <div class="d-sm-flex justify-content-between align-items-start">
                                                     <div>
-                                                        <h4 class="card-title card-title-dash">Top 10 Menu</h4>
+                                                        <h4 class="card-title card-title-dash">Rangking Menu</h4>
                                                         <p class="card-subtitle card-subtitle-dash">Menu terbaik dari yang
                                                             terbaik berdasarkan komposisinya</p>
                                                     </div>
                                                 </div>
                                                 <div class="table-responsive  mt-1">
-                                                    <table class="table select-table">
+                                                    <table class="table select-table" id="rankingTable">
                                                         <thead>
                                                             <tr>
                                                                 <th class="text-center">
@@ -56,26 +56,18 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            @php
-                                                                $i = 1;
-                                                            @endphp
                                                             @foreach ($sorted as $name => $item)
-                                                                @if ($i <= 10)
-                                                                    <tr>
-                                                                        <td class="text-center">
-                                                                            <h6>{{ $loop->iteration }}</h6>
-                                                                        </td>
-                                                                        <td>
-                                                                            <h6>{{ $name }}</h6>
-                                                                        </td>
-                                                                        <td class="text-center">
-                                                                            <h6>{{ $item }}</h6>
-                                                                        </td>
-                                                                    </tr>
-                                                                    @php
-                                                                        $i++;
-                                                                    @endphp
-                                                                @endif
+                                                                <tr>
+                                                                    <td class="text-center">
+                                                                        <h6>{{ $loop->iteration }}</h6>
+                                                                    </td>
+                                                                    <td>
+                                                                        <h6>{{ $name }}</h6>
+                                                                    </td>
+                                                                    <td class="text-center">
+                                                                        <h6>{{ $item }}</h6>
+                                                                    </td>
+                                                                </tr>
                                                             @endforeach
                                                         </tbody>
                                                     </table>
@@ -91,4 +83,16 @@
             </div>
         </div>
     </div>
+@endsection
+@section('scripts')
+    <script>
+        $(document).ready(function() {
+            $('#rankingTable').DataTable({
+                "order": [
+                    [0, 'asc']
+                ],
+                "columnDefs": []
+            });
+        });
+    </script>
 @endsection

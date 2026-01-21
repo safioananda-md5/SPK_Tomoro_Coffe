@@ -106,31 +106,33 @@
                             <span class="menu-title">Dashboard</span>
                         </a>
                     </li>
-                    <li class="nav-item nav-category">Olah Data</li>
-                    <li class="nav-item">
-                        <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
-                            aria-controls="ui-basic">
-                            <i class="menu-icon mdi mdi-floor-plan"></i>
-                            <span class="menu-title">Input Data</span>
-                            <i class="menu-arrow"></i>
-                        </a>
-                        <div class="collapse" id="ui-basic">
-                            <ul class="nav flex-column sub-menu">
-                                <li class="nav-item"> <a class="nav-link"
-                                        href="{{ route('admin.kriteria.index') }}">Data
-                                        Kriteria</a></li>
-                                <li class="nav-item"> <a class="nav-link"
-                                        href="{{ route('admin.alternatif.index') }}">Data
-                                        Alternatif</a></li>
-                            </ul>
-                        </div>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ route('admin.perangkingan.index') }}">
-                            <i class="menu-icon fa fa-list-alt"></i>
-                            <span class="menu-title">Perangkingan</span>
-                        </a>
-                    </li>
+                    @if (Auth::user()->role == 'admin')
+                        <li class="nav-item nav-category">Olah Data</li>
+                        <li class="nav-item">
+                            <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
+                                aria-controls="ui-basic">
+                                <i class="menu-icon mdi mdi-floor-plan"></i>
+                                <span class="menu-title">Input Data</span>
+                                <i class="menu-arrow"></i>
+                            </a>
+                            <div class="collapse" id="ui-basic">
+                                <ul class="nav flex-column sub-menu">
+                                    <li class="nav-item"> <a class="nav-link"
+                                            href="{{ route('admin.kriteria.index') }}">Data
+                                            Kriteria</a></li>
+                                    <li class="nav-item"> <a class="nav-link"
+                                            href="{{ route('admin.alternatif.index') }}">Data
+                                            Alternatif</a></li>
+                                </ul>
+                            </div>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.perangkingan.index') }}">
+                                <i class="menu-icon fa fa-list-alt"></i>
+                                <span class="menu-title">Perangkingan</span>
+                            </a>
+                        </li>
+                    @endif
                 </ul>
             </nav>
             <!-- partial -->

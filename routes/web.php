@@ -56,3 +56,13 @@ Route::group([
         Route::get('/nilai-akhir', [RankingController::class, 'nilaiakhir'])->name('nilaiakhir');
     });
 });
+
+// Owner route
+
+Route::group([
+    'prefix' => '/owner',
+    'as' => 'owner.',
+    'middleware' => ['auth', 'role:owner', 'decrypt:id']
+], function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
