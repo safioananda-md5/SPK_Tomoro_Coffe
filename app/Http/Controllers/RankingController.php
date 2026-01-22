@@ -13,6 +13,12 @@ class RankingController extends Controller
     {
         $criterias = Criteria::all();
         $alternatives = Alternative::with(['alternativecriteria'])->get();
+
+        if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
+            flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
+            return redirect(route('admin.dashboard'));
+        }
+
         $alternativecriterias = AlternativeCriteria::with(['alternative'])->get();
         $utilityMax = [];
         $utilityMin = [];
@@ -84,6 +90,12 @@ class RankingController extends Controller
     {
         $criterias = Criteria::all();
         $alternativecriterias = AlternativeCriteria::with(['alternative'])->get();
+
+        if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
+            flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
+            return redirect(route('admin.dashboard'));
+        }
+
         $utilityMax = [];
         $utilityMin = [];
         foreach ($criterias as $criteria) {
@@ -105,6 +117,12 @@ class RankingController extends Controller
     {
         $criterias = Criteria::all();
         $alternatives = Alternative::with(['alternativecriteria'])->get();
+
+        if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
+            flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
+            return redirect(route('admin.dashboard'));
+        }
+
         $alternativecriterias = AlternativeCriteria::with(['alternative'])->get();
         $utilityMax = [];
         $utilityMin = [];
@@ -166,6 +184,12 @@ class RankingController extends Controller
     {
         $criterias = Criteria::all();
         $alternatives = Alternative::with(['alternativecriteria'])->get();
+
+        if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
+            flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
+            return redirect(route('admin.dashboard'));
+        }
+
         $alternativecriterias = AlternativeCriteria::with(['alternative'])->get();
         $utilityMax = [];
         $utilityMin = [];

@@ -18,11 +18,11 @@
                                 <div class="statistics-details d-flex align-items-center justify-content-start gap-5">
                                     <div>
                                         <p class="statistics-title">Jumlah Menu</p>
-                                        <h3 class="rate-percentage">{{ $CountAlternative }}</h3>
+                                        <h3 class="rate-percentage">{{ $CountAlternative ?? 0 }}</h3>
                                     </div>
                                     <div>
                                         <p class="statistics-title">Jumlah Kriteria</p>
-                                        <h3 class="rate-percentage">{{ $CountCriteria }}</h3>
+                                        <h3 class="rate-percentage">{{ $CountCriteria ?? 0 }}</h3>
                                     </div>
                                 </div>
                             </div>
@@ -56,27 +56,32 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            @php
-                                                                $i = 1;
-                                                            @endphp
-                                                            @foreach ($sorted as $name => $item)
-                                                                @if ($i <= 10)
-                                                                    <tr>
-                                                                        <td class="text-center">
-                                                                            <h6>{{ $loop->iteration }}</h6>
-                                                                        </td>
-                                                                        <td>
-                                                                            <h6>{{ $name }}</h6>
-                                                                        </td>
-                                                                        <td class="text-center">
-                                                                            <h6>{{ $item }}</h6>
-                                                                        </td>
-                                                                    </tr>
-                                                                    @php
-                                                                        $i++;
-                                                                    @endphp
-                                                                @endif
-                                                            @endforeach
+                                                            @if ($sorted)
+                                                                @php
+                                                                    $i = 1;
+                                                                @endphp
+                                                                @foreach ($sorted as $name => $item)
+                                                                    @if ($i <= 10)
+                                                                        <tr>
+                                                                            <td class="text-center">
+                                                                                <h6>{{ $loop->iteration }}</h6>
+                                                                            </td>
+                                                                            <td>
+                                                                                <h6>{{ $name }}</h6>
+                                                                            </td>
+                                                                            <td class="text-center">
+                                                                                <h6>{{ $item }}</h6>
+                                                                            </td>
+                                                                        </tr>
+                                                                        @php
+                                                                            $i++;
+                                                                        @endphp
+                                                                    @endif
+                                                                @endforeach
+                                                            @else
+                                                                <td colspan="3" class="text-center">Tidak ada data
+                                                                    alternatif</td>
+                                                            @endif
                                                         </tbody>
                                                     </table>
                                                 </div>

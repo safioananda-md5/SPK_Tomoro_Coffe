@@ -56,19 +56,27 @@
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            @foreach ($sorted as $name => $item)
+                                                            @if ($sorted)
+                                                                @foreach ($sorted as $name => $item)
+                                                                    <tr>
+                                                                        <td class="text-center">
+                                                                            <h6>{{ $loop->iteration }}</h6>
+                                                                        </td>
+                                                                        <td>
+                                                                            <h6>{{ $name }}</h6>
+                                                                        </td>
+                                                                        <td class="text-center">
+                                                                            <h6>{{ $item }}</h6>
+                                                                        </td>
+                                                                    </tr>
+                                                                @endforeach
+                                                            @else
                                                                 <tr>
-                                                                    <td class="text-center">
-                                                                        <h6>{{ $loop->iteration }}</h6>
-                                                                    </td>
-                                                                    <td>
-                                                                        <h6>{{ $name }}</h6>
-                                                                    </td>
-                                                                    <td class="text-center">
-                                                                        <h6>{{ $item }}</h6>
-                                                                    </td>
+                                                                    <td colspan="3" class="text-center">Tidak ada data
+                                                                        alternatif</td>
                                                                 </tr>
-                                                            @endforeach
+                                                            @endif
+
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -85,14 +93,16 @@
     </div>
 @endsection
 @section('scripts')
-    <script>
-        $(document).ready(function() {
-            $('#rankingTable').DataTable({
-                "order": [
-                    [0, 'asc']
-                ],
-                "columnDefs": []
+    @if ($sorted)
+        <script>
+            $(document).ready(function() {
+                $('#rankingTable').DataTable({
+                    "order": [
+                        [0, 'asc']
+                    ],
+                    "columnDefs": []
+                });
             });
-        });
-    </script>
+        </script>
+    @endif
 @endsection
