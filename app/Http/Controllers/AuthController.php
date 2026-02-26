@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\ValidationException;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -19,19 +22,31 @@ class AuthController extends Controller
 
     public function store(Request $request)
     {
-        $credentials = $request->validate([
-            'email' => ['required', 'email'],
-            'password' => ['required'],
-        ]);
+        try {
+            $credentials = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ], [
+                'email.required' => 'Masukkan email dan password valid.',
+                'email.email' => 'Masukkan email dan password valid.',
+                'password' => 'Masukkan email dan password valid.',
+            ]);
 
-        if (Auth::attempt($credentials)) {
-            $request->session()->regenerate();
-            flash()->success('Login berhasil, Selamat datang!');
-
-            return redirect()->route(Auth::user()->role . '.dashboard');
-        } else {
-            flash()->error('Login gagal, Kredensial akun tidak valid!');
-            return back()->onlyInput('email');
+            if (Auth::attempt($credentials)) {
+                $request->session()->regenerate();
+                flash()->success('Login berhasil, Selamat datang!');
+                return redirect()->route(Auth::user()->role . '.dashboard');
+            } else {
+                throw new Exception('Login gagal, Kredensial akun tidak valid!');
+            }
+        } catch (ValidationException $e) {
+            $errors = $e->errors();
+            $allErrors = collect($errors)->flatten()->implode('<br> • ');
+            flash()->error($allErrors);
+            return redirect()->back();
+        } catch (Throwable $e) {
+            flash()->error($e->getMessage());
+            return redirect()->back();
         }
     }
 
