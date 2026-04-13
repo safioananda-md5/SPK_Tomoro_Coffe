@@ -8,7 +8,7 @@ use App\Http\Controllers\RankingController;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function () {
-    return redirect(Route('login'));
+    return redirect(Route('home'));
 });
 
 Route::get('/login', [AuthController::class, 'index'])->name('login');
@@ -59,10 +59,12 @@ Route::group([
 
 // Owner route
 
-Route::group([
-    'prefix' => '/owner',
-    'as' => 'owner.',
-    'middleware' => ['auth', 'role:owner', 'decrypt:id']
-], function () {
-    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
-});
+Route::get('/home', [DashboardController::class, 'landing'])->middleware('guest')->name('home');
+
+// Route::group([
+//     'prefix' => '/owner',
+//     'as' => 'owner.',
+//     'middleware' => ['auth', 'role:owner', 'decrypt:id']
+// ], function () {
+//     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+// });

@@ -10,11 +10,19 @@ use Throwable;
 
 class AuthController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         if (Auth::user()) {
-            $name = Auth::user()->role . '.dashboard';
-            return redirect(route($name));
+            if (Auth::user()->role == 'Admin') {
+                $name = Auth::user()->role . '.dashboard';
+                return redirect(route($name));
+            } else {
+                Auth::logout();
+                $request->session()->invalidate();
+                $request->session()->regenerateToken();
+                flash()->error('Akun telah non-aktif.');
+                return view('Auth.login');
+            }
         } else {
             return view('Auth.login');
         }
@@ -55,8 +63,6 @@ class AuthController extends Controller
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
-        flash()->success('Logout berhasil, Sampai jumpa kembali!');
-
-        return redirect(route('login'));
+        return redirect(route('home'));
     }
 }
