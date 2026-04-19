@@ -50,16 +50,19 @@ Route::group([
         'prefix' => '/perangkingan',
         'as' => 'perangkingan.',
     ], function () {
-        Route::get('/', [RankingController::class, 'index'])->name('index');
-        Route::get('/nilai-utility', [RankingController::class, 'utility'])->name('utility');
-        Route::get('/bobot-utility', [RankingController::class, 'bobotutility'])->name('bobotutility');
-        Route::get('/nilai-akhir', [RankingController::class, 'nilaiakhir'])->name('nilaiakhir');
+        Route::get('/periode', [RankingController::class, 'periode'])->name('periode');
+        Route::post('/periode', [RankingController::class, 'post_periode'])->name('post_periode');
+        Route::delete('/periode/{id}', [RankingController::class, 'delete_periode'])->name('delete_periode');
+        Route::get('/ranking/{id}', [RankingController::class, 'index'])->name('index');
+        Route::get('/nilai-utility/{id}', [RankingController::class, 'utility'])->name('utility');
+        Route::get('/bobot-utility/{id}', [RankingController::class, 'bobotutility'])->name('bobotutility');
+        Route::get('/nilai-akhir/{id}', [RankingController::class, 'nilaiakhir'])->name('nilaiakhir');
     });
 });
 
 // Owner route
 
-Route::get('/home', [DashboardController::class, 'landing'])->middleware('guest')->name('home');
+Route::get('/home', [DashboardController::class, 'landing'])->name('home');
 
 // Route::group([
 //     'prefix' => '/owner',

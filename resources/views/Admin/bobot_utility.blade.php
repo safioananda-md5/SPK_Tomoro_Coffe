@@ -6,7 +6,8 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb border-0">
             <li class="breadcrumb-item"><a href="{{ route(Auth::user()->role . '.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.perangkingan.index') }}">Perangkingan</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a
+                    href="{{ route(Auth::user()->role . '.perangkingan.periode') }}">Periode</a></li>
             <li class="breadcrumb-item active" aria-current="page">Bobot Utility</li>
         </ol>
     </nav>
@@ -14,16 +15,18 @@
         <div class="col-sm-12 mb-3">
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.perangkingan.index') }}">Ranking</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.perangkingan.utility') }}">Nilai Utility</a>
+                    <a class="nav-link" href="{{ route('admin.perangkingan.utility', Crypt::encrypt($id)) }}">Nilai
+                        Utility</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" disabled>Bobot Utility</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.perangkingan.nilaiakhir') }}">Nilai Akhir</a>
+                    <a class="nav-link" href="{{ route('admin.perangkingan.nilaiakhir', Crypt::encrypt($id)) }}">Nilai
+                        Akhir</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.perangkingan.index', Crypt::encrypt($id)) }}">Ranking</a>
                 </li>
             </ul>
         </div>
@@ -37,6 +40,7 @@
                         <table class="table table-striped" id="rankingTable" width="100%">
                             <thead>
                                 <tr>
+                                    <th>Alternatif</th>
                                     <th>Nama Menu</th>
                                     @foreach ($criterias as $criteria)
                                         <th>
@@ -50,8 +54,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($bobotUtility as $utility)
+                                @foreach ($bobotUtility as $id => $utility)
                                     <tr>
+                                        <td class="text-center">{{ $AAA[$id]['CODE'] }}</td>
                                         <td>{{ $utility['name'] }}</td>
                                         @foreach ($criterias as $criteria)
                                             <td class="text-center">{{ $utility['criterias'][$criteria->id] }}</td>

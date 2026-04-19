@@ -1,28 +1,33 @@
 @extends('layouts.main')
 @push('title')
-    Perangkingan
+    Detail Perangkingan
 @endpush
 @section('content')
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb border-0">
             <li class="breadcrumb-item"><a href="{{ route(Auth::user()->role . '.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Perangkingan</li>
+            <li class="breadcrumb-item active" aria-current="page"><a
+                    href="{{ route(Auth::user()->role . '.perangkingan.periode') }}">Periode</a></li>
+            <li class="breadcrumb-item active" aria-current="page">Detail Perangkingan</li>
         </ol>
     </nav>
     <div class="row mt-3">
         <div class="col-sm-12 mb-3">
             <ul class="nav nav-tabs">
                 <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.perangkingan.utility', Crypt::encrypt($id)) }}">Nilai
+                        Utility</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.perangkingan.bobotutility', Crypt::encrypt($id)) }}">Bobot
+                        Utility</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.perangkingan.nilaiakhir', Crypt::encrypt($id)) }}">Nilai
+                        Akhir</a>
+                </li>
+                <li class="nav-item">
                     <a class="nav-link active" disabled>Ranking</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.perangkingan.utility') }}">Nilai Utility</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.perangkingan.bobotutility') }}">Bobot Utility</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.perangkingan.nilaiakhir') }}">Nilai Akhir</a>
                 </li>
             </ul>
         </div>
@@ -37,15 +42,17 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">Ranking</th>
+                                    <th class="text-center">Alternatif</th>
                                     <th>Nama Menu</th>
                                     <th class="text-center">Nilai</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($sorted as $name => $item)
+                                @foreach ($sorted as $id => $item)
                                     <tr>
                                         <td class="text-center">{{ $loop->iteration }}</td>
-                                        <td>{{ $name }}</td>
+                                        <td class="text-center">{{ $AAA[$id]['CODE'] }}</td>
+                                        <td>{{ $AAA[$id]['NAME'] }}</td>
                                         <td class="text-center">{{ $item }}</td>
                                     </tr>
                                 @endforeach

@@ -35,7 +35,10 @@
                                             <div class="card-body">
                                                 <div class="d-sm-flex justify-content-between align-items-start">
                                                     <div>
-                                                        <h4 class="card-title card-title-dash">Top 10 Menu</h4>
+                                                        <h4 class="card-title card-title-dash">Top 10 Menu
+                                                            <small>(Berdasarkan
+                                                                periode terbaru)</small>
+                                                        </h4>
                                                         <p class="card-subtitle card-subtitle-dash">Menu terbaik dari yang
                                                             terbaik berdasarkan komposisinya</p>
                                                     </div>
@@ -79,8 +82,8 @@
                                                                     @endif
                                                                 @endforeach
                                                             @else
-                                                                <td colspan="3" class="text-center">Tidak ada data
-                                                                    alternatif</td>
+                                                                <td colspan="3" class="text-center">Periode belum
+                                                                    ditentukan</td>
                                                             @endif
                                                         </tbody>
                                                     </table>

@@ -6,7 +6,8 @@
     <nav aria-label="breadcrumb">
         <ol class="breadcrumb border-0">
             <li class="breadcrumb-item"><a href="{{ route(Auth::user()->role . '.dashboard') }}">Dashboard</a></li>
-            <li class="breadcrumb-item"><a href="{{ route('admin.perangkingan.index') }}">Perangkingan</a></li>
+            <li class="breadcrumb-item active" aria-current="page"><a
+                    href="{{ route(Auth::user()->role . '.perangkingan.periode') }}">Periode</a></li>
             <li class="breadcrumb-item active" aria-current="page">Nilai Akhir</li>
         </ol>
     </nav>
@@ -14,16 +15,18 @@
         <div class="col-sm-12 mb-3">
             <ul class="nav nav-tabs">
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.perangkingan.index') }}">Ranking</a>
+                    <a class="nav-link" href="{{ route('admin.perangkingan.utility', Crypt::encrypt($id)) }}">Nilai
+                        Utility</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.perangkingan.utility') }}">Nilai Utility</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="{{ route('admin.perangkingan.bobotutility') }}">Bobot Utility</a>
+                    <a class="nav-link" href="{{ route('admin.perangkingan.bobotutility', Crypt::encrypt($id)) }}">Bobot
+                        Utility</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link active" disabled>Nilai Akhir</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="{{ route('admin.perangkingan.index', Crypt::encrypt($id)) }}">Ranking</a>
                 </li>
             </ul>
         </div>
@@ -37,6 +40,7 @@
                         <table class="table table-striped" id="rankingTable" width="100%">
                             <thead>
                                 <tr>
+                                    <th>Alternatif</th>
                                     <th>Nama Menu</th>
                                     <th class="text-center">Nilai Akhir</th>
                                     @foreach ($criterias as $criteria)
@@ -51,8 +55,9 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                @foreach ($ArrNilaiAkhir as $nilaiAkhir)
+                                @foreach ($ArrNilaiAkhir as $id => $nilaiAkhir)
                                     <tr>
+                                        <td class="text-center">{{ $AAA[$id]['CODE'] }}</td>
                                         <td>{{ $nilaiAkhir['name'] }}</td>
                                         <td class="text-center">{{ $nilaiAkhir['nilaiakhir'] }}</td>
                                         @foreach ($criterias as $criteria)
@@ -96,7 +101,7 @@
         $(document).ready(function() {
             $('#rankingTable').DataTable({
                 "order": [
-                    [1, 'desc']
+                    [0, 'asc']
                 ],
                 "columnDefs": [{
                     "orderable": false,

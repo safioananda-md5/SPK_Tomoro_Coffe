@@ -49,7 +49,7 @@
             </div>
         </div>
     </header>
-    <div class="card card-body mx-3 mx-md-4 mt-n6 z-index-1 position-relative">
+    <div class="card card-body mx-3 mx-md-4 mt-n3 z-index-1 position-relative">
         <section class="pt-3 pb-4" id="stats">
             <div class="container">
                 <div class="row">
@@ -94,7 +94,7 @@
                         @php
                             $i = 1;
                         @endphp
-                        @foreach ($sorted as $name => $item)
+                        @forelse ($sorted as $name => $item)
                             <div class="col-md-4 col-lg-2 mb-5 d-flex"> <a
                                     class="card h-100 w-100 shadow-none border border-radius-lg text-center d-flex flex-column"
                                     href="#" style="width: 200px; text-decoration: none; color: inherit;">
@@ -122,8 +122,11 @@
                             @php
                                 $i++;
                             @endphp
-                        @endforeach
+                        @empty
+                            Tidak dapat menampilkan rekomendasi produk.
+                        @endforelse
                     @else
+                        <p class="text-center">Tidak dapat menampilkan rekomendasi produk.</p>
                     @endif
                 </div>
             </div>

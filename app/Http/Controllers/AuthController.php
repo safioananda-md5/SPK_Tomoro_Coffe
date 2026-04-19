@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function index(Request $request)
     {
         if (Auth::user()) {
-            if (Auth::user()->role == 'Admin') {
+            if (Auth::user()->role == 'admin') {
                 $name = Auth::user()->role . '.dashboard';
                 return redirect(route($name));
             } else {
