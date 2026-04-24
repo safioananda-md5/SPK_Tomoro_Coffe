@@ -57,8 +57,6 @@
                             <img src="{{ asset('assets/images/logo-mini.webp') }}" alt="logo" width="50px" />
                             Tomoro Coffe
                         </a>
-                        <a href="https://www.creative-tim.com/product/material-dashboard#pricingCard"
-                            class="btn btn-sm  bg-gradient-dark  mb-0 ms-auto d-lg-none d-block">Buy Now</a>
                         <button class="navbar-toggler shadow-none ms-2 ms-md-0" type="button" data-bs-toggle="collapse"
                             data-bs-target="#navigation" aria-controls="navigation" aria-expanded="false"
                             aria-label="Toggle navigation">
@@ -120,8 +118,7 @@
                             All rights reserved. Copyright ©
                             <script>
                                 document.write(new Date().getFullYear())
-                            </script> Material Kit by <a href="https://www.creative-tim.com"
-                                target="_blank">Creative Tim</a>.
+                            </script>
                         </p>
                     </div>
                 </div>
