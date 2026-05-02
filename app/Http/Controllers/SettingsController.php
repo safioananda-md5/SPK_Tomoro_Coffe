@@ -20,16 +20,16 @@ class SettingsController extends Controller
     {
         try {
             DB::beginTransaction();
-            $ID = Setting::latest()->first()->value('id');
-            Setting::updateOrCreate([
-                'id' => $ID
-            ], [
-                'main_title' => $request->main_title,
-                'main_desc_1' => $request->main_desc_1,
-                'main_desc_2' => $request->main_desc_2,
-                'second_title' => $request->second_title,
-                'second_desc' => $request->second_desc,
-            ]);
+            Setting::updateOrCreate(
+                ['id' => 1],
+                [
+                    'main_title'   => $request->main_title,
+                    'main_desc_1'  => $request->main_desc_1,
+                    'main_desc_2'  => $request->main_desc_2,
+                    'second_title' => $request->second_title,
+                    'second_desc'  => $request->second_desc,
+                ]
+            );
             DB::commit();
             flash()->success('Settings berhasil dirubah.');
             return redirect(route('admin.settings.index'));

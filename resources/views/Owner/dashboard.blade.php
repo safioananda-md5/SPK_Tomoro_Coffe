@@ -8,12 +8,12 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-5 mt-8 position-relative z-index-1">
-                        <h1>{{ $Setting->main_title }}</h1>
+                        <h1>{{ $Setting->main_title ?? '' }}</h1>
                         <p class="text-lg mt-3">
-                            {{ $Setting->main_desc_1 }}
+                            {{ $Setting->main_desc_1 ?? '' }}
                         </p>
                         <div class="d-flex align-items-center mb-4">
-                            <p class="mb-0">{{ $Setting->main_desc_2 }}</p>
+                            <p class="mb-0">{{ $Setting->main_desc_2 ?? '' }}</p>
                         </div>
                         <div class="d-block d-md-flex">
                             <a href="https://www.tomoro-coffee.id/home" target="_blank"
@@ -77,9 +77,9 @@
             <div class="container">
                 <div class="row mb-5">
                     <div class="col-lg-7 mx-auto text-center">
-                        <h2 class="mb-3">{{ $Setting->second_title }}</h2>
+                        <h2 class="mb-3">{{ $Setting->second_title ?? '' }}</h2>
                         <p>
-                            {{ $Setting->second_desc }}
+                            {{ $Setting->second_desc ?? '' }}
                         </p>
                     </div>
                 </div>
