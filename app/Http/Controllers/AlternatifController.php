@@ -48,12 +48,13 @@ class AlternatifController extends Controller
             $i = 0;
             DB::beginTransaction();
             foreach ($dataCollection as $index_data => $item) {
+                // dd($item);
                 $alternative = Alternative::updateOrCreate(
                     [
-                        'name' => $item['daftar_menu_tomoro_coffee']
+                        'name' => $item['daftar_menu_tomoro_coffee'],
                     ],
                     [
-                        'name' => $item['daftar_menu_tomoro_coffee']
+                        'price' => $item['harga'],
                     ]
                 );
 

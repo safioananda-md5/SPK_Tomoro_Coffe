@@ -132,6 +132,12 @@
                                 <span class="menu-title">Perangkingan</span>
                             </a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.settings.index') }}">
+                                <i class="menu-icon fa fa-cog"></i>
+                                <span class="menu-title">Settings</span>
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </nav>

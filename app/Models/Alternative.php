@@ -11,7 +11,8 @@ class Alternative extends Model
 
     protected $table = 'alternatives';
     protected $fillable = [
-        'name'
+        'name',
+        'price'
     ];
 
     public function alternativecriteria()

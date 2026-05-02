@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Http\Request;
 use App\Models\AlternativeCriteria;
 use App\Models\Periode;
+use App\Models\Setting;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -120,7 +121,7 @@ class DashboardController extends Controller
 
         $periode = Periode::latest()->first();
         if ($periode) {
-            $alternatives = Alternative::whereIn('id', $periode->alternatives)->get();
+            $alternatives = Alternative::with(['alternativecriteria'])->whereIn('id', $periode->alternatives)->get();
             $criteriasOrder = Criteria::orderBy('weight', 'desc')->get();
 
             $CountCriteria = count(Criteria::all());
@@ -188,10 +189,23 @@ class DashboardController extends Controller
                         $newArrcriteria[$indexACT] = $ACTmultiW;
                     }
 
-                    $ArrNilaiAkhir[$alternative->name] = $totalNilaiAkhir;
+                    $Incriteria = [];
+                    foreach ($alternative->alternativecriteria as $AC) {
+                        if ($AC->value > 0) {
+                            $Incriteria[] = $AC->criteria_id;
+                        }
+                    }
+
+                    $nameCriterias = implode(', ', Criteria::whereIn('id', $Incriteria)->pluck('name')->toArray());
+
+                    $ArrNilaiAkhir[$alternative->name] = [
+                        $totalNilaiAkhir,
+                        'Rp ' . number_format($alternative->price, 0, ',', '.'),
+                        $nameCriterias
+                    ];
                 }
 
-                $sorted = collect($ArrNilaiAkhir)->sortDesc();
+                $sorted = collect($ArrNilaiAkhir)->sortByDesc('0');
             } else {
                 $CountAlternative = null;
                 $CountCriteria = null;
@@ -205,6 +219,8 @@ class DashboardController extends Controller
             $criteriasOrder = Criteria::orderBy('weight', 'desc')->get();
         }
 
-        return view('Owner.dashboard', compact(['alternatives', 'criteriasOrder', 'sorted']));
+        $Setting = Setting::latest()->first();
+
+        return view('Owner.dashboard', compact(['alternatives', 'criteriasOrder', 'sorted', 'Setting']));
     }
 }

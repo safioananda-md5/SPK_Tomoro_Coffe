@@ -120,8 +120,7 @@
                             All rights reserved. Copyright ©
                             <script>
                                 document.write(new Date().getFullYear())
-                            </script> Material Kit by <a href="https://www.creative-tim.com"
-                                target="_blank">Creative Tim</a>.
+                            </script>
                         </p>
                     </div>
                 </div>
@@ -131,7 +130,9 @@
     <!--   Core JS Files   -->
     <script src="{{ asset('assets/material/js/core/popper.min.js') }}" type="text/javascript"></script>
     <script src="{{ asset('assets/material/js/core/bootstrap.min.js') }}" type="text/javascript"></script>
-    <script src="{{ asset('assets/material/js/plugins/perfect-scrollbar.min.js') }}"></script>
+    {{-- <script src="{{ asset('assets/material/js/plugins/perfect-scrollbar.min.js') }}"></script> --}}
+    <script src="{{ asset('assets/vendors/js/vendor.bundle.base.js') }}"></script>
+    <script src="{{ asset('assets/js/jquery.cookie.js') }}" type="text/javascript"></script>
     <!--  Plugin for TypedJS, full documentation here: https://github.com/inorganik/CountUp.js -->
     <script src="{{ asset('assets/material/js/plugins/countup.min.js') }}"></script>
     <script type="text/javascript">
@@ -167,20 +168,12 @@
                 console.error(countUp3.error);
             };
         }
-
-        const copyButton = document.getElementById("copy-code");
-
-        copyButton.addEventListener("click", function() {
-            const textToCopy = copyButton.parentElement.textContent;
-            navigator.clipboard.writeText(textToCopy)
-                .then
-                .catch(err => console.error("Error copying text: ", err));
-        });
     </script>
     <!-- Control Center for Material UI Kit: parallax effects, scripts for the example pages etc -->
     <!--  Google Maps Plugin    -->
     <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyDTTfWur0PDbZWPr7Pmq8K3jiDp0_xUziI"></script>
     <script src="{{ asset('assets/material/js/material-dashboard.min.js?v=3.2.0') }}" type="text/javascript"></script>
+    @yield('scripts')
 </body>
 
 </html>

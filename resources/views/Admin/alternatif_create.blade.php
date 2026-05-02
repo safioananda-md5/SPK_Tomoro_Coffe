@@ -7,15 +7,16 @@
         <ol class="breadcrumb border-0">
             <li class="breadcrumb-item"><a href="{{ route(Auth::user()->role . '.dashboard') }}">Dashboard</a></li>
             <li class="breadcrumb-item"><a href="{{ route('admin.alternatif.index') }}">Alternatif</a></li>
-            <li class="breadcrumb-item active" aria-current="page">Tambah Alternatif</li>
+            <li class="breadcrumb-item active" aria-current="page">Tambah/Edit Alternatif</li>
         </ol>
     </nav>
     <div class="row mt-3">
         <div class="col-sm-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-body">
-                    <h4 class="fw-bold">Form Tambah Alternatif</h4>
-                    <small><em><span style="color:red">*</span> Menandakan kolom wajib diisi atau dipilih.</em></small>
+                    <h4 class="fw-bold">Form Tambah/Edit Alternatif</h4>
+                    <small><em><span style="color:red">*</span> Menandakan kolom wajib diisi atau dipilih.</em></small><br>
+                    <small>Data dengan nama menu yang sama akan otomatis melakukan update.</small>
                     <hr>
                     <form action="{{ route('admin.alternatif.store') }}" method="POST" id="TambahAlternatif"
                         enctype="multipart/form-data">

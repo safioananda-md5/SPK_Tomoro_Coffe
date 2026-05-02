@@ -8,14 +8,12 @@
             <div class="container">
                 <div class="row">
                     <div class="col-lg-5 mt-8 position-relative z-index-1">
-                        <h1>Rekomendasi Terbaik</h1>
+                        <h1>{{ $Setting->main_title }}</h1>
                         <p class="text-lg mt-3">
-                            Eksplorasi rasa kopi kelas dunia dengan harga yang bersahabat. Pilih menu favoritmu sekarang dan
-                            rasakan standar baru dalam menikmati kopi berkualitas tinggi.
+                            {{ $Setting->main_desc_1 }}
                         </p>
                         <div class="d-flex align-items-center mb-4">
-                            <p class="mb-0">Dinikmati lebih dari <b>40 juta</b> penikmat Tomoro Coffee di Indonesia
-                                sampai detik ini</p>
+                            <p class="mb-0">{{ $Setting->main_desc_2 }}</p>
                         </div>
                         <div class="d-block d-md-flex">
                             <a href="https://www.tomoro-coffee.id/home" target="_blank"
@@ -43,8 +41,6 @@
                             </linearGradient>
                         </defs>
                     </svg>
-                    <img class="position-absolute top-0 mt-n7 me-n12 end-0 w-70 z-index-3"
-                        src="{{ asset('assets/material/img/perspective.png') }}" alt="header-image">
                 </div>
             </div>
         </div>
@@ -77,15 +73,13 @@
                 </div>
             </div>
         </section>
-        <section class="mt-5 pb-4" id="technologies">
+        <section class="mt-5 pb-7" id="technologies">
             <div class="container">
                 <div class="row mb-5">
                     <div class="col-lg-7 mx-auto text-center">
-                        <h2 class="mb-3">Rekomendasi Menu Terbaik</h2>
+                        <h2 class="mb-3">{{ $Setting->second_title }}</h2>
                         <p>
-                            Pilihan terbaik yang telah teruji. Kami menyeleksi setiap rasa dengan kriteria yang ketat untuk
-                            memastikan hanya rasa yang paling dicintai pelanggan yang sampai ke tangan Anda. Dijamin
-                            ketagihan!
+                            {{ $Setting->second_desc }}
                         </p>
                     </div>
                 </div>
@@ -95,30 +89,81 @@
                             $i = 1;
                         @endphp
                         @forelse ($sorted as $name => $item)
-                            <div class="col-md-4 col-lg-2 mb-5 d-flex"> <a
-                                    class="card h-100 w-100 shadow-none border border-radius-lg text-center d-flex flex-column"
-                                    href="#" style="width: 200px; text-decoration: none; color: inherit;">
-                                    <div class="avatar rounded-circle bg-white shadow mx-auto mt-n4 mb-3"
-                                        style="min-height: 50px;">
-                                        <div class="d-flex align-items-center justify-content-center bg-secondary"
-                                            style="width: 50px; height: 50px; border-radius: 50%;">
-                                            <span class="text-white h4 mb-0">{{ $loop->iteration }}</span>
+                            @if ($i <= 10)
+                                <div class="col-md-4 col-lg-2 mb-5 d-flex sepuluh"> <a
+                                        class="card h-100 w-100 shadow-none border border-radius-lg text-center d-flex flex-column"
+                                        href="#" style="width: 200px; text-decoration: none; color: inherit;">
+                                        <div class="avatar rounded-circle bg-white shadow mx-auto mt-n4 mb-3"
+                                            style="min-height: 50px;">
+                                            <div class="d-flex align-items-center justify-content-center bg-secondary"
+                                                style="width: 50px; height: 50px; border-radius: 50%;">
+                                                <span class="text-white h4 mb-0">{{ $loop->iteration }}</span>
+                                            </div>
                                         </div>
-                                    </div>
-                                    <div class="flex-grow-1 d-flex flex-column">
-                                        <img class="w-100 px-2" alt="Image placeholder"
-                                            src="{{ asset('assets/material/img/coffee.jpg') }}"
-                                            style="border-radius: 15px !important; display: block;">
+                                        <div class="flex-grow-1 d-flex flex-column">
+                                            <img class="w-100 px-2" alt="Image placeholder"
+                                                src="{{ asset('assets/material/img/coffee.jpg') }}"
+                                                style="border-radius: 15px !important; display: block;">
 
-                                        <h5 class="p-2 text-lg mb-0">{{ $name }}</h5>
+                                            <h6 class="font-weight-bold mt-3">{{ $item[1] }}</h6>
+                                            <h5 class="p-2 text-lg mb-0">{{ $name }}</h5>
 
-                                        <div class="mt-auto pb-3">
-                                            <small class="text-muted font-weight-bold">(Nilai akhir:
-                                                {{ $item }})</small>
+                                            <div class="mt-auto pb-3 d-flex flex-column">
+                                                <small class="text-muted font-weight-bold">{{ $item[2] }}</small>
+                                            </div>
                                         </div>
-                                    </div>
-                                </a>
-                            </div>
+                                    </a>
+                                </div>
+                                <div class="col-md-4 col-lg-2 mb-5 d-flex selengkapnya"> <a
+                                        class="card h-100 w-100 shadow-none border border-radius-lg text-center d-flex flex-column"
+                                        href="#" style="width: 200px; text-decoration: none; color: inherit;">
+                                        <div class="avatar rounded-circle bg-white shadow mx-auto mt-n4 mb-3"
+                                            style="min-height: 50px;">
+                                            <div class="d-flex align-items-center justify-content-center bg-secondary"
+                                                style="width: 50px; height: 50px; border-radius: 50%;">
+                                                <span class="text-white h4 mb-0">{{ $loop->iteration }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 d-flex flex-column">
+                                            <img class="w-100 px-2" alt="Image placeholder"
+                                                src="{{ asset('assets/material/img/coffee.jpg') }}"
+                                                style="border-radius: 15px !important; display: block;">
+
+                                            <h6 class="font-weight-bold mt-3">{{ $item[1] }}</h6>
+                                            <h5 class="p-2 text-lg mb-0">{{ $name }}</h5>
+
+                                            <div class="mt-auto pb-3 d-flex flex-column">
+                                                <small class="text-muted font-weight-bold">{{ $item[2] }}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            @else
+                                <div class="col-md-4 col-lg-2 mb-5 d-flex selengkapnya"> <a
+                                        class="card h-100 w-100 shadow-none border border-radius-lg text-center d-flex flex-column"
+                                        href="#" style="width: 200px; text-decoration: none; color: inherit;">
+                                        <div class="avatar rounded-circle bg-white shadow mx-auto mt-n4 mb-3"
+                                            style="min-height: 50px;">
+                                            <div class="d-flex align-items-center justify-content-center bg-secondary"
+                                                style="width: 50px; height: 50px; border-radius: 50%;">
+                                                <span class="text-white h4 mb-0">{{ $loop->iteration }}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 d-flex flex-column">
+                                            <img class="w-100 px-2" alt="Image placeholder"
+                                                src="{{ asset('assets/material/img/coffee.jpg') }}"
+                                                style="border-radius: 15px !important; display: block;">
+
+                                            <h6 class="font-weight-bold mt-3">{{ $item[1] }}</h6>
+                                            <h5 class="p-2 text-lg mb-0">{{ $name }}</h5>
+
+                                            <div class="mt-auto pb-3 d-flex flex-column">
+                                                <small class="text-muted font-weight-bold">{{ $item[2] }}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            @endif
                             @php
                                 $i++;
                             @endphp
@@ -129,44 +174,17 @@
                         <p class="text-center">Tidak dapat menampilkan rekomendasi produk.</p>
                     @endif
                 </div>
-            </div>
-        </section>
-        <section class="mb-8" id="products">
-            <div class="container">
-                <div class="row">
-                    <div class="col-12">
-                        <div class="card bg-gradient-light h-100">
-                            <div class="card-body">
-                                <h3 class="text-dark">Kriteria</h3>
-                                <small class="text-muted">Kami percaya bahwa rasa yang sempurna lahir dari presisi. Setiap
-                                    menu yang kami
-                                    sajikan telah melalui proses penilaian ketat berdasarkan 7 Kriteria Utama. Setiap
-                                    kriteria memiliki bobot khusus yang dirancang untuk menciptakan harmoni rasa—memastikan
-                                    tidak ada elemen yang terlalu dominan, namun tetap memberikan karakter yang
-                                    kuat.</small>
-                                <div class="mt-3">
-                                    @foreach ($criteriasOrder as $criteria)
-                                        <p class="mb-0 text-dark">
-                                            <span
-                                                class="fw-bold">{{ $loop->iteration . '. ' . $criteria->name }}</span><span
-                                                class="ms-3 text-muted">Memiliki bobot pengaruh
-                                                sebesar
-                                                {{ $criteria->weight }}%</span>
-                                        </p>
-                                        <hr class="bg-dark my-2">
-                                    @endforeach
-                                </div>
-                            </div>
-                        </div>
+                @if ($i > 10)
+                    <div class="row">
+                        <a href="javascript:void(0)" class="link-info" id="sedikit">Tampilkan lebih sedikit</a>
+                        <a href="javascript:void(0)" class="link-info" id="selengkapnya">Tampilkan menu lainnya...</a>
                     </div>
-                </div>
+                @endif
             </div>
         </section>
     </div>
-    <div class="container mt-n7">
+    <div class="container mt-n5">
         <section class="py-5 bg-dark-blue border-radius-xl position-relative overflow-hidden z-index-1">
-            <img src="{{ asset('assets/material/img/campaign/wave.png') }}" alt="pattern-lines"
-                class="position-absolute start-0 top-0 w-100 opacity-1">
             <div class="container position-relative z-index-2">
                 <div class="row">
                     <div class="col-lg-5 col-md-8 m-auto text-start">
@@ -223,4 +241,24 @@
     </div>
 @endsection
 @section('scripts')
+    <script>
+        $(document).ready(function() {
+            $('.selengkapnya').addClass('d-none');
+            $('#sedikit').addClass('d-none');
+
+            $('#selengkapnya').on('click', function() {
+                $('.sepuluh').addClass('d-none');
+                $('.selengkapnya').removeClass('d-none');
+                $(this).addClass('d-none');
+                $('#sedikit').removeClass('d-none');
+            });
+
+            $('#sedikit').on('click', function() {
+                $('.sepuluh').removeClass('d-none');
+                $('.selengkapnya').addClass('d-none');
+                $(this).addClass('d-none');
+                $('#selengkapnya').removeClass('d-none');
+            });
+        });
+    </script>
 @endsection
