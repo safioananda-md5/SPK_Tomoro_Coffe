@@ -7,6 +7,7 @@ use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
 class CriteriaController extends Controller
@@ -46,8 +47,15 @@ class CriteriaController extends Controller
                 ]
             );
             DB::beginTransaction();
+
+            if ($request->shortname) {
+                $SR = Str::lower($request->shortname);
+            } else {
+                $SR = null;
+            }
             Criteria::create([
                 'name' => $request->name,
+                'short_name' => $SR,
                 'type' => $request->type,
                 'weight' => $request->weight,
                 'description' => $request->description ?? null,
@@ -92,9 +100,16 @@ class CriteriaController extends Controller
                     'weight.max' => 'Maksimum bobot kriteria 100%',
                 ]
             );
+
+            if ($request->shortname) {
+                $SR = Str::lower($request->shortname);
+            } else {
+                $SR = null;
+            }
             DB::beginTransaction();
             Criteria::where('id', $id)->update([
                 'name' => $request->name,
+                'short_name' => $SR,
                 'type' => $request->type,
                 'weight' => $request->weight,
                 'description' => $request->description ?? null,

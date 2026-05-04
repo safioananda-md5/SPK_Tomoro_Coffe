@@ -46,6 +46,12 @@
                             @if ($edit) value="{{ $criteria->name }}" @endif required>
                     </div>
                     <div class="form-group">
+                        <label for="shortname">Nama Singkat (huruf kecil)(opsional)</label>
+                        <input type="text" name="shortname" class="form-control" id="shortname"
+                            placeholder="Masukkan Nama SIngkat Kriteria"
+                            @if ($edit) value="{{ $criteria->short_name }}" @endif>
+                    </div>
+                    <div class="form-group">
                         <label for="type">Jenis Keriteria<span style="color:red">*</span></label>
                         <select class="form-select" name="type" id="type" required>
                             <option value="">-- Pilih Jenis Kriteria --</option>

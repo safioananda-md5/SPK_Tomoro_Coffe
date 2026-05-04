@@ -30,7 +30,6 @@
                                 <tr>
                                     <th width="5%"> Hapus </th>
                                     <th width="30%"> Nama Menu </th>
-                                    <th width="10%"> Harga </th>
                                     @foreach ($criterias as $criteria)
                                         <th>{{ $criteria->name }}</th>
                                     @endforeach
@@ -43,7 +42,6 @@
                                                 onclick="deleteAlternative('{{ Crypt::encrypt($alternative->id) }}')"></i>
                                         </td>
                                         <td>{{ $alternative->name }}</td>
-                                        <td>Rp {{ number_format($alternative->price, 0, ',', '.') }}</td>
                                         @foreach ($criterias as $criteria)
                                             @foreach ($alternative->alternativecriteria as $AC)
                                                 @if ($AC->criteria_id == $criteria->id)

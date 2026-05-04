@@ -196,7 +196,7 @@ class DashboardController extends Controller
                         }
                     }
 
-                    $nameCriterias = implode(', ', Criteria::whereIn('id', $Incriteria)->pluck('name')->toArray());
+                    $nameCriterias = implode(', ', Criteria::whereIn('id', $Incriteria)->whereNotNull('short_name')->pluck('short_name')->toArray());
 
                     $ArrNilaiAkhir[$alternative->name] = [
                         $totalNilaiAkhir,

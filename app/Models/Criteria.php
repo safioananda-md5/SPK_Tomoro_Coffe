@@ -14,6 +14,7 @@ class Criteria extends Model
         'type',
         'weight',
         'description',
+        'short_name',
     ];
 
     public function alternativecriteria()

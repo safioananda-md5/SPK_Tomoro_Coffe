@@ -109,7 +109,8 @@
                                             <h5 class="p-2 text-lg mb-0">{{ $name }}</h5>
 
                                             <div class="mt-auto pb-3 d-flex flex-column">
-                                                <small class="text-muted font-weight-bold">{{ $item[2] }}</small>
+                                                <small class="text-muted font-weight-bold">Kombinasi
+                                                    {{ $item[2] }}</small>
                                             </div>
                                         </div>
                                     </a>
@@ -133,7 +134,8 @@
                                             <h5 class="p-2 text-lg mb-0">{{ $name }}</h5>
 
                                             <div class="mt-auto pb-3 d-flex flex-column">
-                                                <small class="text-muted font-weight-bold">{{ $item[2] }}</small>
+                                                <small class="text-muted font-weight-bold">Kombinasi
+                                                    {{ $item[2] }}</small>
                                             </div>
                                         </div>
                                     </a>
@@ -158,7 +160,8 @@
                                             <h5 class="p-2 text-lg mb-0">{{ $name }}</h5>
 
                                             <div class="mt-auto pb-3 d-flex flex-column">
-                                                <small class="text-muted font-weight-bold">{{ $item[2] }}</small>
+                                                <small class="text-muted font-weight-bold">Kombinasi
+                                                    {{ $item[2] }}</small>
                                             </div>
                                         </div>
                                     </a>
