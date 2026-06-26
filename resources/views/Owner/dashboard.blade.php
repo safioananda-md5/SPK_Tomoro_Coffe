@@ -179,10 +179,24 @@
                 </div>
                 @if ($i > 10)
                     <div class="row">
-                        <a href="javascript:void(0)" class="link-info" id="sedikit">Tampilkan lebih sedikit</a>
-                        <a href="javascript:void(0)" class="link-info" id="selengkapnya">Tampilkan menu lainnya...</a>
+                        <div class="col-12">
+                            <a href="javascript:void(0)" class="link-info" id="sedikit">Tampilkan lebih sedikit</a>
+                            <a href="javascript:void(0)" class="link-info" id="selengkapnya">Tampilkan menu
+                                lainnya...</a>
+                        </div>
                     </div>
                 @endif
+                <div class="row mt-5">
+                    <div class="col-12">
+                        Hasil rekomendasi peringkat ini disusun berdasarkan analisis Sistem Pendukung Keputusan menggunakan
+                        Metode SMART <i>(Simple Multi-Attribute Rating Technique)</i>. Metode ini mengevaluasi setiap
+                        alternatif
+                        berdasarkan pembobotan nilai kriteria secara linier untuk menghasilkan keputusan yang transparan dan
+                        akurat. Detail proses dan tahapan perhitungan dapat Anda lihat <a
+                            href="{{ route('perhitungan', Crypt::encrypt($latestPeriode)) }}" target="_blank">di
+                            sini</a>.
+                    </div>
+                </div>
             </div>
         </section>
     </div>

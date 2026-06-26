@@ -12,18 +12,25 @@
     <div class="row mt-3">
         <div class="col-sm-12 grid-margin stretch-card">
             <div class="card">
-                <div class="card-body">
+                <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h4 style="fw-bold">Data Alternatif</h4>
+                        <h5 class="card-header" style="fw-bold">Data Alternatif</h5>
                         <div>
                             @if (count($alternatives) > 0)
                                 <button type="button" class="btn btn-outline-danger" onclick="deleteAllAlternative()">Hapus
                                     Seluruh Alternatif</button>
                             @endif
-                            <a href="{{ route('admin.alternatif.create') }}" class="btn btn-primary">Tambah/Edit
-                                Alternatif</a>
+                            {{-- <a href="{{ route('admin.alternatif.import') }}" class="btn btn-success">
+                                <i class="fa fa-file me-2"></i>
+                                Import Alternatif
+                            </a> --}}
+                            <a href="{{ route('admin.alternatif.create') }}" class="btn btn-primary">
+                                Tambah Alternatif
+                            </a>
                         </div>
                     </div>
+                </div>
+                <div class="card-body">
                     <div class="table-responsive mt-3">
                         <table class="table table-striped" id="alternatifTable" width="100%">
                             <thead>
@@ -38,14 +45,17 @@
                             <tbody>
                                 @foreach ($alternatives as $alternative)
                                     <tr>
-                                        <td class="text-center"><i class="fa fa-trash-o text-danger h3 iconHover"
-                                                onclick="deleteAlternative('{{ Crypt::encrypt($alternative->id) }}')"></i>
+                                        <td class="text-center">
+                                            <a href="{{ route('admin.alternatif.edit', Crypt::encrypt($alternative->id)) }}"
+                                                class="btn btn-sm btn-warning">Edit</a>
+                                            <button type="button" class="btn btn-sm btn-outline-danger"
+                                                onclick="deleteAlternative('{{ Crypt::encrypt($alternative->id) }}')">Hapus</button>
                                         </td>
                                         <td>{{ $alternative->name }}</td>
                                         @foreach ($criterias as $criteria)
                                             @foreach ($alternative->alternativecriteria as $AC)
                                                 @if ($AC->criteria_id == $criteria->id)
-                                                    <td>{{ $AC->value }}</td>
+                                                    <td class="text-center">{{ $AC->value }}</td>
                                                 @endif
                                             @endforeach
                                         @endforeach

@@ -18,16 +18,32 @@ class AlternatifController extends Controller
     public function index()
     {
         $criterias = Criteria::all();
-        $alternatives = Alternative::with('alternativecriteria.criteria')->get();
+        $alternatives = Alternative::with('alternativecriteria.criteria')->where('available', true)->get();
         return view('admin.alternatif', compact(['criterias', 'alternatives']));
+    }
+
+    public function import()
+    {
+        return view('admin.alternatif_import');
     }
 
     public function create()
     {
-        return view('admin.alternatif_create');
+        $criterias = Criteria::all();
+        $edit = false;
+        return view('admin.alternatif_create', compact(['criterias', 'edit']));
     }
 
-    public function store(Request $request)
+    public function edit($id)
+    {
+        $criterias = Criteria::all();
+        $edit = true;
+        $alternative = Alternative::find($id);
+        $alternative_critera = AlternativeCriteria::where('alternative_id', $id)->get();
+        return view('admin.alternatif_create', compact(['criterias', 'alternative', 'edit', 'alternative_critera']));
+    }
+
+    public function store_import(Request $request)
     {
         try {
             $request->validate([
@@ -84,6 +100,132 @@ class AlternatifController extends Controller
             // dd($header);
             flash()->success('Data alternatif berhasil diunggah.');
             return redirect(route('admin.alternatif.index'));
+        } catch (ValidationException $e) {
+            $errors = $e->errors();
+            $allErrors = collect($errors)->flatten()->implode('<br> • ');
+            flash()->error('Inputan Gagal! Periksa kembali isian Anda. <br> • ' . $allErrors);
+            return redirect()->back();
+        } catch (Throwable $e) {
+            DB::rollback();
+            flash()->error('Inputan Gagal! Periksa kembali isian Anda. <br> ' . $e->getMessage());
+            return redirect()->back();
+        }
+    }
+
+    public function store(Request $request)
+    {
+        try {
+            $rules = [
+                'name'       => 'required|string',
+                'price'      => 'required|numeric|min:0',
+                'category'      => 'required',
+                'criteria'   => 'required|array',
+                'criteria.*' => 'required|numeric|min:0|max:100',
+            ];
+
+            $messages = [
+                'name.required'       => 'Nama Alternatif wajib diisi.',
+                'name.string'         => 'Nama Alternatif harus berupa teks.',
+
+                'price.required'      => 'Harga Alternatif wajib diisi.',
+                'price.numeric'       => 'Harga Alternatif harus berupa angka.',
+                'price.min'           => 'Harga Alternatif tidak boleh minus.',
+
+                'category.required'   => 'Kategori Alternatif wajib diisi.',
+
+                'criteria.required'   => 'Kandungan bahan wajib diisi.',
+                'criteria.array'      => 'Format kriteria tidak valid.',
+
+                'criteria.*.required' => 'Semua nilai kandungan bahan wajib diisi, tidak boleh ada yang kosong.',
+                'criteria.*.numeric'  => 'Nilai kandungan bahan harus berupa angka.',
+                'criteria.*.min'      => 'Nilai kandungan bahan tidak boleh minus.',
+                'criteria.*.max'      => 'Nilai kandungan bahan maksimal 100%.',
+            ];
+
+            $validatedData = $request->validate($rules, $messages);
+
+            DB::beginTransaction();
+
+            $alternative = Alternative::create([
+                'name' => $request->name,
+                'price' => $request->price,
+            ]);
+
+            foreach ($request->criteria as $idcriteria => $kandungan) {
+                AlternativeCriteria::create([
+                    'alternative_id' => $alternative->id,
+                    'criteria_id' => $idcriteria,
+                    'value' => $kandungan,
+                ]);
+            }
+
+            DB::commit();
+            flash()->success('Data alternatif berhasil ditambahkan.');
+            return redirect(route('admin.alternatif.index'));
+        } catch (ValidationException $e) {
+            $errors = $e->errors();
+            $allErrors = collect($errors)->flatten()->implode('<br> • ');
+            flash()->error('Inputan Gagal! Periksa kembali isian Anda. <br> • ' . $allErrors);
+            return redirect()->back();
+        } catch (Throwable $e) {
+            DB::rollback();
+            flash()->error('Inputan Gagal! Periksa kembali isian Anda. <br> ' . $e->getMessage());
+            return redirect()->back();
+        }
+    }
+
+    public function update(Request $request, $id)
+    {
+        try {
+            $rules = [
+                'name'       => 'required|string',
+                'price'      => 'required|numeric|min:0',
+                'category'      => 'required',
+                'criteria'   => 'required|array',
+                'criteria.*' => 'required|numeric|min:0|max:100',
+            ];
+
+            $messages = [
+                'name.required'       => 'Nama Alternatif wajib diisi.',
+                'name.string'         => 'Nama Alternatif harus berupa teks.',
+
+                'price.required'      => 'Harga Alternatif wajib diisi.',
+                'price.numeric'       => 'Harga Alternatif harus berupa angka.',
+                'price.min'           => 'Harga Alternatif tidak boleh minus.',
+
+                'category.required'   => 'Kategori Alternatif wajib diisi.',
+
+                'criteria.required'   => 'Kandungan bahan wajib diisi.',
+                'criteria.array'      => 'Format kriteria tidak valid.',
+
+                'criteria.*.required' => 'Semua nilai kandungan bahan wajib diisi, tidak boleh ada yang kosong.',
+                'criteria.*.numeric'  => 'Nilai kandungan bahan harus berupa angka.',
+                'criteria.*.min'      => 'Nilai kandungan bahan tidak boleh minus.',
+                'criteria.*.max'      => 'Nilai kandungan bahan maksimal 100%.',
+            ];
+
+            $validatedData = $request->validate($rules, $messages);
+
+            DB::beginTransaction();
+
+            $alternative = Alternative::where('id', $id)->update([
+                'name' => $request->name,
+                'price' => $request->price,
+            ]);
+
+            AlternativeCriteria::where('alternative_id', $id)->delete();
+
+            foreach ($request->criteria as $idcriteria => $kandungan) {
+                AlternativeCriteria::create([
+                    'alternative_id' => $id,
+                    'criteria_id' => $idcriteria,
+                    'value' => $kandungan,
+                ]);
+            }
+
+            DB::commit();
+            flash()->success('Data alternatif berhasil diperbarui.');
+            return redirect()->back();
         } catch (ValidationException $e) {
             $errors = $e->errors();
             $allErrors = collect($errors)->flatten()->implode('<br> • ');

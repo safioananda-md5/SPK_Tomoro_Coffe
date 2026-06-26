@@ -31,7 +31,7 @@
                                     <div class="modal-body">
                                         Apakah Anda yakin ingin membuat data perangkingan sekarang?
                                         <br>
-                                        <small class="text-muted">Proses ini akan menggunakan data terbaru dari
+                                        <small class="text-muted">Proses ini akan menggunakan seluruh data terbaru dari
                                             sistem.</small>
                                     </div>
                                     <div class="modal-footer">
@@ -59,13 +59,26 @@
                             <tbody>
                                 @foreach ($Periodes as $Periode)
                                     <tr>
-                                        <td class="text-center">{{ $Periode->name }}</td>
+                                        <td class="text-center">
+                                            {{ $Periode->name }}
+                                            @if ($Periode->id == $latest)
+                                                <span class="badge rounded-pill text-bg-primary ms-3">Periode Aktif</span>
+                                            @endif
+                                        </td>
                                         <td class="text-center">{{ count($Periode->alternatives) }}</td>
                                         <td class="text-center">
-                                            <a href="{{ route('admin.perangkingan.index', Crypt::encrypt($Periode->id)) }}"
-                                                class="btn btn-primary">
-                                                Detail
-                                            </a>
+                                            @if ($Periode->is_equal)
+                                                <a href="{{ route('admin.perangkingan.index', Crypt::encrypt($Periode->id)) }}"
+                                                    class="btn btn-primary">
+                                                    Detail
+                                                </a>
+                                            @else
+                                                <span class="badge bg-danger rounded-pill mb-3 text-wrap">Data kriteria yang
+                                                    digunakan
+                                                    pada periode ini
+                                                    tidak sesuai dengan kriteria aktif saat ini.</span>
+                                                <br>
+                                            @endif
                                             <button type="button" class="btn btn-danger" data-bs-toggle="modal"
                                                 data-bs-target="#modalHapus">
                                                 Hapus Periode

@@ -6,6 +6,7 @@ use App\Models\Alternative;
 use App\Models\AlternativeCriteria;
 use App\Models\Criteria;
 use App\Models\Periode;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\ValidationException;
@@ -32,18 +33,84 @@ class RankingController extends Controller
 
     public function periode()
     {
-        $Periodes = periode::orderBy('id', 'desc')->get();
-        return view('Admin.periode', compact(['Periodes']));
+        try {
+            $criterias = Criteria::all();
+            $totalwieght = 0;
+            $someempty = false;
+            foreach ($criterias as $criteria) {
+                if ($criteria->weight <= 0 || $criteria->weight == null) {
+                    $someempty = true;
+                } else {
+                    $totalwieght = bcadd($totalwieght, $criteria->weight);
+                }
+            }
+
+            if ($someempty) {
+                throw new Exception('Terdapat bobot kriteria bernilai 0.');
+            }
+
+            if ($totalwieght != 100) {
+                throw new Exception('Bobot kriteria tidak 100%, Nilai bobot: ' . $totalwieght . '%.');
+            }
+        } catch (Throwable $e) {
+            DB::rollback();
+            flash()->error($e->getMessage());
+            return redirect(route('admin.kriteria.index'));
+        }
+
+        $Periodes = Periode::orderBy('id', 'desc')->get();
+        $alternativecriteria = AlternativeCriteria::get();
+
+        $criteria_active = array_map('intval', Criteria::pluck('id')->toArray());
+        sort($criteria_active);
+
+        $Periodes->transform(function ($Periode) use ($criteria_active) {
+
+            $firstAlternativeId = $Periode->alternatives[0] ?? 0;
+
+            $array_tadi = AlternativeCriteria::where('alternative_id', (int)$firstAlternativeId)
+                ->pluck('criteria_id')
+                ->toArray();
+
+            $array_tadi = array_map('intval', $array_tadi);
+            sort($array_tadi);
+
+            $Periode->is_equal = ($criteria_active == $array_tadi);
+
+            return $Periode;
+        });
+
+        $latest = Periode::latest()->value('id');
+
+        return view('Admin.periode', compact(['Periodes', 'latest', 'alternativecriteria', 'criteria_active']));
     }
 
     public function post_periode()
     {
         try {
             DB::beginTransaction();
+
+            $oldAlternatives = Alternative::where('available', true)->get();
+            $ids = [];
+            foreach ($oldAlternatives as $alternative) {
+                $newAlternative = $alternative->replicate();
+                $newAlternative->available = false;
+                $newAlternative->save();
+                $oldCriteria = AlternativeCriteria::where('alternative_id', $alternative->id)->get();
+                foreach ($oldCriteria as $criteria) {
+                    $newCriteria = $criteria->replicate();
+                    $newCriteria->alternative_id = $newAlternative->id;
+                    $newCriteria->save();
+                }
+
+                $ids[] = $newAlternative->id;
+            }
+
             Periode::create([
                 'name' => now()->format('d/m/Y H:i:s'),
-                'alternatives' => Alternative::pluck('id')->toArray(),
+                'alternatives' => $ids,
             ]);
+
             DB::commit();
             flash()->success('Priode pengujian berhasil dibuat.');
             return redirect()->back();
@@ -63,7 +130,12 @@ class RankingController extends Controller
     {
         try {
             DB::beginTransaction();
-            Periode::where('id', $id)->delete();
+            $periode = Periode::find($id);
+            $alternativeIds = array_map('intval', $periode->alternatives ?? []);
+            if (!empty($alternativeIds)) {
+                Alternative::whereIn('id', $alternativeIds)->forceDelete();
+            }
+            $periode->delete();
             DB::commit();
             flash()->success('Priode pengujian berhasil dihapus.');
             return redirect()->back();

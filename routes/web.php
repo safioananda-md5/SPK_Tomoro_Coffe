@@ -34,6 +34,7 @@ Route::group([
         Route::get('/{id}/edit-kriteria', [CriteriaController::class, 'edit'])->name('edit');
         Route::put('/{id}/edit-kriteria', [CriteriaController::class, 'update'])->name('update');
         Route::delete('/{id}/hapus-kriteria', [CriteriaController::class, 'delete'])->name('delete');
+        Route::put('/update/bobot', [CriteriaController::class, 'updatebobot'])->name('updatebobot');
     });
 
     Route::group([
@@ -41,8 +42,12 @@ Route::group([
         'as' => 'alternatif.',
     ], function () {
         Route::get('/', [AlternatifController::class, 'index'])->name('index');
-        Route::get('/tambah-edit-alternatif', [AlternatifController::class, 'create'])->name('create');
-        Route::post('/tambah-alternatif', [AlternatifController::class, 'store'])->name('store');
+        Route::get('/import-alternatif', [AlternatifController::class, 'import'])->name('import');
+        Route::get('/tambah-alternatif', [AlternatifController::class, 'create'])->name('create');
+        Route::get('/edit-alternatif/{id}', [AlternatifController::class, 'edit'])->name('edit');
+        Route::post('/import-alternatif', [AlternatifController::class, 'store_import'])->name('store_import');
+        Route::post('/store-alternatif', [AlternatifController::class, 'store'])->name('store');
+        Route::put('/update-alternatif/{id}', [AlternatifController::class, 'update'])->name('update');
         Route::delete('/{id}/hapus-alternatif', [AlternatifController::class, 'delete'])->name('delete');
         Route::delete('/hapus-seluruh-alternatif', [AlternatifController::class, 'alldelete'])->name('alldelete');
     });
@@ -72,6 +77,10 @@ Route::group([
 // Owner route
 
 Route::get('/home', [DashboardController::class, 'landing'])->name('home');
+Route::get('/home/perhitungan/{id}', [DashboardController::class, 'perhitungan'])->name('perhitungan');
+Route::get('/home/bobotutility/{id}', [DashboardController::class, 'bobotutility'])->name('bobotutility');
+Route::get('/home/nilaiakhir/{id}', [DashboardController::class, 'nilaiakhir'])->name('nilaiakhir');
+Route::get('/home/ranking/{id}', [DashboardController::class, 'ranking'])->name('ranking');
 
 // Route::group([
 //     'prefix' => '/owner',

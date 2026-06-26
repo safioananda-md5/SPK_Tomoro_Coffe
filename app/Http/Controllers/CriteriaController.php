@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Criteria;
+use Exception;
 use Throwable;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -16,10 +17,15 @@ class CriteriaController extends Controller
     {
         $criterias = Criteria::all();
         $totalwieght = 0;
+        $someempty = false;
         foreach ($criterias as $criteria) {
-            $totalwieght = bcadd($totalwieght, $criteria->weight);
+            if ($criteria->weight <= 0 || $criteria->weight == null) {
+                $someempty = true;
+            } else {
+                $totalwieght = bcadd($totalwieght, $criteria->weight);
+            }
         }
-        return view('admin.kriteria', compact(['criterias', 'totalwieght']));
+        return view('admin.kriteria', compact(['criterias', 'totalwieght', 'someempty']));
     }
 
     public function create()
@@ -35,30 +41,20 @@ class CriteriaController extends Controller
                 [
                     'name' => 'required',
                     'type' => 'required',
-                    'weight' => 'required|numeric|max:100',
-                    'description' => 'sometimes',
                 ],
                 [
                     'name.required' => 'Nama kriteria wajib diisi.',
                     'type.required' => 'Tipe kriteria wajib diisi.',
-                    'weight.required' => 'Bobot kriteria wajib diisi.',
-                    'weight.numeric' => 'Bobot kriteria wajib angka.',
-                    'weight.max' => 'Maksimum bobot kriteria 100%',
                 ]
             );
             DB::beginTransaction();
 
-            if ($request->shortname) {
-                $SR = Str::lower($request->shortname);
-            } else {
-                $SR = null;
-            }
             Criteria::create([
                 'name' => $request->name,
-                'short_name' => $SR,
+                'short_name' => Str::lower($request->name),
                 'type' => $request->type,
-                'weight' => $request->weight,
-                'description' => $request->description ?? null,
+                'weight' => 0,
+                'description' => 'none',
             ]);
             DB::commit();
             flash()->success('Data kriteria berhasil ditambahkan.');
@@ -89,30 +85,18 @@ class CriteriaController extends Controller
                 [
                     'name' => 'required',
                     'type' => 'required',
-                    'weight' => 'required|numeric|max:100',
-                    'description' => 'sometimes',
                 ],
                 [
                     'name.required' => 'Nama kriteria wajib diisi.',
                     'type.required' => 'Tipe kriteria wajib diisi.',
-                    'weight.required' => 'Bobot kriteria wajib diisi.',
-                    'weight.numeric' => 'Bobot kriteria wajib angka.',
-                    'weight.max' => 'Maksimum bobot kriteria 100%',
                 ]
             );
 
-            if ($request->shortname) {
-                $SR = Str::lower($request->shortname);
-            } else {
-                $SR = null;
-            }
             DB::beginTransaction();
             Criteria::where('id', $id)->update([
                 'name' => $request->name,
-                'short_name' => $SR,
+                'short_name' => Str::lower($request->name),
                 'type' => $request->type,
-                'weight' => $request->weight,
-                'description' => $request->description ?? null,
             ]);
             DB::commit();
             flash()->success('Data kriteria berhasil diperbarui.');
@@ -148,6 +132,49 @@ class CriteriaController extends Controller
             return response()->json([
                 'message' => 'Inputan Gagal! Periksa kembali isian Anda. <br> ' . $e->getMessage()
             ], 500);
+        }
+    }
+
+    public function updatebobot(Request $request)
+    {
+        try {
+            $request->validate([
+                'weight' => 'required',
+                'weight.*' => 'required|numeric|min:1',
+            ], [
+                'weight.required' => 'Kriteria tidak dapat ditentukan.',
+                'weight.*.required' => 'Terdapat bobot kriteria yang masih kosong.',
+                'weight.*.min' => 'Isian bobot kriteria tidak boleh 0',
+            ]);
+
+            $total = 0;
+            foreach ($request->weight as $idcriteria => $weight) {
+                $total += (int) $weight;
+            }
+
+            if ($total !== 100) {
+                throw new Exception('Total bobot kriteria wajib 100%.');
+            }
+
+            DB::beginTransaction();
+            foreach ($request->weight as $idcriteria => $weight) {
+                Criteria::where('id', $idcriteria)->update([
+                    'weight' => $weight
+                ]);
+            }
+            DB::commit();
+
+            flash()->success('Bobot kriteria telah di atur.');
+            return redirect()->back();
+        } catch (ValidationException $e) {
+            $errors = $e->errors();
+            $allErrors = collect($errors)->flatten()->implode('<br> • ');
+            flash()->error('Inputan Gagal! Periksa kembali isian Anda. <br> • ' . $allErrors);
+            return redirect()->back();
+        } catch (Throwable $e) {
+            DB::rollback();
+            flash()->error('Inputan Gagal! Periksa kembali isian Anda. <br> ' . $e->getMessage());
+            return redirect()->back();
         }
     }
 }

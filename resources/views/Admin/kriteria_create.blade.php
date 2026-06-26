@@ -46,12 +46,6 @@
                             @if ($edit) value="{{ $criteria->name }}" @endif required>
                     </div>
                     <div class="form-group">
-                        <label for="shortname">Nama Singkat (huruf kecil)(opsional)</label>
-                        <input type="text" name="shortname" class="form-control" id="shortname"
-                            placeholder="Masukkan Nama SIngkat Kriteria"
-                            @if ($edit) value="{{ $criteria->short_name }}" @endif>
-                    </div>
-                    <div class="form-group">
                         <label for="type">Jenis Keriteria<span style="color:red">*</span></label>
                         <select class="form-select" name="type" id="type" required>
                             <option value="">-- Pilih Jenis Kriteria --</option>
@@ -64,24 +58,6 @@
                                         selected @endif
                                 @endif>Cost</option>
                         </select>
-                    </div>
-                    <div class="form-group">
-                        <label for="weight">Bobot Kriteria<span style="color:red">*</span></label>
-                        <div class="input-group">
-                            <input type="number" name="weight" class="form-control" id="weight"
-                                placeholder="Masukkan Bobot Kriteria"
-                                @if ($edit) value="{{ $criteria->weight }}" @endif required>
-                            <span class="input-group-text">%</span>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="description">Keterangan Kriteria <small>(Opsional)</small></label>
-                        @if ($edit)
-                            <textarea class="form-control" id="description" rows="4">{{ $criteria->description }}</textarea>
-                        @else
-                            <textarea class="form-control" id="description" rows="4"></textarea>
-                        @endif
-
                     </div>
                     <div class="text-end">
                         <a href="{{ route('admin.kriteria.index') }}" class="btn btn-outline-danger"
