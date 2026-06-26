@@ -118,7 +118,8 @@
                             All rights reserved. Copyright ©
                             <script>
                                 document.write(new Date().getFullYear())
-                            </script>
+                            </script>,
+                            code by <strong>Owl Job</strong>
                         </p>
                     </div>
                 </div>

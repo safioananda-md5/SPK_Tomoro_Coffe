@@ -155,7 +155,7 @@
                             from BootstrapDash.</span> --}}
                         <span class="float-none float-sm-end d-block mt-1 mt-sm-0 text-center">Copyright ©
                             {{ now()->format('Y') }}. All
-                            rights reserved.</span>
+                            rights reserved. Code by <strong>Owl Job</strong></span>
                     </div>
                 </footer>
                 <!-- partial -->
