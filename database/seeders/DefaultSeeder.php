@@ -16,6 +16,7 @@ class DefaultSeeder extends Seeder
     {
         $this->call([
             UserSeeder::class,
+            SettingSeeder::class,
         ]);
 
         Schema::disableForeignKeyConstraints();
