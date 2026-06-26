@@ -84,10 +84,10 @@
                     </div>
                 </div>
                 <div class="row d-flex align-items-stretch">
+                    @php
+                        $i = 1;
+                    @endphp
                     @if ($sorted)
-                        @php
-                            $i = 1;
-                        @endphp
                         @forelse ($sorted as $name => $item)
                             @if ($i <= 10)
                                 <div class="col-md-4 col-lg-2 mb-5 d-flex sepuluh"> <a
@@ -186,17 +186,21 @@
                         </div>
                     </div>
                 @endif
-                <div class="row mt-5">
-                    <div class="col-12">
-                        Hasil rekomendasi peringkat ini disusun berdasarkan analisis Sistem Pendukung Keputusan menggunakan
-                        Metode SMART <i>(Simple Multi-Attribute Rating Technique)</i>. Metode ini mengevaluasi setiap
-                        alternatif
-                        berdasarkan pembobotan nilai kriteria secara linier untuk menghasilkan keputusan yang transparan dan
-                        akurat. Detail proses dan tahapan perhitungan dapat Anda lihat <a
-                            href="{{ route('perhitungan', Crypt::encrypt($latestPeriode)) }}" target="_blank">di
-                            sini</a>.
+                @if ($sorted)
+                    <div class="row mt-5">
+                        <div class="col-12">
+                            Hasil rekomendasi peringkat ini disusun berdasarkan analisis Sistem Pendukung Keputusan
+                            menggunakan
+                            Metode SMART <i>(Simple Multi-Attribute Rating Technique)</i>. Metode ini mengevaluasi setiap
+                            alternatif
+                            berdasarkan pembobotan nilai kriteria secara linier untuk menghasilkan keputusan yang transparan
+                            dan
+                            akurat. Detail proses dan tahapan perhitungan dapat Anda lihat <a
+                                href="{{ route('perhitungan', Crypt::encrypt($latestPeriode)) }}" target="_blank">di
+                                sini</a>.
+                        </div>
                     </div>
-                </div>
+                @endif
             </div>
         </section>
     </div>

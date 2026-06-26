@@ -239,7 +239,7 @@ class DashboardController extends Controller
 
         $Setting = Setting::latest()->first();
 
-        $latestPeriode = Periode::latest()->first()->value('id');
+        $latestPeriode = Periode::latest()->first()?->id ?? '';
         return view('Owner.dashboard', compact(['alternatives', 'latestPeriode', 'criteriasOrder', 'sorted', 'Setting']));
     }
 
