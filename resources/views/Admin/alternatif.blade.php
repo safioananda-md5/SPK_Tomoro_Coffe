@@ -88,8 +88,12 @@
                 text: "Data yang dihapus tidak dapat dikembalikan!",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
+                reverseButtons: true,
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: "btn btn-outline-danger ms-2",
+                    cancelButton: "btn btn-primary"
+                },
                 cancelButtonText: "Batal",
                 confirmButtonText: "Iya, Hapus!"
             }).then((result) => {
@@ -131,8 +135,12 @@
                 text: "Data yang dihapus tidak dapat dikembalikan!",
                 icon: "warning",
                 showCancelButton: true,
-                confirmButtonColor: "#3085d6",
-                cancelButtonColor: "#d33",
+                reverseButtons: true,
+                buttonsStyling: false,
+                customClass: {
+                    confirmButton: "btn btn-outline-danger ms-2",
+                    cancelButton: "btn btn-primary"
+                },
                 cancelButtonText: "Batal",
                 confirmButtonText: "Iya, Hapus!"
             }).then((result) => {
