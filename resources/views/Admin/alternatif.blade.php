@@ -35,8 +35,9 @@
                         <table class="table table-striped" id="alternatifTable" width="100%">
                             <thead>
                                 <tr>
-                                    <th width="5%"> Hapus </th>
+                                    <th width="5%"> Aksi </th>
                                     <th width="30%"> Nama Menu </th>
+                                    <th width="30%"> Kategori </th>
                                     @foreach ($criterias as $criteria)
                                         <th>{{ $criteria->name }}</th>
                                     @endforeach
@@ -52,13 +53,23 @@
                                                 onclick="deleteAlternative('{{ Crypt::encrypt($alternative->id) }}')">Hapus</button>
                                         </td>
                                         <td>{{ $alternative->name }}</td>
+                                        <td>{{ $alternative->category == 1 ? 'Non-Coffe' : 'Coffe' }}</td>
                                         @foreach ($criterias as $criteria)
                                             @foreach ($alternative->alternativecriteria as $AC)
+                                                @php
+                                                    $ada = false;
+                                                @endphp
                                                 @if ($AC->criteria_id == $criteria->id)
+                                                    @php
+                                                        $ada = true;
+                                                    @endphp
                                                     <td class="text-center">{{ $AC->value }}</td>
                                                 @endif
                                             @endforeach
                                         @endforeach
+                                        @if (!$ada)
+                                            <td class="text-center">0</td>
+                                        @endif
                                     </tr>
                                 @endforeach
                             </tbody>

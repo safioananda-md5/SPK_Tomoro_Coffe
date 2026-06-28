@@ -54,9 +54,18 @@
                             <div class="col-md-6 col-lg-3 position-relative">
                                 <div class="p-3 text-center">
                                     <h1 class="text-gradient text-warning"><span id="stats1"
-                                            countTo="{{ count($alternatives) }}">0</span>
+                                            countTo="{{ count($alternativescoffe) }}">0</span>
                                     </h1>
-                                    <h5 class="mt-3">Menu Tersedia</h5>
+                                    <h5 class="mt-3">Menu Coffe Tersedia</h5>
+                                </div>
+                                <hr class="vertical dark">
+                            </div>
+                            <div class="col-md-3 col-lg-3 position-relative">
+                                <div class="p-3 text-center">
+                                    <h1 class="text-gradient text-warning"><span id="stats3"
+                                            countTo="{{ count($alternativesnoncoffe) }}">0</span>
+                                    </h1>
+                                    <h5 class="mt-3">Menu Non-Coffe Tersedia</h5>
                                 </div>
                                 <hr class="vertical dark">
                             </div>
@@ -83,8 +92,8 @@
                         </p>
                     </div>
                 </div>
-                <div class="row d-flex align-items-stretch">
-                    @php
+                <div class="row">
+                    {{-- @php
                         $i = 1;
                     @endphp
                     @if ($sorted)
@@ -175,9 +184,22 @@
                         @endforelse
                     @else
                         <p class="text-center">Tidak dapat menampilkan rekomendasi produk.</p>
+                    @endif --}}
+
+                    <!-- Button trigger modal -->
+
+                    @if (!$someempty && $totalwieght == 100)
+                        <div class="col-12 text-center">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal"
+                                data-bs-target="#staticBackdrop">
+                                Pilih Kategori Menu
+                            </button>
+                        </div>
+                    @else
+                        <p class="text-center">Terdapat kesalah sistem terkait kriteria data.</p>
                     @endif
                 </div>
-                @if ($i > 10)
+                {{-- @if ($i > 10)
                     <div class="row">
                         <div class="col-12">
                             <a href="javascript:void(0)" class="link-info" id="sedikit">Tampilkan lebih sedikit</a>
@@ -200,7 +222,7 @@
                                 sini</a>.
                         </div>
                     </div>
-                @endif
+                @endif --}}
             </div>
         </section>
     </div>
@@ -260,6 +282,33 @@
             </div>
         </section>
     </div>
+
+    <div class="modal fade" id="staticBackdrop" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="staticBackdropLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="staticBackdropLabel">Pilih Kategori Menu</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <div class="input-group input-group-outline">
+                            <select class="form-select px-3" id="kategori">
+                                <option value="" selected>-- Pilih Kategori --</option>
+                                <option value="0">Coffe</option>
+                                <option value="1">Non-Coffe</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="buat">Buat Perhitungan</button>
+                </div>
+            </div>
+        </div>
+    </div>
 @endsection
 @section('scripts')
     <script>
@@ -279,6 +328,21 @@
                 $('.selengkapnya').addClass('d-none');
                 $(this).addClass('d-none');
                 $('#selengkapnya').removeClass('d-none');
+            });
+
+            $('#buat').on('click', function() {
+                let category = $('#kategori').val();
+                if (category) {
+                    if (category == 0) {
+                        let urlcoffe = "{{ route('home.coffe') }}";
+                        window.open(urlcoffe, '_blank');
+                    } else {
+                        let urlnoncoffe = "{{ route('home.non_coffe') }}";
+                        window.open(urlnoncoffe, '_blank');
+                    }
+                } else {
+                    location.reload();
+                }
             });
         });
     </script>

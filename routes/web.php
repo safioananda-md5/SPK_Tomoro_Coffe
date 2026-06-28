@@ -77,10 +77,12 @@ Route::group([
 // Owner route
 
 Route::get('/home', [DashboardController::class, 'landing'])->name('home');
-Route::get('/home/perhitungan/{id}', [DashboardController::class, 'perhitungan'])->name('perhitungan');
-Route::get('/home/bobotutility/{id}', [DashboardController::class, 'bobotutility'])->name('bobotutility');
-Route::get('/home/nilaiakhir/{id}', [DashboardController::class, 'nilaiakhir'])->name('nilaiakhir');
-Route::get('/home/ranking/{id}', [DashboardController::class, 'ranking'])->name('ranking');
+Route::get('/home/perhitungan/{type}', [DashboardController::class, 'perhitungan'])->name('perhitungan');
+Route::get('/home/bobotutility/{type}', [DashboardController::class, 'bobotutility'])->name('bobotutility');
+Route::get('/home/nilaiakhir/{type}', [DashboardController::class, 'nilaiakhir'])->name('nilaiakhir');
+Route::get('/home/ranking/{type}', [DashboardController::class, 'ranking'])->name('ranking');
+Route::get('/home/coffe', [DashboardController::class, 'coffe'])->name('home.coffe');
+Route::get('/home/non-coffe', [DashboardController::class, 'non_coffe'])->name('home.non_coffe');
 
 // Route::group([
 //     'prefix' => '/owner',

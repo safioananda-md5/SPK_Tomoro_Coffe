@@ -17,6 +17,31 @@ class AlternatifController extends Controller
 {
     public function index()
     {
+        try {
+            $criterias = Criteria::all();
+            $totalwieght = 0;
+            $someempty = false;
+            foreach ($criterias as $criteria) {
+                if ($criteria->weight <= 0 || $criteria->weight == null) {
+                    $someempty = true;
+                } else {
+                    $totalwieght = bcadd($totalwieght, $criteria->weight);
+                }
+            }
+
+            if ($someempty) {
+                throw new Exception('Terdapat bobot kriteria bernilai 0.');
+            }
+
+            if ($totalwieght != 100) {
+                throw new Exception('Bobot kriteria tidak 100%, Nilai bobot: ' . $totalwieght . '%.');
+            }
+        } catch (Throwable $e) {
+            DB::rollback();
+            flash()->error($e->getMessage());
+            return redirect(route('admin.kriteria.index'));
+        }
+
         $criterias = Criteria::all();
         $alternatives = Alternative::with('alternativecriteria.criteria')->where('available', true)->get();
         return view('admin.alternatif', compact(['criterias', 'alternatives']));
@@ -64,14 +89,14 @@ class AlternatifController extends Controller
             $i = 0;
             DB::beginTransaction();
             foreach ($dataCollection as $index_data => $item) {
-                // dd($item);
+                // dd($item['kategori'] == 'coffe' ? 0 : 1);
                 $alternative = Alternative::updateOrCreate(
                     [
                         'name' => $item['daftar_menu_tomoro_coffee'],
                     ],
                     [
                         'price' => $item['harga'],
-                        'category' => $item['harga'] == 'coffe' ? 0 : 1,
+                        'category' => $item['kategori'] == 'coffe' ? 0 : 1,
                     ]
                 );
 

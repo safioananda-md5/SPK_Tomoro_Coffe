@@ -10,18 +10,18 @@
                     <div class="col-sm-12 mb-3">
                         <ul class="nav nav-tabs">
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('perhitungan', Crypt::encrypt($id)) }}">Nilai
+                                <a class="nav-link" href="{{ route('perhitungan', $type) }}">Nilai
                                     Utility</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('bobotutility', Crypt::encrypt($id)) }}">Bobot
+                                <a class="nav-link" href="{{ route('bobotutility', $type) }}">Bobot
                                     Utility</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link active" disabled>Nilai Akhir</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('ranking', Crypt::encrypt($id)) }}">Ranking</a>
+                                <a class="nav-link" href="{{ route('ranking', $type) }}">Ranking</a>
                             </li>
                         </ul>
                     </div>
@@ -61,7 +61,7 @@
                                                     @endphp
                                                 @endif
                                                 <tr>
-                                                    <td class="text-center">{{ $AAA[$id]['CODE'] - $firstA + 1 }}</td>
+                                                    <td class="text-center">A{{ $AAA[$id]['CODE'] - $firstA + 1 }}</td>
                                                     <td>{{ $nilaiAkhir['name'] }}</td>
                                                     <td class="text-center">{{ $nilaiAkhir['nilaiakhir'] }}</td>
                                                     @foreach ($criterias as $criteria)

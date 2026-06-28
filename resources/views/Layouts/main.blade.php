@@ -108,7 +108,7 @@
                     </li>
                     @if (Auth::user()->role == 'admin')
                         <li class="nav-item nav-category">Olah Data</li>
-                        <li class="nav-item">
+                        {{-- <li class="nav-item">
                             <a class="nav-link" data-bs-toggle="collapse" href="#ui-basic" aria-expanded="false"
                                 aria-controls="ui-basic">
                                 <i class="menu-icon mdi mdi-floor-plan"></i>
@@ -125,13 +125,27 @@
                                             Alternatif</a></li>
                                 </ul>
                             </div>
+                        </li> --}}
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.kriteria.index') }}">
+                                <i class="menu-icon fa fa-list-alt"></i>
+                                <span class="menu-title">Data
+                                    Kriteria</span>
+                            </a>
                         </li>
                         <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.alternatif.index') }}">
+                                <i class="menu-icon fa fa-check"></i>
+                                <span class="menu-title">Data
+                                    Alternatif</span>
+                            </a>
+                        </li>
+                        {{-- <li class="nav-item">
                             <a class="nav-link" href="{{ route('admin.perangkingan.periode') }}">
                                 <i class="menu-icon fa fa-list-alt"></i>
                                 <span class="menu-title">Perangkingan</span>
                             </a>
-                        </li>
+                        </li> --}}
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('admin.settings.index') }}">
                                 <i class="menu-icon fa fa-cog"></i>

@@ -13,15 +13,15 @@
                                 <a class="nav-link active" disabled>Nilai Utility</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('bobotutility', Crypt::encrypt($id)) }}">Bobot
+                                <a class="nav-link" href="{{ route('bobotutility', $type) }}">Bobot
                                     Utility</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('nilaiakhir', Crypt::encrypt($id)) }}">Nilai
+                                <a class="nav-link" href="{{ route('nilaiakhir', $type) }}">Nilai
                                     Akhir</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('ranking', Crypt::encrypt($id)) }}">Ranking</a>
+                                <a class="nav-link" href="{{ route('ranking', $type) }}">Ranking</a>
                             </li>
                         </ul>
                     </div>

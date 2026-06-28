@@ -10,15 +10,15 @@
                     <div class="col-sm-12 mb-3">
                         <ul class="nav nav-tabs">
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('perhitungan', Crypt::encrypt($id)) }}">Nilai
+                                <a class="nav-link" href="{{ route('perhitungan', $type) }}">Nilai
                                     Utility</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('bobotutility', Crypt::encrypt($id)) }}">Bobot
+                                <a class="nav-link" href="{{ route('bobotutility', $type) }}">Bobot
                                     Utility</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" href="{{ route('nilaiakhir', Crypt::encrypt($id)) }}">Nilai
+                                <a class="nav-link" href="{{ route('nilaiakhir', $type) }}">Nilai
                                     Akhir</a>
                             </li>
                             <li class="nav-item">
@@ -30,7 +30,13 @@
                         <div class="card">
                             <div class="card-body">
                                 <div class="d-flex align-items-center justify-content-between">
-                                    <h4 style="fw-bold">Hasil Perangkingan</h4>
+                                    <h4 style="fw-bold">Hasil Perangkingan
+                                        @if ($type == 0)
+                                            Menu Coffe
+                                        @else
+                                            Menu Non-Coffe
+                                        @endif
+                                    </h4>
                                 </div>
                                 <div class="table-responsive mt-3">
                                     <table class="table table-striped" id="rankingTable" width="100%">
@@ -61,7 +67,7 @@
                                             @foreach ($sorted as $id => $item)
                                                 <tr>
                                                     <td class="text-center">{{ $loop->iteration }}</td>
-                                                    <td class="text-center">{{ $AAA[$id]['CODE'] - $firstA + 1 }}</td>
+                                                    <td class="text-center">A{{ $AAA[$id]['CODE'] - $firstA + 1 }}</td>
                                                     <td>{{ $AAA[$id]['NAME'] }}</td>
                                                     <td class="text-center">{{ $item }}</td>
                                                 </tr>
