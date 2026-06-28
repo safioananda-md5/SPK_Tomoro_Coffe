@@ -34,6 +34,8 @@
                                         File</button>
                                 </span>
                             </div>
+                            <small>Unduh file template <a href="{{ asset('assets/templates/data_alternatif.xlsx') }}"
+                                    download>di sini</a>.</small>
                         </div>
                         <div class="text-end">
                             <a href="{{ route('admin.alternatif.index') }}" class="btn btn-outline-danger"
