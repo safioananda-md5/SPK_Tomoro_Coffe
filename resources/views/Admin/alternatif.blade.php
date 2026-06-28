@@ -20,10 +20,10 @@
                                 <button type="button" class="btn btn-outline-danger" onclick="deleteAllAlternative()">Hapus
                                     Seluruh Alternatif</button>
                             @endif
-                            {{-- <a href="{{ route('admin.alternatif.import') }}" class="btn btn-success">
+                            <a href="{{ route('admin.alternatif.import') }}" class="btn btn-success">
                                 <i class="fa fa-file me-2"></i>
                                 Import Alternatif
-                            </a> --}}
+                            </a>
                             <a href="{{ route('admin.alternatif.create') }}" class="btn btn-primary">
                                 Tambah Alternatif
                             </a>

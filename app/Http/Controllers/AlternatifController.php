@@ -71,6 +71,7 @@ class AlternatifController extends Controller
                     ],
                     [
                         'price' => $item['harga'],
+                        'category' => $item['harga'] == 'coffe' ? 0 : 1,
                     ]
                 );
 
