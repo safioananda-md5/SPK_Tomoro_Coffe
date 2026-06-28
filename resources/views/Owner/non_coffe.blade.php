@@ -8,7 +8,7 @@
             <div class="container">
                 <div class="row mb-5">
                     <div class="col-lg-7 mx-auto text-center">
-                        <h2 class="mb-3">SPK Menu Coffe</h2>
+                        <h2 class="mb-3">SPK Menu Non-Coffe</h2>
                     </div>
                 </div>
                 <div class="row">
