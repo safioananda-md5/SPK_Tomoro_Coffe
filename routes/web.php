@@ -59,10 +59,12 @@ Route::group([
         Route::get('/periode', [RankingController::class, 'periode'])->name('periode');
         Route::post('/periode', [RankingController::class, 'post_periode'])->name('post_periode');
         Route::delete('/periode/{id}', [RankingController::class, 'delete_periode'])->name('delete_periode');
-        Route::get('/ranking/{id}', [RankingController::class, 'index'])->name('index');
-        Route::get('/nilai-utility/{id}', [RankingController::class, 'utility'])->name('utility');
-        Route::get('/bobot-utility/{id}', [RankingController::class, 'bobotutility'])->name('bobotutility');
-        Route::get('/nilai-akhir/{id}', [RankingController::class, 'nilaiakhir'])->name('nilaiakhir');
+        Route::get('/show', [RankingController::class, 'show'])->name('show');
+        Route::get('/nilai-asli/{type}', [RankingController::class, 'nilai_asli'])->name('nilai_asli');
+        // Route::get('/ranking/{id}', [RankingController::class, 'ranking'])->name('ranking');
+        // Route::get('/nilai-utility/{id}', [RankingController::class, 'utility'])->name('utility');
+        // Route::get('/bobot-utility/{id}', [RankingController::class, 'bobotutility'])->name('bobotutility');
+        // Route::get('/nilai-akhir/{id}', [RankingController::class, 'nilaiakhir'])->name('nilaiakhir');
     });
 
     Route::group([
@@ -78,11 +80,12 @@ Route::group([
 
 Route::get('/home', [DashboardController::class, 'landing'])->name('home');
 Route::get('/home/perhitungan/{type}', [DashboardController::class, 'perhitungan'])->name('perhitungan');
-Route::get('/home/bobotutility/{type}', [DashboardController::class, 'bobotutility'])->name('bobotutility');
-Route::get('/home/nilaiakhir/{type}', [DashboardController::class, 'nilaiakhir'])->name('nilaiakhir');
-Route::get('/home/ranking/{type}', [DashboardController::class, 'ranking'])->name('ranking');
-Route::get('/home/coffe', [DashboardController::class, 'coffe'])->name('home.coffe');
-Route::get('/home/non-coffe', [DashboardController::class, 'non_coffe'])->name('home.non_coffe');
+Route::get('/nilai-asli/{type}', [DashboardController::class, 'nilai_asli'])->name('nilai_asli');
+// Route::get('/home/bobotutility/{type}', [DashboardController::class, 'bobotutility'])->name('bobotutility');
+// Route::get('/home/nilaiakhir/{type}', [DashboardController::class, 'nilaiakhir'])->name('nilaiakhir');
+// Route::get('/home/ranking/{type}', [DashboardController::class, 'ranking'])->name('ranking');
+// Route::get('/home/coffe', [DashboardController::class, 'coffe'])->name('home.coffe');
+// Route::get('/home/non-coffe', [DashboardController::class, 'non_coffe'])->name('home.non_coffe');
 
 // Route::group([
 //     'prefix' => '/owner',

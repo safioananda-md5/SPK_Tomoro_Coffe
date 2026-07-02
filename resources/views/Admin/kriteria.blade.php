@@ -14,7 +14,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="card-title" style="fw-bold">Data Kriteria</h5>
+                        <h5 class="card-title m-0 p-0" style="fw-bold">Data Kriteria</h5>
                         <div>
                             <!-- Button trigger modal -->
                             <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#bobot">

@@ -12,7 +12,7 @@
         </ol>
     </nav>
     <div class="row mt-3">
-        <div class="col-sm-12 mb-3">
+        <div class="col-sm-12 mb-3">    
             <ul class="nav nav-tabs">
                 <li class="nav-item">
                     <a class="nav-link" href="{{ route('admin.perangkingan.utility', Crypt::encrypt($id)) }}">Nilai

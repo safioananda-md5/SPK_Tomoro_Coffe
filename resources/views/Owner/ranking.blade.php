@@ -2,6 +2,27 @@
 @push('title')
     Ranking
 @endpush
+@section('style')
+    <style>
+        @keyframes pulse-animation {
+            0% {
+                opacity: 0.6;
+            }
+
+            50% {
+                opacity: 1;
+            }
+
+            100% {
+                opacity: 0.6;
+            }
+        }
+
+        .text-pulse {
+            animation: pulse-animation 1.8s infinite ease-in-out;
+        }
+    </style>
+@endsection
 @section('content')
     <div class="card card-body mx-3 mx-md-4 mt-n3 z-index-1 position-relative">
         <section class="pt-3 pb-4" id="stats">
@@ -27,7 +48,7 @@
                         </ul>
                     </div>
                     <div class="col-sm-12 grid-margin stretch-card">
-                        <div class="card">
+                        <div class="card d-none" id="real-card">
                             <div class="card-body">
                                 <div class="d-flex align-items-center justify-content-between">
                                     <h4 style="fw-bold">Hasil Perangkingan
@@ -37,6 +58,15 @@
                                             Menu Non-Coffe
                                         @endif
                                     </h4>
+                                    <div>
+                                        @if ($type == 0)
+                                            <a href="{{ route('home.coffe') }}" class="btn btn-outline-info">Lihat Gambar
+                                                Menu</a>
+                                        @else
+                                            <a href="{{ route('home.non_coffe') }}" class="btn btn-outline-info">Lihat
+                                                Gambar Menu</a>
+                                        @endif
+                                    </div>
                                 </div>
                                 <div class="table-responsive mt-3">
                                     <table class="table table-striped" id="rankingTable" width="100%">
@@ -75,6 +105,27 @@
                                         </tbody>
                                     </table>
                                 </div>
+                            </div>
+                        </div>
+                        <div class="card border-0 shadow-sm text-center py-5"
+                            style="max-width: 450px; margin: 20px auto; border-radius: 12px; background: #ffffff;"
+                            id="loader">
+                            <div class="card-body d-flex flex-column align-items-center justify-content-center">
+
+                                <div class="spinner-border text-info mb-4" role="status"
+                                    style="width: 3.5rem; height: 3.5rem; border-width: 0.25em;">
+                                    <span class="visually-hidden">Loading...</span>
+                                </div>
+
+                                <h5 class="card-title fw-bold text-dark mb-2 text-pulse">
+                                    Sistem Sedang Melakukan Perhitungan
+                                </h5>
+
+                                <p class="text-muted small px-3 mb-0">
+                                    Mohon tunggu sebentar, <span class="fw-semibold text-info">ranking</span> sedang
+                                    dikalkulasi secara realtime oleh sistem.
+                                </p>
+
                             </div>
                         </div>
                     </div>
@@ -140,4 +191,10 @@
     </div>
 @endsection
 @section('scripts')
+    <script>
+        setTimeout(function() {
+            $('#real-card').removeClass('d-none');
+            $('#loader').remove();
+        }, 4000);
+    </script>
 @endsection

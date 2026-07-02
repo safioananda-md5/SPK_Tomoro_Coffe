@@ -140,12 +140,12 @@
                                     Alternatif</span>
                             </a>
                         </li>
-                        {{-- <li class="nav-item">
-                            <a class="nav-link" href="{{ route('admin.perangkingan.periode') }}">
+                        <li class="nav-item">
+                            <a class="nav-link" href="{{ route('admin.perangkingan.show') }}">
                                 <i class="menu-icon fa fa-list-alt"></i>
                                 <span class="menu-title">Perangkingan</span>
                             </a>
-                        </li> --}}
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link" href="{{ route('admin.settings.index') }}">
                                 <i class="menu-icon fa fa-cog"></i>

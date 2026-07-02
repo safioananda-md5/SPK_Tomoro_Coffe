@@ -14,7 +14,7 @@
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="card-header" style="fw-bold">Data Alternatif</h5>
+                        <h5 class="card-title m-0 p-0" style="fw-bold">Data Alternatif</h5>
                         <div>
                             @if (count($alternatives) > 0)
                                 <button type="button" class="btn btn-outline-danger" onclick="deleteAllAlternative()">Hapus

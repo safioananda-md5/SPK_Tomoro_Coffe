@@ -295,7 +295,6 @@
                     <div class="mb-3">
                         <div class="input-group input-group-outline">
                             <select class="form-select px-3" id="kategori">
-                                <option value="" selected>-- Pilih Kategori --</option>
                                 <option value="0">Coffe</option>
                                 <option value="1">Non-Coffe</option>
                             </select>
@@ -304,7 +303,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="buat">Buat Perhitungan</button>
+                    <button type="button" class="btn btn-primary" id="buat">Hitung SPK</button>
                 </div>
             </div>
         </div>
@@ -334,10 +333,12 @@
                 let category = $('#kategori').val();
                 if (category) {
                     if (category == 0) {
-                        let urlcoffe = "{{ route('home.coffe') }}";
+                        let urlcoffe = "{{ route('perhitungan', ':type') }}";
+                        urlcoffe = urlcoffe.replace(':type', category);
                         window.open(urlcoffe, '_blank');
                     } else {
-                        let urlnoncoffe = "{{ route('home.non_coffe') }}";
+                        let urlnoncoffe = "{{ route('perhitungan', ':type') }}";
+                        urlnoncoffe = urlnoncoffe.replace(':type', category);
                         window.open(urlnoncoffe, '_blank');
                     }
                 } else {

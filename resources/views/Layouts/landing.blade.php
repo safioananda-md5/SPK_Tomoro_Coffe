@@ -35,6 +35,7 @@
     <link rel="stylesheet" href="{{ asset('assets/vendors/font-awesome/css/font-awesome.min.css') }}">
     <!-- CSS Files -->
     <link id="pagestyle" href="{{ asset('assets/material/css/material-dashboard.css?v=3.2.0') }}" rel="stylesheet" />
+    @yield('style')
 </head>
 
 <body class="landing-page bg-gray-200">

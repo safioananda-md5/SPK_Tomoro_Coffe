@@ -16,23 +16,6 @@ use Illuminate\Support\Facades\Crypt;
 
 class DashboardController extends Controller
 {
-    // protected $globalAlternatives;
-
-    // public function __construct()
-    // {
-    //     // 2. Isi data di dalam constructor
-    //     // Ini bisa berupa array, hasil query database, atau logic lainnya
-    //     $alternatives = Alternative::all();
-    //     $loop = 0;
-    //     foreach ($alternatives as $alternative) {
-    //         $loop = $loop + 1;
-    //         $this->globalAlternatives[$alternative->id] = [
-    //             'NAME' => $alternative->name,
-    //             'CODE' => (int) $loop,
-    //         ];
-    //     }
-    // }
-
     public function index()
     {
         $hour = Carbon::now('Asia/Jakarta')->format('H');
@@ -47,89 +30,12 @@ class DashboardController extends Controller
             $greeting = "Selamat Malam";
         }
 
-        $periode = Periode::latest()->first();
+        $CountCriteria = Criteria::count();
+        $CountAlternative = Alternative::count();
 
-        if ($periode) {
-            $CountCriteria = count(Criteria::all());
-            $CountAlternative = count(Alternative::whereIn('id', $periode->alternatives)->get());
-        } else {
-            $CountCriteria = 0;
-            $CountAlternative = 0;
-        }
+        $top10newalterantives = Alternative::latest()->limit(10)->get();
 
-        if ($CountCriteria > 0 && $CountAlternative > 2 && $periode) {
-            $criterias = Criteria::all();
-            $alternatives = Alternative::with(['alternativecriteria'])->whereIn('id', $periode->alternatives)->get();
-            $alternativecriterias = AlternativeCriteria::with(['alternative'])->whereIn('alternative_id', $periode->alternatives)->get();
-            $utilityMax = [];
-            $utilityMin = [];
-
-            $convertionCriteria = [];
-            foreach ($criterias as $criteria) {
-                $arrvalueraw = [];
-                foreach ($alternativecriterias as $alternativecriteria) {
-                    if ($alternativecriteria->criteria_id == $criteria->id) {
-                        $alternativeValue = convertion_value($alternativecriteria->value);
-                        $arrvalueraw[] = $alternativeValue;
-                    }
-                }
-                $utilityMax[$criteria->id] = max($arrvalueraw);
-                $utilityMin[$criteria->id] = min($arrvalueraw);
-                $convertionCriteria[$criteria->id] = bcdiv($criteria->weight, 100, 3);
-            }
-
-            $ArrNilaiAkhir = [];
-            foreach ($alternatives as $alternative) {
-                $Arrcriteria = [];
-                foreach ($criterias as $criteria) {
-                    foreach ($alternative->alternativecriteria as $alternativecriteria) {
-                        $weightValue = 0;
-                        $firstsub = null;
-                        $secondsub = null;
-                        $alternativeValue = convertion_value($alternativecriteria->value);
-                        if ($alternativecriteria->criteria_id == $criteria->id) {
-                            if ($criteria->type == 'benefit') {
-                                $firstsub = bcsub($alternativeValue, $utilityMin[$criteria->id], 3);
-                                $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                                if ($firstsub > 0 & $secondsub > 0) {
-                                    $weightValue = bcdiv($firstsub, $secondsub, 3);
-                                } else {
-                                    $weightValue = 0;
-                                }
-                            } else if ($criteria->type == 'cost') {
-                                $firstsub = bcsub($utilityMax[$criteria->id], $alternativeValue, 3);
-                                $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                                if ($firstsub > 0 & $secondsub > 0) {
-                                    $weightValue = bcdiv($firstsub, $secondsub, 3);
-                                } else {
-                                    $weightValue = 0;
-                                }
-                            }
-
-                            $Arrcriteria[$criteria->id] = $weightValue;
-                        }
-                    }
-                }
-
-                $totalNilaiAkhir = 0;
-                $newArrcriteria = [];
-                foreach ($Arrcriteria as $indexACT => $ACT) {
-                    $ACTmultiW = bcmul($ACT, $convertionCriteria[$indexACT], 3);
-                    $totalNilaiAkhir =  bcadd($totalNilaiAkhir, $ACTmultiW, 3);
-                    $newArrcriteria[$indexACT] = $ACTmultiW;
-                }
-
-                $ArrNilaiAkhir[$alternative->name] = $totalNilaiAkhir;
-            }
-
-            $sorted = collect($ArrNilaiAkhir)->sortDesc();
-        } else {
-            $CountAlternative = null;
-            $CountCriteria = null;
-            $sorted = null;
-        }
-
-        return view(Str::title(Auth::user()->role) . '.dashboard', compact(['greeting', 'CountAlternative', 'CountCriteria', 'sorted']));
+        return view(Str::title(Auth::user()->role) . '.dashboard', compact(['greeting', 'CountAlternative', 'CountCriteria', 'top10newalterantives']));
     }
 
     public function landing()
@@ -159,478 +65,518 @@ class DashboardController extends Controller
 
     public function perhitungan($type)
     {
-        // $id = Crypt::decrypt($id);
-        // $periode = periode::find($id);
-        $criterias = Criteria::all();
-        $Alternative = Alternative::where('category', $type)->pluck('id')->toArray();
-        $alternativecriterias = AlternativeCriteria::with(['alternative'])->whereIn('alternative_id', $Alternative)->get();
-
-        if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
-            flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
-            return redirect(route('admin.dashboard'));
-        }
-
-        $utilityMax = [];
-        $utilityMin = [];
-        foreach ($criterias as $criteria) {
-            $arrvalueraw = [];
-            foreach ($alternativecriterias as $alternativecriteria) {
-                if ($alternativecriteria->criteria_id == $criteria->id) {
-                    $alternativeValue = convertion_value($alternativecriteria->value);
-                    $arrvalueraw[] = $alternativeValue;
-                }
-            }
-            $utilityMax[$criteria->id] = max($arrvalueraw);
-            $utilityMin[$criteria->id] = min($arrvalueraw);
-        }
-
-        return view('Owner.nilai_utility', compact(['criterias', 'alternativecriterias', 'utilityMax', 'utilityMin', 'type']));
+        return view('Owner.perhitungan', compact(['type']));
     }
 
-    public function bobotutility($type)
+    public function nilai_asli($type)
     {
-        $criterias = Criteria::all();
-        $alternatives = Alternative::with(['alternativecriteria'])->where('category', $type)->get();
-
-        if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
-            flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
-            return redirect(route('admin.dashboard'));
+        $raw_alterantives = Alternative::with(['alternativecriteria.criteria'])->where('category', $type)->get();
+        $Alternatives = [];
+        $headers = [];
+        $headers[] = 'Nama Alternatif';
+        foreach ($raw_alterantives->first()->alternativecriteria as $alternativecriteria) {
+            $headers[] = $alternativecriteria->criteria->name;
         }
 
-        $alternativecriterias = AlternativeCriteria::with(['alternative'])->get();
-        $utilityMax = [];
-        $utilityMin = [];
-        foreach ($criterias as $criteria) {
-            $arrvalueraw = [];
-            foreach ($alternativecriterias as $alternativecriteria) {
-                if ($alternativecriteria->criteria_id == $criteria->id) {
-                    $alternativeValue = convertion_value($alternativecriteria->value);
-                    $arrvalueraw[] = $alternativeValue;
-                }
-            }
-            $utilityMax[$criteria->id] = max($arrvalueraw);
-            $utilityMin[$criteria->id] = min($arrvalueraw);
-        }
-
-        $bobotUtility = [];
-        foreach ($alternatives as $alternative) {
-            $Arrcriteria = [];
-            foreach ($criterias as $criteria) {
-                foreach ($alternative->alternativecriteria as $alternativecriteria) {
-                    $weightValue = 0;
-                    $firstsub = null;
-                    $secondsub = null;
-                    $alternativeValue = convertion_value($alternativecriteria->value);
-                    if ($alternativecriteria->criteria_id == $criteria->id) {
-                        if ($criteria->type == 'benefit') {
-                            $firstsub = bcsub($alternativeValue, $utilityMin[$criteria->id], 3);
-                            $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                            if ($firstsub > 0 & $secondsub > 0) {
-                                $weightValue = bcdiv($firstsub, $secondsub, 3);
-                            } else {
-                                $weightValue = 0;
-                            }
-                        } else if ($criteria->type == 'cost') {
-                            $firstsub = bcsub($utilityMax[$criteria->id], $alternativeValue, 3);
-                            $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                            if ($firstsub > 0 & $secondsub > 0) {
-                                $weightValue = bcdiv($firstsub, $secondsub, 3);
-                            } else {
-                                $weightValue = 0;
-                            }
-                        }
-
-                        $Arrcriteria[$criteria->id] = $weightValue;
-                    }
-                }
-            }
-
-            $bobotUtility[$alternative->id] = [
-                'name' => $alternative->name,
-                'criterias' => $Arrcriteria
-            ];
-        }
-
-        $loop = 0;
-        $AAA = [];
-        foreach ($alternatives as $alternative) {
-            $loop = $loop + 1;
-            $AAA[$alternative->id] = [
-                'NAME' => $alternative->name,
-                'CODE' => (int) $loop,
-            ];
-        }
-
-        return view('Owner.bobot_utility', compact(['criterias', 'bobotUtility', 'AAA', 'type']));
-    }
-
-    public function nilaiakhir($type)
-    {
-        $criterias = Criteria::all();
-        $alternatives = Alternative::with(['alternativecriteria'])->where('category', $type)->get();
-
-        if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
-            flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
-            return redirect(route('admin.dashboard'));
-        }
-
-        $alternativecriterias = AlternativeCriteria::with(['alternative'])->get();
-        $utilityMax = [];
-        $utilityMin = [];
-
-        $convertionCriteria = [];
-        foreach ($criterias as $criteria) {
-            $arrvalueraw = [];
-            foreach ($alternativecriterias as $alternativecriteria) {
-                if ($alternativecriteria->criteria_id == $criteria->id) {
-                    $alternativeValue = convertion_value($alternativecriteria->value);
-                    $arrvalueraw[] = $alternativeValue;
-                }
-            }
-            $utilityMax[$criteria->id] = max($arrvalueraw);
-            $utilityMin[$criteria->id] = min($arrvalueraw);
-            $convertionCriteria[$criteria->id] = bcdiv($criteria->weight, 100, 3);
-        }
-
-        $ArrNilaiAkhir = [];
-        foreach ($alternatives as $alternative) {
-            $Arrcriteria = [];
-            foreach ($criterias as $criteria) {
-                foreach ($alternative->alternativecriteria as $alternativecriteria) {
-                    $weightValue = 0;
-                    $firstsub = null;
-                    $secondsub = null;
-                    $alternativeValue = convertion_value($alternativecriteria->value);
-                    if ($alternativecriteria->criteria_id == $criteria->id) {
-                        if ($criteria->type == 'benefit') {
-                            $firstsub = bcsub($alternativeValue, $utilityMin[$criteria->id], 3);
-                            $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                            if ($firstsub > 0 & $secondsub > 0) {
-                                $weightValue = bcdiv($firstsub, $secondsub, 3);
-                            } else {
-                                $weightValue = 0;
-                            }
-                        } else if ($criteria->type == 'cost') {
-                            $firstsub = bcsub($utilityMax[$criteria->id], $alternativeValue, 3);
-                            $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                            if ($firstsub > 0 & $secondsub > 0) {
-                                $weightValue = bcdiv($firstsub, $secondsub, 3);
-                            } else {
-                                $weightValue = 0;
-                            }
-                        }
-
-                        $Arrcriteria[$criteria->id] = $weightValue;
-                    }
-                }
-            }
-
-            $totalNilaiAkhir = 0;
-            $newArrcriteria = [];
-            foreach ($Arrcriteria as $indexACT => $ACT) {
-                $ACTmultiW = bcmul($ACT, $convertionCriteria[$indexACT], 3);
-                $totalNilaiAkhir =  bcadd($totalNilaiAkhir, $ACTmultiW, 3);
-                $newArrcriteria[$indexACT] = $ACTmultiW;
-            }
-
-            $ArrNilaiAkhir[$alternative->id] = [
-                'name' => $alternative->name,
-                'criterias' => $newArrcriteria,
-                'nilaiakhir' => $totalNilaiAkhir
-            ];
-        }
-
-        $loop = 0;
-        $AAA = [];
-        foreach ($alternatives as $alternative) {
-            $loop = $loop + 1;
-            $AAA[$alternative->id] = [
-                'NAME' => $alternative->name,
-                'CODE' => (int) $loop,
-            ];
-        }
-
-        return view('Owner.nilai_akhir', compact(['criterias', 'ArrNilaiAkhir', 'AAA', 'type']));
-    }
-
-    public function ranking($type)
-    {
-        $criterias = Criteria::all();
-        $alternatives = Alternative::with(['alternativecriteria'])->where('category', $type)->get();
-
-        if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
-            flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
-            return redirect(route('admin.dashboard'));
-        }
-
-        $alternativecriterias = AlternativeCriteria::with(['alternative'])->get();
-        $utilityMax = [];
-        $utilityMin = [];
-
-        $convertionCriteria = [];
-        foreach ($criterias as $criteria) {
-            $arrvalueraw = [];
-            foreach ($alternativecriterias as $alternativecriteria) {
-                if ($alternativecriteria->criteria_id == $criteria->id) {
-                    $alternativeValue = convertion_value($alternativecriteria->value);
-                    $arrvalueraw[] = $alternativeValue;
-                }
-            }
-            $utilityMax[$criteria->id] = max($arrvalueraw);
-            $utilityMin[$criteria->id] = min($arrvalueraw);
-            $convertionCriteria[$criteria->id] = bcdiv($criteria->weight, 100, 3);
-        }
-
-        $ArrNilaiAkhir = [];
-        foreach ($alternatives as $alternative) {
-            $Arrcriteria = [];
-            foreach ($criterias as $criteria) {
-                foreach ($alternative->alternativecriteria as $alternativecriteria) {
-                    $weightValue = 0;
-                    $firstsub = null;
-                    $secondsub = null;
-                    $alternativeValue = convertion_value($alternativecriteria->value);
-                    if ($alternativecriteria->criteria_id == $criteria->id) {
-                        if ($criteria->type == 'benefit') {
-                            $firstsub = bcsub($alternativeValue, $utilityMin[$criteria->id], 3);
-                            $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                            if ($firstsub > 0 & $secondsub > 0) {
-                                $weightValue = bcdiv($firstsub, $secondsub, 3);
-                            } else {
-                                $weightValue = 0;
-                            }
-                        } else if ($criteria->type == 'cost') {
-                            $firstsub = bcsub($utilityMax[$criteria->id], $alternativeValue, 3);
-                            $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                            if ($firstsub > 0 & $secondsub > 0) {
-                                $weightValue = bcdiv($firstsub, $secondsub, 3);
-                            } else {
-                                $weightValue = 0;
-                            }
-                        }
-
-                        $Arrcriteria[$criteria->id] = $weightValue;
-                    }
-                }
-            }
-
-            $totalNilaiAkhir = 0;
-            $newArrcriteria = [];
-            foreach ($Arrcriteria as $indexACT => $ACT) {
-                $ACTmultiW = bcmul($ACT, $convertionCriteria[$indexACT], 3);
-                $totalNilaiAkhir =  bcadd($totalNilaiAkhir, $ACTmultiW, 3);
-                $newArrcriteria[$indexACT] = $ACTmultiW;
-            }
-
-            $ArrNilaiAkhir[$alternative->id] = $totalNilaiAkhir;
-        }
-
-        $sorted = collect($ArrNilaiAkhir)->sortDesc();
-
-        $loop = 0;
-        $AAA = [];
-        foreach ($alternatives as $alternative) {
-            $loop = $loop + 1;
-            $AAA[$alternative->id] = [
-                'NAME' => $alternative->name,
-                'CODE' => (int) $loop,
-            ];
-        }
-
-        return view('Owner.ranking', compact(['sorted', 'AAA', 'type']));
-    }
-
-    public function coffe()
-    {
-        $alternatives = Alternative::with(['alternativecriteria'])->where('category', 0)->get();
-        $criteriasOrder = Criteria::orderBy('weight', 'desc')->get();
-
-        $CountCriteria = count(Criteria::all());
-        $CountAlternative = count(Alternative::where('category', 0)->get());
-
-        if ($CountCriteria > 0 && $CountAlternative > 2) {
-            $criterias = Criteria::all();
-            $alternatives = Alternative::with(['alternativecriteria'])->where('category', 0)->get();
-            $alternativecriterias = AlternativeCriteria::with(['alternative'])->whereIn('alternative_id', $alternatives->pluck('id')->toArray())->get();
-            $utilityMax = [];
-            $utilityMin = [];
-
-            $convertionCriteria = [];
-            foreach ($criterias as $criteria) {
-                $arrvalueraw = [];
-                foreach ($alternativecriterias as $alternativecriteria) {
-                    if ($alternativecriteria->criteria_id == $criteria->id) {
-                        $alternativeValue = convertion_value($alternativecriteria->value);
-                        $arrvalueraw[] = $alternativeValue;
-                    }
-                }
-                $utilityMax[$criteria->id] = max($arrvalueraw);
-                $utilityMin[$criteria->id] = min($arrvalueraw);
-                $convertionCriteria[$criteria->id] = bcdiv($criteria->weight, 100, 3);
-            }
-
-            $ArrNilaiAkhir = [];
-            foreach ($alternatives as $alternative) {
-                $Arrcriteria = [];
-                foreach ($criterias as $criteria) {
-                    foreach ($alternative->alternativecriteria as $alternativecriteria) {
-                        $weightValue = 0;
-                        $firstsub = null;
-                        $secondsub = null;
-                        $alternativeValue = convertion_value($alternativecriteria->value);
-                        if ($alternativecriteria->criteria_id == $criteria->id) {
-                            if ($criteria->type == 'benefit') {
-                                $firstsub = bcsub($alternativeValue, $utilityMin[$criteria->id], 3);
-                                $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                                if ($firstsub > 0 & $secondsub > 0) {
-                                    $weightValue = bcdiv($firstsub, $secondsub, 3);
-                                } else {
-                                    $weightValue = 0;
-                                }
-                            } else if ($criteria->type == 'cost') {
-                                $firstsub = bcsub($utilityMax[$criteria->id], $alternativeValue, 3);
-                                $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                                if ($firstsub > 0 & $secondsub > 0) {
-                                    $weightValue = bcdiv($firstsub, $secondsub, 3);
-                                } else {
-                                    $weightValue = 0;
-                                }
-                            }
-
-                            $Arrcriteria[$criteria->id] = $weightValue;
-                        }
-                    }
-                }
-
-                $totalNilaiAkhir = 0;
-                $newArrcriteria = [];
-                foreach ($Arrcriteria as $indexACT => $ACT) {
-                    $ACTmultiW = bcmul($ACT, $convertionCriteria[$indexACT], 3);
-                    $totalNilaiAkhir =  bcadd($totalNilaiAkhir, $ACTmultiW, 3);
-                    $newArrcriteria[$indexACT] = $ACTmultiW;
-                }
-
-                $Incriteria = [];
-                foreach ($alternative->alternativecriteria as $AC) {
-                    if ($AC->value > 0) {
-                        $Incriteria[] = $AC->criteria_id;
-                    }
-                }
-
-                $nameCriterias = implode(', ', Criteria::whereIn('id', $Incriteria)->whereNotNull('short_name')->pluck('short_name')->toArray());
-
-                $ArrNilaiAkhir[$alternative->name] = [
-                    $totalNilaiAkhir,
-                    'Rp ' . number_format($alternative->price, 0, ',', '.'),
-                    $nameCriterias
+        foreach ($raw_alterantives as $alternative) {
+            $alterantive_criterias = [];
+            foreach ($alternative->alternativecriteria as $alternativecriteria) {
+                $alterantive_criterias[] = [
+                    'name' => $alternativecriteria->criteria->name,
+                    'value' => $alternativecriteria->value,
+                    'bobot' => $alternativecriteria->criteria->weight,
+                    'normalisasi' => $alternativecriteria->criteria->weight / 100,
                 ];
             }
-
-            $sorted = collect($ArrNilaiAkhir)->sortByDesc('0');
-        } else {
-            $CountAlternative = null;
-            $CountCriteria = null;
-            $sorted = null;
+            $Alternatives[] = [
+                'name' => $alternative->name,
+                'alterantive_criterias' => $alterantive_criterias,
+            ];
         }
 
-        // dd($sorted);
-        return view('Owner.coffe', compact(['alternatives', 'criteriasOrder', 'sorted']));
+
+
+        return response()->json([
+            'message' => 'Berhasil!',
+            'headers' => $headers,
+            'alterantives' => $Alternatives,
+        ], 200);
     }
 
-    public function non_coffe()
-    {
-        $alternatives = Alternative::with(['alternativecriteria'])->where('category', 1)->get();
-        $criteriasOrder = Criteria::orderBy('weight', 'desc')->get();
+    // public function perhitungan($type)
+    // {
+    //     // $id = Crypt::decrypt($id);
+    //     // $periode = periode::find($id);
+    //     $criterias = Criteria::all();
+    //     $Alternative = Alternative::where('category', $type)->pluck('id')->toArray();
+    //     $alternativecriterias = AlternativeCriteria::with(['alternative'])->whereIn('alternative_id', $Alternative)->get();
 
-        $CountCriteria = count(Criteria::all());
-        $CountAlternative = count(Alternative::where('category', 1)->get());
+    //     if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
+    //         flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
+    //         return redirect(route('admin.dashboard'));
+    //     }
 
-        if ($CountCriteria > 0 && $CountAlternative > 2) {
-            $criterias = Criteria::all();
-            $alternatives = Alternative::with(['alternativecriteria'])->where('category', 1)->get();
-            $alternativecriterias = AlternativeCriteria::with(['alternative'])->whereIn('alternative_id', $alternatives->pluck('id')->toArray())->get();
-            $utilityMax = [];
-            $utilityMin = [];
+    //     $utilityMax = [];
+    //     $utilityMin = [];
+    //     foreach ($criterias as $criteria) {
+    //         $arrvalueraw = [];
+    //         foreach ($alternativecriterias as $alternativecriteria) {
+    //             if ($alternativecriteria->criteria_id == $criteria->id) {
+    //                 $alternativeValue = convertion_value($alternativecriteria->value);
+    //                 $arrvalueraw[] = $alternativeValue;
+    //             }
+    //         }
+    //         $utilityMax[$criteria->id] = max($arrvalueraw);
+    //         $utilityMin[$criteria->id] = min($arrvalueraw);
+    //     }
 
-            $convertionCriteria = [];
-            foreach ($criterias as $criteria) {
-                $arrvalueraw = [];
-                foreach ($alternativecriterias as $alternativecriteria) {
-                    if ($alternativecriteria->criteria_id == $criteria->id) {
-                        $alternativeValue = convertion_value($alternativecriteria->value);
-                        $arrvalueraw[] = $alternativeValue;
-                    }
-                }
-                $utilityMax[$criteria->id] = max($arrvalueraw);
-                $utilityMin[$criteria->id] = min($arrvalueraw);
-                $convertionCriteria[$criteria->id] = bcdiv($criteria->weight, 100, 3);
-            }
+    //     return view('Owner.nilai_utility', compact(['criterias', 'alternativecriterias', 'utilityMax', 'utilityMin', 'type']));
+    // }
 
-            $ArrNilaiAkhir = [];
-            foreach ($alternatives as $alternative) {
-                $Arrcriteria = [];
-                foreach ($criterias as $criteria) {
-                    foreach ($alternative->alternativecriteria as $alternativecriteria) {
-                        $weightValue = 0;
-                        $firstsub = null;
-                        $secondsub = null;
-                        $alternativeValue = convertion_value($alternativecriteria->value);
-                        if ($alternativecriteria->criteria_id == $criteria->id) {
-                            if ($criteria->type == 'benefit') {
-                                $firstsub = bcsub($alternativeValue, $utilityMin[$criteria->id], 3);
-                                $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                                if ($firstsub > 0 & $secondsub > 0) {
-                                    $weightValue = bcdiv($firstsub, $secondsub, 3);
-                                } else {
-                                    $weightValue = 0;
-                                }
-                            } else if ($criteria->type == 'cost') {
-                                $firstsub = bcsub($utilityMax[$criteria->id], $alternativeValue, 3);
-                                $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
-                                if ($firstsub > 0 & $secondsub > 0) {
-                                    $weightValue = bcdiv($firstsub, $secondsub, 3);
-                                } else {
-                                    $weightValue = 0;
-                                }
-                            }
+    // public function bobotutility($type)
+    // {
+    //     $criterias = Criteria::all();
+    //     $alternatives = Alternative::with(['alternativecriteria'])->where('category', $type)->get();
 
-                            $Arrcriteria[$criteria->id] = $weightValue;
-                        }
-                    }
-                }
+    //     if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
+    //         flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
+    //         return redirect(route('admin.dashboard'));
+    //     }
 
-                $totalNilaiAkhir = 0;
-                $newArrcriteria = [];
-                foreach ($Arrcriteria as $indexACT => $ACT) {
-                    $ACTmultiW = bcmul($ACT, $convertionCriteria[$indexACT], 3);
-                    $totalNilaiAkhir =  bcadd($totalNilaiAkhir, $ACTmultiW, 3);
-                    $newArrcriteria[$indexACT] = $ACTmultiW;
-                }
+    //     $alternativecriterias = AlternativeCriteria::with(['alternative'])->get();
+    //     $utilityMax = [];
+    //     $utilityMin = [];
+    //     foreach ($criterias as $criteria) {
+    //         $arrvalueraw = [];
+    //         foreach ($alternativecriterias as $alternativecriteria) {
+    //             if ($alternativecriteria->criteria_id == $criteria->id) {
+    //                 $alternativeValue = convertion_value($alternativecriteria->value);
+    //                 $arrvalueraw[] = $alternativeValue;
+    //             }
+    //         }
+    //         $utilityMax[$criteria->id] = max($arrvalueraw);
+    //         $utilityMin[$criteria->id] = min($arrvalueraw);
+    //     }
 
-                $Incriteria = [];
-                foreach ($alternative->alternativecriteria as $AC) {
-                    if ($AC->value > 0) {
-                        $Incriteria[] = $AC->criteria_id;
-                    }
-                }
+    //     $bobotUtility = [];
+    //     foreach ($alternatives as $alternative) {
+    //         $Arrcriteria = [];
+    //         foreach ($criterias as $criteria) {
+    //             foreach ($alternative->alternativecriteria as $alternativecriteria) {
+    //                 $weightValue = 0;
+    //                 $firstsub = null;
+    //                 $secondsub = null;
+    //                 $alternativeValue = convertion_value($alternativecriteria->value);
+    //                 if ($alternativecriteria->criteria_id == $criteria->id) {
+    //                     if ($criteria->type == 'benefit') {
+    //                         $firstsub = bcsub($alternativeValue, $utilityMin[$criteria->id], 3);
+    //                         $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
+    //                         if ($firstsub > 0 & $secondsub > 0) {
+    //                             $weightValue = bcdiv($firstsub, $secondsub, 3);
+    //                         } else {
+    //                             $weightValue = 0;
+    //                         }
+    //                     } else if ($criteria->type == 'cost') {
+    //                         $firstsub = bcsub($utilityMax[$criteria->id], $alternativeValue, 3);
+    //                         $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
+    //                         if ($firstsub > 0 & $secondsub > 0) {
+    //                             $weightValue = bcdiv($firstsub, $secondsub, 3);
+    //                         } else {
+    //                             $weightValue = 0;
+    //                         }
+    //                     }
 
-                $nameCriterias = implode(', ', Criteria::whereIn('id', $Incriteria)->whereNotNull('short_name')->pluck('short_name')->toArray());
+    //                     $Arrcriteria[$criteria->id] = $weightValue;
+    //                 }
+    //             }
+    //         }
 
-                $ArrNilaiAkhir[$alternative->name] = [
-                    $totalNilaiAkhir,
-                    'Rp ' . number_format($alternative->price, 0, ',', '.'),
-                    $nameCriterias
-                ];
-            }
+    //         $bobotUtility[$alternative->id] = [
+    //             'name' => $alternative->name,
+    //             'criterias' => $Arrcriteria
+    //         ];
+    //     }
 
-            $sorted = collect($ArrNilaiAkhir)->sortByDesc('0');
-        } else {
-            $CountAlternative = null;
-            $CountCriteria = null;
-            $sorted = null;
-        }
+    //     $loop = 0;
+    //     $AAA = [];
+    //     foreach ($alternatives as $alternative) {
+    //         $loop = $loop + 1;
+    //         $AAA[$alternative->id] = [
+    //             'NAME' => $alternative->name,
+    //             'CODE' => (int) $loop,
+    //         ];
+    //     }
 
-        // dd($sorted);
-        return view('Owner.non_coffe', compact(['alternatives', 'criteriasOrder', 'sorted']));
-    }
+    //     return view('Owner.bobot_utility', compact(['criterias', 'bobotUtility', 'AAA', 'type']));
+    // }
+
+    // public function nilaiakhir($type)
+    // {
+    //     $criterias = Criteria::all();
+    //     $alternatives = Alternative::with(['alternativecriteria'])->where('category', $type)->get();
+
+    //     if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
+    //         flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
+    //         return redirect(route('admin.dashboard'));
+    //     }
+
+    //     $alternativecriterias = AlternativeCriteria::with(['alternative'])->get();
+    //     $utilityMax = [];
+    //     $utilityMin = [];
+
+    //     $convertionCriteria = [];
+    //     foreach ($criterias as $criteria) {
+    //         $arrvalueraw = [];
+    //         foreach ($alternativecriterias as $alternativecriteria) {
+    //             if ($alternativecriteria->criteria_id == $criteria->id) {
+    //                 $alternativeValue = convertion_value($alternativecriteria->value);
+    //                 $arrvalueraw[] = $alternativeValue;
+    //             }
+    //         }
+    //         $utilityMax[$criteria->id] = max($arrvalueraw);
+    //         $utilityMin[$criteria->id] = min($arrvalueraw);
+    //         $convertionCriteria[$criteria->id] = bcdiv($criteria->weight, 100, 3);
+    //     }
+
+    //     $ArrNilaiAkhir = [];
+    //     foreach ($alternatives as $alternative) {
+    //         $Arrcriteria = [];
+    //         foreach ($criterias as $criteria) {
+    //             foreach ($alternative->alternativecriteria as $alternativecriteria) {
+    //                 $weightValue = 0;
+    //                 $firstsub = null;
+    //                 $secondsub = null;
+    //                 $alternativeValue = convertion_value($alternativecriteria->value);
+    //                 if ($alternativecriteria->criteria_id == $criteria->id) {
+    //                     if ($criteria->type == 'benefit') {
+    //                         $firstsub = bcsub($alternativeValue, $utilityMin[$criteria->id], 3);
+    //                         $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
+    //                         if ($firstsub > 0 & $secondsub > 0) {
+    //                             $weightValue = bcdiv($firstsub, $secondsub, 3);
+    //                         } else {
+    //                             $weightValue = 0;
+    //                         }
+    //                     } else if ($criteria->type == 'cost') {
+    //                         $firstsub = bcsub($utilityMax[$criteria->id], $alternativeValue, 3);
+    //                         $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
+    //                         if ($firstsub > 0 & $secondsub > 0) {
+    //                             $weightValue = bcdiv($firstsub, $secondsub, 3);
+    //                         } else {
+    //                             $weightValue = 0;
+    //                         }
+    //                     }
+
+    //                     $Arrcriteria[$criteria->id] = $weightValue;
+    //                 }
+    //             }
+    //         }
+
+    //         $totalNilaiAkhir = 0;
+    //         $newArrcriteria = [];
+    //         foreach ($Arrcriteria as $indexACT => $ACT) {
+    //             $ACTmultiW = bcmul($ACT, $convertionCriteria[$indexACT], 3);
+    //             $totalNilaiAkhir =  bcadd($totalNilaiAkhir, $ACTmultiW, 3);
+    //             $newArrcriteria[$indexACT] = $ACTmultiW;
+    //         }
+
+    //         $ArrNilaiAkhir[$alternative->id] = [
+    //             'name' => $alternative->name,
+    //             'criterias' => $newArrcriteria,
+    //             'nilaiakhir' => $totalNilaiAkhir
+    //         ];
+    //     }
+
+    //     $loop = 0;
+    //     $AAA = [];
+    //     foreach ($alternatives as $alternative) {
+    //         $loop = $loop + 1;
+    //         $AAA[$alternative->id] = [
+    //             'NAME' => $alternative->name,
+    //             'CODE' => (int) $loop,
+    //         ];
+    //     }
+
+    //     return view('Owner.nilai_akhir', compact(['criterias', 'ArrNilaiAkhir', 'AAA', 'type']));
+    // }
+
+    // public function ranking($type)
+    // {
+    //     $criterias = Criteria::all();
+    //     $alternatives = Alternative::with(['alternativecriteria'])->where('category', $type)->get();
+
+    //     if (count($criterias = Criteria::all()) < 1 || count(Alternative::with(['alternativecriteria'])->get()) < 2) {
+    //         flash()->error('Data kriteria atau alternatif tidak memenuhi syarat perhitungan.');
+    //         return redirect(route('admin.dashboard'));
+    //     }
+
+    //     $alternativecriterias = AlternativeCriteria::with(['alternative'])->get();
+    //     $utilityMax = [];
+    //     $utilityMin = [];
+
+    //     $convertionCriteria = [];
+    //     foreach ($criterias as $criteria) {
+    //         $arrvalueraw = [];
+    //         foreach ($alternativecriterias as $alternativecriteria) {
+    //             if ($alternativecriteria->criteria_id == $criteria->id) {
+    //                 $alternativeValue = convertion_value($alternativecriteria->value);
+    //                 $arrvalueraw[] = $alternativeValue;
+    //             }
+    //         }
+    //         $utilityMax[$criteria->id] = max($arrvalueraw);
+    //         $utilityMin[$criteria->id] = min($arrvalueraw);
+    //         $convertionCriteria[$criteria->id] = bcdiv($criteria->weight, 100, 3);
+    //     }
+
+    //     $ArrNilaiAkhir = [];
+    //     foreach ($alternatives as $alternative) {
+    //         $Arrcriteria = [];
+    //         foreach ($criterias as $criteria) {
+    //             foreach ($alternative->alternativecriteria as $alternativecriteria) {
+    //                 $weightValue = 0;
+    //                 $firstsub = null;
+    //                 $secondsub = null;
+    //                 $alternativeValue = convertion_value($alternativecriteria->value);
+    //                 if ($alternativecriteria->criteria_id == $criteria->id) {
+    //                     if ($criteria->type == 'benefit') {
+    //                         $firstsub = bcsub($alternativeValue, $utilityMin[$criteria->id], 3);
+    //                         $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
+    //                         if ($firstsub > 0 & $secondsub > 0) {
+    //                             $weightValue = bcdiv($firstsub, $secondsub, 3);
+    //                         } else {
+    //                             $weightValue = 0;
+    //                         }
+    //                     } else if ($criteria->type == 'cost') {
+    //                         $firstsub = bcsub($utilityMax[$criteria->id], $alternativeValue, 3);
+    //                         $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
+    //                         if ($firstsub > 0 & $secondsub > 0) {
+    //                             $weightValue = bcdiv($firstsub, $secondsub, 3);
+    //                         } else {
+    //                             $weightValue = 0;
+    //                         }
+    //                     }
+
+    //                     $Arrcriteria[$criteria->id] = $weightValue;
+    //                 }
+    //             }
+    //         }
+
+    //         $totalNilaiAkhir = 0;
+    //         $newArrcriteria = [];
+    //         foreach ($Arrcriteria as $indexACT => $ACT) {
+    //             $ACTmultiW = bcmul($ACT, $convertionCriteria[$indexACT], 3);
+    //             $totalNilaiAkhir =  bcadd($totalNilaiAkhir, $ACTmultiW, 3);
+    //             $newArrcriteria[$indexACT] = $ACTmultiW;
+    //         }
+
+    //         $ArrNilaiAkhir[$alternative->id] = $totalNilaiAkhir;
+    //     }
+
+    //     $sorted = collect($ArrNilaiAkhir)->sortDesc();
+
+    //     $loop = 0;
+    //     $AAA = [];
+    //     foreach ($alternatives as $alternative) {
+    //         $loop = $loop + 1;
+    //         $AAA[$alternative->id] = [
+    //             'NAME' => $alternative->name,
+    //             'CODE' => (int) $loop,
+    //         ];
+    //     }
+
+    //     return view('Owner.ranking', compact(['sorted', 'AAA', 'type']));
+    // }
+
+    // public function coffe()
+    // {
+    //     $alternatives = Alternative::with(['alternativecriteria'])->where('category', 0)->get();
+    //     $criteriasOrder = Criteria::orderBy('weight', 'desc')->get();
+
+    //     $CountCriteria = count(Criteria::all());
+    //     $CountAlternative = count(Alternative::where('category', 0)->get());
+
+    //     if ($CountCriteria > 0 && $CountAlternative > 2) {
+    //         $criterias = Criteria::all();
+    //         $alternatives = Alternative::with(['alternativecriteria'])->where('category', 0)->get();
+    //         $alternativecriterias = AlternativeCriteria::with(['alternative'])->whereIn('alternative_id', $alternatives->pluck('id')->toArray())->get();
+    //         $utilityMax = [];
+    //         $utilityMin = [];
+
+    //         $convertionCriteria = [];
+    //         foreach ($criterias as $criteria) {
+    //             $arrvalueraw = [];
+    //             foreach ($alternativecriterias as $alternativecriteria) {
+    //                 if ($alternativecriteria->criteria_id == $criteria->id) {
+    //                     $alternativeValue = convertion_value($alternativecriteria->value);
+    //                     $arrvalueraw[] = $alternativeValue;
+    //                 }
+    //             }
+    //             $utilityMax[$criteria->id] = max($arrvalueraw);
+    //             $utilityMin[$criteria->id] = min($arrvalueraw);
+    //             $convertionCriteria[$criteria->id] = bcdiv($criteria->weight, 100, 3);
+    //         }
+
+    //         $ArrNilaiAkhir = [];
+    //         foreach ($alternatives as $alternative) {
+    //             $Arrcriteria = [];
+    //             foreach ($criterias as $criteria) {
+    //                 foreach ($alternative->alternativecriteria as $alternativecriteria) {
+    //                     $weightValue = 0;
+    //                     $firstsub = null;
+    //                     $secondsub = null;
+    //                     $alternativeValue = convertion_value($alternativecriteria->value);
+    //                     if ($alternativecriteria->criteria_id == $criteria->id) {
+    //                         if ($criteria->type == 'benefit') {
+    //                             $firstsub = bcsub($alternativeValue, $utilityMin[$criteria->id], 3);
+    //                             $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
+    //                             if ($firstsub > 0 & $secondsub > 0) {
+    //                                 $weightValue = bcdiv($firstsub, $secondsub, 3);
+    //                             } else {
+    //                                 $weightValue = 0;
+    //                             }
+    //                         } else if ($criteria->type == 'cost') {
+    //                             $firstsub = bcsub($utilityMax[$criteria->id], $alternativeValue, 3);
+    //                             $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
+    //                             if ($firstsub > 0 & $secondsub > 0) {
+    //                                 $weightValue = bcdiv($firstsub, $secondsub, 3);
+    //                             } else {
+    //                                 $weightValue = 0;
+    //                             }
+    //                         }
+
+    //                         $Arrcriteria[$criteria->id] = $weightValue;
+    //                     }
+    //                 }
+    //             }
+
+    //             $totalNilaiAkhir = 0;
+    //             $newArrcriteria = [];
+    //             foreach ($Arrcriteria as $indexACT => $ACT) {
+    //                 $ACTmultiW = bcmul($ACT, $convertionCriteria[$indexACT], 3);
+    //                 $totalNilaiAkhir =  bcadd($totalNilaiAkhir, $ACTmultiW, 3);
+    //                 $newArrcriteria[$indexACT] = $ACTmultiW;
+    //             }
+
+    //             $Incriteria = [];
+    //             foreach ($alternative->alternativecriteria as $AC) {
+    //                 if ($AC->value > 0) {
+    //                     $Incriteria[] = $AC->criteria_id;
+    //                 }
+    //             }
+
+    //             $nameCriterias = implode(', ', Criteria::whereIn('id', $Incriteria)->whereNotNull('short_name')->pluck('short_name')->toArray());
+
+    //             $ArrNilaiAkhir[$alternative->name] = [
+    //                 $totalNilaiAkhir,
+    //                 'Rp ' . number_format($alternative->price, 0, ',', '.'),
+    //                 $nameCriterias
+    //             ];
+    //         }
+
+    //         $sorted = collect($ArrNilaiAkhir)->sortByDesc('0');
+    //     } else {
+    //         $CountAlternative = null;
+    //         $CountCriteria = null;
+    //         $sorted = null;
+    //     }
+
+    //     // dd($sorted);
+    //     return view('Owner.coffe', compact(['alternatives', 'criteriasOrder', 'sorted']));
+    // }
+
+    // public function non_coffe()
+    // {
+    //     $alternatives = Alternative::with(['alternativecriteria'])->where('category', 1)->get();
+    //     $criteriasOrder = Criteria::orderBy('weight', 'desc')->get();
+
+    //     $CountCriteria = count(Criteria::all());
+    //     $CountAlternative = count(Alternative::where('category', 1)->get());
+
+    //     if ($CountCriteria > 0 && $CountAlternative > 2) {
+    //         $criterias = Criteria::all();
+    //         $alternatives = Alternative::with(['alternativecriteria'])->where('category', 1)->get();
+    //         $alternativecriterias = AlternativeCriteria::with(['alternative'])->whereIn('alternative_id', $alternatives->pluck('id')->toArray())->get();
+    //         $utilityMax = [];
+    //         $utilityMin = [];
+
+    //         $convertionCriteria = [];
+    //         foreach ($criterias as $criteria) {
+    //             $arrvalueraw = [];
+    //             foreach ($alternativecriterias as $alternativecriteria) {
+    //                 if ($alternativecriteria->criteria_id == $criteria->id) {
+    //                     $alternativeValue = convertion_value($alternativecriteria->value);
+    //                     $arrvalueraw[] = $alternativeValue;
+    //                 }
+    //             }
+    //             $utilityMax[$criteria->id] = max($arrvalueraw);
+    //             $utilityMin[$criteria->id] = min($arrvalueraw);
+    //             $convertionCriteria[$criteria->id] = bcdiv($criteria->weight, 100, 3);
+    //         }
+
+    //         $ArrNilaiAkhir = [];
+    //         foreach ($alternatives as $alternative) {
+    //             $Arrcriteria = [];
+    //             foreach ($criterias as $criteria) {
+    //                 foreach ($alternative->alternativecriteria as $alternativecriteria) {
+    //                     $weightValue = 0;
+    //                     $firstsub = null;
+    //                     $secondsub = null;
+    //                     $alternativeValue = convertion_value($alternativecriteria->value);
+    //                     if ($alternativecriteria->criteria_id == $criteria->id) {
+    //                         if ($criteria->type == 'benefit') {
+    //                             $firstsub = bcsub($alternativeValue, $utilityMin[$criteria->id], 3);
+    //                             $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
+    //                             if ($firstsub > 0 & $secondsub > 0) {
+    //                                 $weightValue = bcdiv($firstsub, $secondsub, 3);
+    //                             } else {
+    //                                 $weightValue = 0;
+    //                             }
+    //                         } else if ($criteria->type == 'cost') {
+    //                             $firstsub = bcsub($utilityMax[$criteria->id], $alternativeValue, 3);
+    //                             $secondsub = bcsub($utilityMax[$criteria->id], $utilityMin[$criteria->id], 3);
+    //                             if ($firstsub > 0 & $secondsub > 0) {
+    //                                 $weightValue = bcdiv($firstsub, $secondsub, 3);
+    //                             } else {
+    //                                 $weightValue = 0;
+    //                             }
+    //                         }
+
+    //                         $Arrcriteria[$criteria->id] = $weightValue;
+    //                     }
+    //                 }
+    //             }
+
+    //             $totalNilaiAkhir = 0;
+    //             $newArrcriteria = [];
+    //             foreach ($Arrcriteria as $indexACT => $ACT) {
+    //                 $ACTmultiW = bcmul($ACT, $convertionCriteria[$indexACT], 3);
+    //                 $totalNilaiAkhir =  bcadd($totalNilaiAkhir, $ACTmultiW, 3);
+    //                 $newArrcriteria[$indexACT] = $ACTmultiW;
+    //             }
+
+    //             $Incriteria = [];
+    //             foreach ($alternative->alternativecriteria as $AC) {
+    //                 if ($AC->value > 0) {
+    //                     $Incriteria[] = $AC->criteria_id;
+    //                 }
+    //             }
+
+    //             $nameCriterias = implode(', ', Criteria::whereIn('id', $Incriteria)->whereNotNull('short_name')->pluck('short_name')->toArray());
+
+    //             $ArrNilaiAkhir[$alternative->name] = [
+    //                 $totalNilaiAkhir,
+    //                 'Rp ' . number_format($alternative->price, 0, ',', '.'),
+    //                 $nameCriterias
+    //             ];
+    //         }
+
+    //         $sorted = collect($ArrNilaiAkhir)->sortByDesc('0');
+    //     } else {
+    //         $CountAlternative = null;
+    //         $CountCriteria = null;
+    //         $sorted = null;
+    //     }
+
+    //     // dd($sorted);
+    //     return view('Owner.non_coffe', compact(['alternatives', 'criteriasOrder', 'sorted']));
+    // }
 }

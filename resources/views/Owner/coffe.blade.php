@@ -8,7 +8,7 @@
             <div class="container">
                 <div class="row mb-5">
                     <div class="col-lg-7 mx-auto text-center">
-                        <h2 class="mb-3">SPK Menu Coffe</h2>
+                        <h2 class="mb-3">Menu Coffe</h2>
                     </div>
                 </div>
                 <div class="row">
@@ -111,21 +111,6 @@
                             <a href="javascript:void(0)" class="link-info" id="sedikit">Tampilkan lebih sedikit</a>
                             <a href="javascript:void(0)" class="link-info" id="selengkapnya">Tampilkan menu
                                 lainnya...</a>
-                        </div>
-                    </div>
-                @endif
-                @if ($sorted)
-                    <div class="row mt-5">
-                        <div class="col-12">
-                            Hasil rekomendasi peringkat ini disusun berdasarkan analisis Sistem Pendukung Keputusan
-                            menggunakan
-                            Metode SMART <i>(Simple Multi-Attribute Rating Technique)</i>. Metode ini mengevaluasi setiap
-                            alternatif
-                            berdasarkan pembobotan nilai kriteria secara linier untuk menghasilkan keputusan yang transparan
-                            dan
-                            akurat. Detail proses dan tahapan perhitungan dapat Anda lihat <a
-                                href="{{ route('perhitungan', 0) }}" target="_blank">di
-                                sini</a>.
                         </div>
                     </div>
                 @endif

@@ -17,11 +17,11 @@
                             <div class="col-sm-12">
                                 <div class="statistics-details d-flex align-items-center justify-content-start gap-5">
                                     <div>
-                                        <p class="statistics-title">Jumlah Menu</p>
+                                        <p class="statistics-title">Jumlah Menu Total</p>
                                         <h3 class="rate-percentage">{{ $CountAlternative ?? 0 }}</h3>
                                     </div>
                                     <div>
-                                        <p class="statistics-title">Jumlah Kriteria</p>
+                                        <p class="statistics-title">Jumlah Kriteria Total</p>
                                         <h3 class="rate-percentage">{{ $CountCriteria ?? 0 }}</h3>
                                     </div>
                                 </div>
@@ -35,12 +35,10 @@
                                             <div class="card-body">
                                                 <div class="d-sm-flex justify-content-between align-items-start">
                                                     <div>
-                                                        <h4 class="card-title card-title-dash">Top 10 Menu
-                                                            <small>(Berdasarkan
-                                                                periode terbaru)</small>
+                                                        <h4 class="card-title card-title-dash">10 Menu Terbaru
                                                         </h4>
-                                                        <p class="card-subtitle card-subtitle-dash">Menu terbaik dari yang
-                                                            terbaik berdasarkan komposisinya</p>
+                                                        <p class="card-subtitle card-subtitle-dash">Daftar menu yang baru
+                                                            dimasukkan ke dalam sistem.</p>
                                                     </div>
                                                 </div>
                                                 <div class="table-responsive  mt-1">
@@ -48,32 +46,34 @@
                                                         <thead>
                                                             <tr>
                                                                 <th class="text-center">
-                                                                    <h6>Ranking</h6>
+                                                                    <h6>No.</h6>
                                                                 </th>
                                                                 <th>
                                                                     <h6>Nama Menu</h6>
                                                                 </th>
                                                                 <th class="text-center">
-                                                                    <h6>Score</h6>
+                                                                    <h6>Kategori</h6>
                                                                 </th>
                                                             </tr>
                                                         </thead>
                                                         <tbody>
-                                                            @if ($sorted)
+                                                            @if ($top10newalterantives)
                                                                 @php
                                                                     $i = 1;
                                                                 @endphp
-                                                                @foreach ($sorted as $name => $item)
+                                                                @foreach ($top10newalterantives as $item)
                                                                     @if ($i <= 10)
                                                                         <tr>
                                                                             <td class="text-center">
                                                                                 <h6>{{ $loop->iteration }}</h6>
                                                                             </td>
                                                                             <td>
-                                                                                <h6>{{ $name }}</h6>
+                                                                                <h6>{{ $item->name }}</h6>
                                                                             </td>
                                                                             <td class="text-center">
-                                                                                <h6>{{ $item }}</h6>
+                                                                                <h6>
+                                                                                    {{ $item->category == 1 ? 'Non-Coffe' : 'Coffe' }}
+                                                                                </h6>
                                                                             </td>
                                                                         </tr>
                                                                         @php
