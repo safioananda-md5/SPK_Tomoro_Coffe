@@ -59,6 +59,12 @@
                                 @endif>Cost</option>
                         </select>
                     </div>
+                    <div class="form-group">
+                        <label for="weight">Bobot Kriteria<span style="color:red">*</span></label>
+                        <input type="text" name="weight" class="form-control" id="weight"
+                            placeholder="Masukkan Bobot Kriteria"
+                            @if ($edit) value="{{ $criteria->weight }}" @endif required>
+                    </div>
                     <div class="text-end">
                         <a href="{{ route('admin.kriteria.index') }}" class="btn btn-outline-danger"
                             id="cancel">Batal</a>

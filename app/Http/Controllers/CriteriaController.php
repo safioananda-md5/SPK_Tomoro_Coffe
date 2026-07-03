@@ -42,10 +42,12 @@ class CriteriaController extends Controller
                 [
                     'name' => 'required',
                     'type' => 'required',
+                    'weight' => 'required',
                 ],
                 [
                     'name.required' => 'Nama kriteria wajib diisi.',
                     'type.required' => 'Tipe kriteria wajib diisi.',
+                    'weight.required' => 'Bobot kriteria wajib diisi.',
                 ]
             );
             DB::beginTransaction();
@@ -54,7 +56,7 @@ class CriteriaController extends Controller
                 'name' => $request->name,
                 'short_name' => Str::lower($request->name),
                 'type' => $request->type,
-                'weight' => 0,
+                'weight' => $request->weight,
                 'description' => 'none',
             ]);
             DB::commit();
@@ -86,18 +88,26 @@ class CriteriaController extends Controller
                 [
                     'name' => 'required',
                     'type' => 'required',
+                    'weight' => 'required',
                 ],
                 [
                     'name.required' => 'Nama kriteria wajib diisi.',
                     'type.required' => 'Tipe kriteria wajib diisi.',
+                    'weight.required' => 'Bobot kriteria wajib diisi.',
                 ]
             );
+
+            $sumBobot = Criteria::whereNot('id', $id)->sum('weight');
+            if (($sumBobot + $request->weight) > 100) {
+                throw new Exception('Total bobot kriteria melebihi 100%, perubahan tidak dapat disimpan | Bobot total : ' . $sumBobot + $request->weight . '%');
+            }
 
             DB::beginTransaction();
             Criteria::where('id', $id)->update([
                 'name' => $request->name,
                 'short_name' => Str::lower($request->name),
                 'type' => $request->type,
+                'weight' => $request->weight,
             ]);
             DB::commit();
             flash()->success('Data kriteria berhasil diperbarui.');

@@ -20,7 +20,11 @@
                         </h2>
                     </div>
                 </div>
-                <div class="row">
+                <div class="row" id="body-overview">
+
+                </div>
+                <h4>Perhitungan SPK</h4>
+                <div class="row border-top">
                     <ul class="nav nav-tabs pt-3" id="spmSmartTab" role="tablist">
                         <li class="nav-item" id="nilai-asli-nav" role="presentation">
                             <button class="nav-link active fw-semibold" id="nilai-asli-tab" data-bs-toggle="tab"
@@ -95,7 +99,6 @@
         var category = null;
         var cmin = [];
         var cmax = [];
-
         const loaderContent = `
             <div class="card border-0 shadow-sm text-center py-5"
                 style="max-width: 450px; margin: 20px auto; border-radius: 12px; background: #ffffff;"
@@ -1052,6 +1055,213 @@
                 $('#title_menu').text('Non-Coffe');
             }
             $('#nilai-asli-nav').trigger('click');
+
+            // ==================
+            let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
+            url_nilaiasli = url_nilaiasli.replace(':type', category);
+
+            $.ajax({
+                url: url_nilaiasli,
+                type: 'GET',
+                dataType: 'json',
+                data: {},
+                success: function(response) {
+                    var cmin = {};
+                    var cmax = {};
+
+                    $.each(response.alterantives, function(key, item) {
+                        $.each(response.headers, function(indexHeader,
+                            itemHeader) {
+                            if (indexHeader === 0)
+                                return;
+
+                            let kriteriaData = item
+                                .alterantive_criterias ? item
+                                .alterantive_criterias[
+                                    indexHeader - 1] : null;
+                            let nilaiSkala =
+                                0.2;
+
+                            if (kriteriaData && kriteriaData
+                                .value !== undefined &&
+                                kriteriaData.value !== null) {
+                                var rawValue = parseFloat(
+                                    kriteriaData.value);
+                                if (rawValue >= 60) nilaiSkala =
+                                    1;
+                                else if (rawValue >= 50 &&
+                                    rawValue <= 59) nilaiSkala =
+                                    0.8;
+                                else if (rawValue >= 30 &&
+                                    rawValue <= 49) nilaiSkala =
+                                    0.6;
+                                else if (rawValue >= 10 &&
+                                    rawValue <= 29) nilaiSkala =
+                                    0.4;
+                            }
+
+                            let currentKey = 'kriteria_' +
+                                indexHeader;
+
+                            if (cmin[currentKey] ===
+                                undefined) {
+                                cmin[currentKey] = nilaiSkala;
+                                cmax[currentKey] = nilaiSkala;
+                            } else {
+                                if (nilaiSkala < cmin[
+                                        currentKey]) cmin[
+                                    currentKey] = nilaiSkala;
+                                if (nilaiSkala > cmax[
+                                        currentKey]) cmax[
+                                    currentKey] = nilaiSkala;
+                            }
+                        });
+                    });
+
+                    var listAlternatifSelesai = [];
+
+                    $.each(response.alterantives, function(key, item) {
+                        var ArrayStringRumus = [];
+                        var TotalNilaiAkhir = 0;
+
+                        $.each(response.headers, function(indexHeader,
+                            itemHeader) {
+                            if (indexHeader === 0)
+                                return;
+
+                            let kriteriaData = item
+                                .alterantive_criterias ? item
+                                .alterantive_criterias[
+                                    indexHeader - 1] : null;
+                            let nilaiini =
+                                0.2;
+                            let normalisasiBobot = 0;
+
+                            if (kriteriaData && kriteriaData
+                                .value !== undefined &&
+                                kriteriaData.value !== null) {
+                                var rawValue = parseFloat(
+                                    kriteriaData.value);
+                                if (rawValue >= 60) nilaiini =
+                                    1;
+                                else if (rawValue >= 50 &&
+                                    rawValue <= 59) nilaiini =
+                                    0.8;
+                                else if (rawValue >= 30 &&
+                                    rawValue <= 49) nilaiini =
+                                    0.6;
+                                else if (rawValue >= 10 &&
+                                    rawValue <= 29) nilaiini =
+                                    0.4;
+
+                                normalisasiBobot = kriteriaData
+                                    .normalisasi ? parseFloat(
+                                        kriteriaData.normalisasi
+                                    ) : 0;
+                            } else {
+                                if (response.alterantives[0] &&
+                                    response.alterantives[0]
+                                    .alterantive_criterias[
+                                        indexHeader - 1]) {
+                                    normalisasiBobot =
+                                        parseFloat(response
+                                            .alterantives[0]
+                                            .alterantive_criterias[
+                                                indexHeader - 1]
+                                            .normalisasi || 0);
+                                }
+                            }
+
+                            let currentKey = 'kriteria_' +
+                                indexHeader;
+                            let maxVal = cmax[currentKey] !==
+                                undefined ? cmax[currentKey] :
+                                0.2;
+                            let minVal = cmin[currentKey] !==
+                                undefined ? cmin[currentKey] :
+                                0.2;
+
+                            var nilaiUtility = 0;
+                            var pembagi = maxVal - minVal;
+
+                            if (pembagi === 0) {
+                                nilaiUtility = 1;
+                            } else {
+                                nilaiUtility = (nilaiini -
+                                    minVal) / pembagi;
+                            }
+
+                            var hasilPerkalianBobot =
+                                nilaiUtility * normalisasiBobot;
+
+                            ArrayStringRumus.push(
+                                hasilPerkalianBobot.toFixed(
+                                    4));
+                            TotalNilaiAkhir +=
+                                hasilPerkalianBobot;
+                        });
+
+                        var stringNilai = ArrayStringRumus.join(' + ');
+
+                        listAlternatifSelesai.push({
+                            name: item.name,
+                            price: item.price,
+                            category: item.category,
+                            komposisi: item.komposisi,
+                            total: TotalNilaiAkhir,
+                            prosesString: stringNilai
+                        });
+                    });
+
+                    listAlternatifSelesai.sort(function(a, b) {
+                        var selisihTotal = b.total - a.total;
+
+                        if (selisihTotal !== 0) {
+                            return selisihTotal;
+                        }
+                        return a.name.localeCompare(b.name);
+                    });
+
+                    var body_ranking = "";
+                    let counting = 0;
+                    $.each(listAlternatifSelesai, function(index, alternatif) {
+                        if (alternatif.category == category) {
+                            body_ranking += `
+                                <div class="col-md-4 col-lg-2 mb-5 d-flex selengkapnya"><a
+                                        class="card h-100 w-100 shadow-none border border-radius-lg text-center d-flex flex-column"
+                                        href="#" style="width: 200px; text-decoration: none; color: inherit;">
+                                        <div class="avatar rounded-circle bg-white shadow mx-auto mt-n4 mb-3"
+                                            style="min-height: 50px;">
+                                            <div class="d-flex align-items-center justify-content-center bg-secondary"
+                                                style="width: 50px; height: 50px; border-radius: 50%;">
+                                                <span class="text-white h4 mb-0">${++counting}</span>
+                                            </div>
+                                        </div>
+                                        <div class="flex-grow-1 d-flex flex-column">
+                                            <img class="w-100 px-2" alt="Image placeholder"
+                                                src="{{ asset('assets/material/img/coffee.jpg') }}"
+                                                style="border-radius: 15px !important; display: block;">
+
+                                            <h6 class="font-weight-bold mt-3">${alternatif.price}</h6>
+                                            <h5 class="p-2 text-lg mb-0">${alternatif.name}</h5>
+
+                                            <div class="mt-auto pb-3 d-flex flex-column">
+                                                <small class="text-muted font-weight-bold">Kombinasi
+                                                ${alternatif.komposisi}</small>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </div>
+                            `;
+                        }
+                    });
+
+                    $('#body-overview').html(body_ranking);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan:', error);
+                }
+            });
         });
     </script>
 @endsection

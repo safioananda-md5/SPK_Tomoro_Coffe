@@ -108,14 +108,22 @@ class DashboardController extends Controller
                     'normalisasi' => $alternativecriteria->criteria->weight / 100,
                 ];
             }
+
+            $Incriteria = [];
+            foreach ($alternative->alternativecriteria as $AC) {
+                if ($AC->value > 0) {
+                    $Incriteria[] = $AC->criteria_id;
+                }
+            }
+            $nameCriterias = implode(', ', Criteria::whereIn('id', $Incriteria)->whereNotNull('short_name')->pluck('short_name')->toArray());
             $Alternatives[] = [
                 'name' => $alternative->name,
                 'category' => $alternative->category,
+                'price' => $alternative->price,
+                'komposisi' => $nameCriterias,
                 'alterantive_criterias' => $alterantive_criterias,
             ];
         }
-
-
 
         return response()->json([
             'message' => 'Berhasil!',

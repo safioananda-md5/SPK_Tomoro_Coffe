@@ -16,7 +16,7 @@
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="card-title m-0 p-0" style="fw-bold">Data Kriteria</h5>
                         <div>
-                            <!-- Button trigger modal -->
+                            {{-- <!-- Button trigger modal -->
                             <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#bobot">
                                 Atur Bobot
                             </button>
@@ -68,15 +68,16 @@
                                         </form>
                                     </div>
                                 </div>
-                            </div>
+                            </div> --}}
                             <a href="{{ route('admin.kriteria.create') }}" class="btn btn-primary">Tambah Kriteria</a>
                         </div>
                     </div>
                 </div>
                 <div class="card-body">
                     @if ($totalwieght != 100)
-                        <div class="alert alert-danger" role="alert">
-                            Bobot kriteria tidak 100%, Nilai bobot: {{ $totalwieght }}%
+                        <div class="alert alert-warning" role="alert">
+                            Bobot kriteria kurang dari 100%, Nilai bobot hanya {{ $totalwieght }}%, kurang
+                            {{ 100 - $totalwieght }}%.
                         </div>
                     @endif
                     @if ($someempty)
