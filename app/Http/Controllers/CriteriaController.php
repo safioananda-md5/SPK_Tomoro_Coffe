@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AlternativeCriteria;
 use App\Models\Criteria;
 use Exception;
 use Throwable;
@@ -118,6 +119,7 @@ class CriteriaController extends Controller
         try {
             DB::beginTransaction();
             Criteria::where('id', $id)->delete();
+            AlternativeCriteria::where('criteria_id', $id)->delete();
             DB::commit();
             flash()->success('Data kriteria berhasil dihapus.');
             return redirect()->back();

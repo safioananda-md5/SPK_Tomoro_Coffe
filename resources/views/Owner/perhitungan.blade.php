@@ -154,7 +154,8 @@
                             });
                             var body_nilai_asli = "";
                             $.each(response.alterantives, function(key, item) {
-                                body_nilai_asli += `<tr><td>${item.name}</td>`;
+                                body_nilai_asli +=
+                                    `<tr class="categori_${item.category}"><td>${item.name}</td>`;
                                 $.each(response.headers, function(indexHeader,
                                     itemHeader) {
                                     if (indexHeader === 0)
@@ -178,6 +179,12 @@
                             });
 
                             $('#body_nilai_asli').html(body_nilai_asli);
+
+                            if (category == 0) {
+                                $('.categori_1').remove();
+                            } else {
+                                $('.categori_0').remove();
+                            }
                         },
                         error: function(xhr, status, error) {
                             console.error('Terjadi kesalahan:', error);
@@ -242,7 +249,7 @@
                             var body_nilai_skalar = "";
                             $.each(response.alterantives, function(key, item) {
                                 body_nilai_skalar +=
-                                    `<tr><td>${item.name}</td>`;
+                                    `<tr class="categori_${item.category}"><td>${item.name}</td>`;
 
                                 $.each(response.headers, function(indexHeader,
                                     itemHeader) {
@@ -286,6 +293,12 @@
                             });
 
                             $('#body_nilai_skalar').html(body_nilai_skalar);
+
+                            if (category == 0) {
+                                $('.categori_1').remove();
+                            } else {
+                                $('.categori_0').remove();
+                            }
                         },
                         error: function(xhr, status, error) {
                             console.error('Terjadi kesalahan:', error);
@@ -383,7 +396,8 @@
 
                             var body_nilai_utility = "";
 
-                            body_nilai_utility += `<tr><td>C max</td>`;
+                            body_nilai_utility +=
+                                `<tr><td>C max</td>`;
                             $.each(response.headers, function(indexHeader, itemHeader) {
                                 if (indexHeader === 0) return;
                                 let currentKey = 'kriteria_' + indexHeader;
@@ -404,6 +418,12 @@
                             body_nilai_utility += `</tr>`;
 
                             $('#body_nilai_utility').html(body_nilai_utility);
+
+                            if (category == 0) {
+                                $('.categori_1').remove();
+                            } else {
+                                $('.categori_0').remove();
+                            }
                         },
                         error: function(xhr, status, error) {
                             console.error('Terjadi kesalahan:', error);
@@ -506,7 +526,7 @@
 
                             $.each(response.alterantives, function(key, item) {
                                 body_bobot_utility +=
-                                    `<tr><td>${item.name}</td>`;
+                                    `<tr class="categori_${item.category}"><td>${item.name}</td>`;
 
                                 $.each(response.headers, function(indexHeader,
                                     itemHeader) {
@@ -573,6 +593,12 @@
                             });
 
                             $('#body_bobot_utility').html(body_bobot_utility);
+
+                            if (category == 0) {
+                                $('.categori_1').remove();
+                            } else {
+                                $('.categori_0').remove();
+                            }
                         },
                         error: function(xhr, status, error) {
                             console.error('Terjadi kesalahan:', error);
@@ -675,7 +701,8 @@
                             var body_nilai_akhir = "";
 
                             $.each(response.alterantives, function(key, item) {
-                                body_nilai_akhir += `<tr><td>${item.name}</td>`;
+                                body_nilai_akhir +=
+                                    `<tr class="categori_${item.category}"><td>${item.name}</td>`;
 
                                 var ArrayStringRumus = [];
                                 var TotalNilaiAkhir = 0;
@@ -780,6 +807,12 @@
                             });
 
                             $('#body_nilai_akhir').html(body_nilai_akhir);
+
+                            if (category == 0) {
+                                $('.categori_1').remove();
+                            } else {
+                                $('.categori_0').remove();
+                            }
                         },
                         error: function(xhr, status, error) {
                             console.error('Terjadi kesalahan:', error);
@@ -958,6 +991,7 @@
 
                                 listAlternatifSelesai.push({
                                     name: item.name,
+                                    category: item.category,
                                     total: TotalNilaiAkhir,
                                     prosesString: stringNilai
                                 });
@@ -975,12 +1009,11 @@
                             var body_ranking = "";
 
                             $.each(listAlternatifSelesai, function(index, alternatif) {
-                                var rankSekarang = index + 1;
+                                // var rankSekarang = index + 1;
 
                                 body_ranking += `
-                                    <tr>
-                                        <td class="text-center font-weight-bold" style="width: 80px;">
-                                            ${rankSekarang}
+                                    <tr class="categori_${alternatif.category}">
+                                        <td class="text-center font-weight-bold ranksekarang" style="width: 80px;">
                                         </td>
                                         <td><strong>${alternatif.name}</strong></td>
                                         <td>
@@ -994,6 +1027,16 @@
                             });
 
                             $('#body_ranking').html(body_ranking);
+
+                            if (category == 0) {
+                                $('.categori_1').remove();
+                            } else {
+                                $('.categori_0').remove();
+                            }
+
+                            $('.ranksekarang').each(function(index) {
+                                $(this).text(index + 1);
+                            });
                         },
                         error: function(xhr, status, error) {
                             console.error('Terjadi kesalahan:', error);
@@ -1001,7 +1044,6 @@
                     });
                 }, 1500);
             });
-
 
             category = @json($type);
             if (category == 0) {

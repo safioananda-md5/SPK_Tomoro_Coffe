@@ -331,6 +331,8 @@
                 $('#update-spk').removeClass('d-none');
                 $('#lihat-spk').removeClass('d-none');
 
+                $('#rangking').html(loaderContent);
+
                 let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
@@ -338,39 +340,56 @@
                     url: url_nilaiasli,
                     type: 'GET',
                     dataType: 'json',
+                    data: {},
                     success: function(response) {
-                        cmin = [];
-                        cmax = [];
-                        $.each(response.alterantives, function(key, item) {
-                            $.each(item.alterantive_criterias, function(
-                                key2, item2) {
-                                var rawValue = parseFloat(item2
-                                    .value);
-                                var nilaiSkala = 0;
+                        var cmin = {};
+                        var cmax = {};
 
-                                if (rawValue >= 60) {
-                                    nilaiSkala = 1;
-                                } else if (rawValue >= 50 &&
-                                    rawValue <= 59) {
-                                    nilaiSkala = 0.8;
-                                } else if (rawValue >= 30 &&
-                                    rawValue <= 49) {
-                                    nilaiSkala = 0.6;
-                                } else if (rawValue >= 10 &&
-                                    rawValue <= 29) {
-                                    nilaiSkala = 0.4;
-                                } else if (rawValue <= 9) {
-                                    nilaiSkala = 0.2;
+                        $.each(response.alterantives, function(key, item) {
+                            $.each(response.headers, function(indexHeader,
+                                itemHeader) {
+                                if (indexHeader === 0)
+                                    return;
+
+                                let kriteriaData = item
+                                    .alterantive_criterias ? item
+                                    .alterantive_criterias[
+                                        indexHeader - 1] : null;
+                                let nilaiSkala =
+                                    0.2;
+
+                                if (kriteriaData && kriteriaData
+                                    .value !== undefined &&
+                                    kriteriaData.value !== null) {
+                                    var rawValue = parseFloat(
+                                        kriteriaData.value);
+                                    if (rawValue >= 60) nilaiSkala =
+                                        1;
+                                    else if (rawValue >= 50 &&
+                                        rawValue <= 59) nilaiSkala =
+                                        0.8;
+                                    else if (rawValue >= 30 &&
+                                        rawValue <= 49) nilaiSkala =
+                                        0.6;
+                                    else if (rawValue >= 10 &&
+                                        rawValue <= 29) nilaiSkala =
+                                        0.4;
                                 }
 
-                                if (cmin[key2] === undefined) {
-                                    cmin[key2] = nilaiSkala;
-                                    cmax[key2] = nilaiSkala;
+                                let currentKey = 'kriteria_' +
+                                    indexHeader;
+
+                                if (cmin[currentKey] ===
+                                    undefined) {
+                                    cmin[currentKey] = nilaiSkala;
+                                    cmax[currentKey] = nilaiSkala;
                                 } else {
-                                    if (nilaiSkala < cmin[key2])
-                                        cmin[key2] = nilaiSkala;
-                                    if (nilaiSkala > cmax[key2])
-                                        cmax[key2] = nilaiSkala;
+                                    if (nilaiSkala < cmin[
+                                            currentKey]) cmin[
+                                        currentKey] = nilaiSkala;
+                                    if (nilaiSkala > cmax[
+                                            currentKey]) cmax[
+                                        currentKey] = nilaiSkala;
                                 }
                             });
                         });
@@ -378,54 +397,91 @@
                         var listAlternatifSelesai = [];
 
                         $.each(response.alterantives, function(key, item) {
-                            var ArrayNilai = [];
-                            var TotalNilai = 0;
+                            var ArrayStringRumus = [];
+                            var TotalNilaiAkhir = 0;
 
-                            $.each(item.alterantive_criterias, function(
-                                key2, item2) {
-                                var rawValue = parseFloat(item2
-                                    .value);
-                                var nilaiini = 0;
+                            $.each(response.headers, function(indexHeader,
+                                itemHeader) {
+                                if (indexHeader === 0)
+                                    return;
 
-                                if (rawValue >= 60) {
-                                    nilaiini = 1;
-                                } else if (rawValue >= 50 &&
-                                    rawValue <= 59) {
-                                    nilaiini = 0.8;
-                                } else if (rawValue >= 30 &&
-                                    rawValue <= 49) {
-                                    nilaiini = 0.6;
-                                } else if (rawValue >= 10 &&
-                                    rawValue <= 29) {
-                                    nilaiini = 0.4;
-                                } else if (rawValue <= 9) {
-                                    nilaiini = 0.2;
+                                let kriteriaData = item
+                                    .alterantive_criterias ? item
+                                    .alterantive_criterias[
+                                        indexHeader - 1] : null;
+                                let nilaiini =
+                                    0.2;
+                                let normalisasiBobot = 0;
+
+                                if (kriteriaData && kriteriaData
+                                    .value !== undefined &&
+                                    kriteriaData.value !== null) {
+                                    var rawValue = parseFloat(
+                                        kriteriaData.value);
+                                    if (rawValue >= 60) nilaiini =
+                                        1;
+                                    else if (rawValue >= 50 &&
+                                        rawValue <= 59) nilaiini =
+                                        0.8;
+                                    else if (rawValue >= 30 &&
+                                        rawValue <= 49) nilaiini =
+                                        0.6;
+                                    else if (rawValue >= 10 &&
+                                        rawValue <= 29) nilaiini =
+                                        0.4;
+
+                                    normalisasiBobot = kriteriaData
+                                        .normalisasi ? parseFloat(
+                                            kriteriaData.normalisasi
+                                        ) : 0;
+                                } else {
+                                    if (response.alterantives[0] &&
+                                        response.alterantives[0]
+                                        .alterantive_criterias[
+                                            indexHeader - 1]) {
+                                        normalisasiBobot =
+                                            parseFloat(response
+                                                .alterantives[0]
+                                                .alterantive_criterias[
+                                                    indexHeader - 1]
+                                                .normalisasi || 0);
+                                    }
                                 }
 
+                                let currentKey = 'kriteria_' +
+                                    indexHeader;
+                                let maxVal = cmax[currentKey] !==
+                                    undefined ? cmax[currentKey] :
+                                    0.2;
+                                let minVal = cmin[currentKey] !==
+                                    undefined ? cmin[currentKey] :
+                                    0.2;
+
                                 var nilaiUtility = 0;
-                                var pembagi = cmax[key2] - cmin[
-                                    key2];
+                                var pembagi = maxVal - minVal;
 
                                 if (pembagi === 0) {
                                     nilaiUtility = 1;
                                 } else {
-                                    nilaiUtility = (nilaiini - cmin[
-                                        key2]) / pembagi;
+                                    nilaiUtility = (nilaiini -
+                                        minVal) / pembagi;
                                 }
 
-                                var nilaiUtilityFormatted =
-                                    nilaiUtility.toFixed(4);
-                                ArrayNilai[key2] =
-                                    nilaiUtilityFormatted;
-                                TotalNilai += nilaiUtility;
+                                var hasilPerkalianBobot =
+                                    nilaiUtility * normalisasiBobot;
+
+                                ArrayStringRumus.push(
+                                    hasilPerkalianBobot.toFixed(
+                                        4));
+                                TotalNilaiAkhir +=
+                                    hasilPerkalianBobot;
                             });
 
-                            var stringNilai = Object.values(ArrayNilai)
-                                .join(' + ');
+                            var stringNilai = ArrayStringRumus.join(' + ');
 
                             listAlternatifSelesai.push({
                                 name: item.name,
-                                total: TotalNilai,
+                                total: TotalNilaiAkhir,
                                 prosesString: stringNilai
                             });
                         });
@@ -442,26 +498,25 @@
                         var body_ranking = "";
 
                         $.each(listAlternatifSelesai, function(index, alternatif) {
-                            var rankSekarang = index +
-                                1;
+                            var rankSekarang = index + 1;
 
                             if (rankSekarang == 1) {
                                 $('#nama_produk_1').text(alternatif.name);
                                 $('#skor_produk_1').text('Nilai akhir: ' +
                                     alternatif.total.toFixed(
-                                        2));
+                                        4));
                             }
                             if (rankSekarang == 2) {
                                 $('#nama_produk_2').text(alternatif.name);
                                 $('#skor_produk_2').text('Nilai akhir: ' +
                                     alternatif.total.toFixed(
-                                        2));
+                                        4));
                             }
                             if (rankSekarang == 3) {
                                 $('#nama_produk_3').text(alternatif.name);
                                 $('#skor_produk_3').text('Nilai akhir: ' +
                                     alternatif.total.toFixed(
-                                        2));
+                                        4));
                             }
 
                             body_ranking += `
@@ -469,7 +524,7 @@
                                     <tr>
                                         <td class="py-3 px-4 text-dark fw-bold">#${rankSekarang}</td>
                                         <td class="py-3 px-4 text-dark">${alternatif.name}</td>
-                                        <td class="py-3 px-4 mono-font fw-bold text-indigo-custom bg-indigo-light">${alternatif.total.toFixed(2)}</td>
+                                        <td class="py-3 px-4 mono-font fw-bold text-indigo-custom bg-indigo-light">${alternatif.total.toFixed(4)}</td>
                                     </tr>
                                 </tr>
                             `;
@@ -1459,39 +1514,56 @@
                     url: url_nilaiasli,
                     type: 'GET',
                     dataType: 'json',
+                    data: {},
                     success: function(response) {
-                        cmin = [];
-                        cmax = [];
-                        $.each(response.alterantives, function(key, item) {
-                            $.each(item.alterantive_criterias, function(
-                                key2, item2) {
-                                var rawValue = parseFloat(item2
-                                    .value);
-                                var nilaiSkala = 0;
+                        var cmin = {};
+                        var cmax = {};
 
-                                if (rawValue >= 60) {
-                                    nilaiSkala = 1;
-                                } else if (rawValue >= 50 &&
-                                    rawValue <= 59) {
-                                    nilaiSkala = 0.8;
-                                } else if (rawValue >= 30 &&
-                                    rawValue <= 49) {
-                                    nilaiSkala = 0.6;
-                                } else if (rawValue >= 10 &&
-                                    rawValue <= 29) {
-                                    nilaiSkala = 0.4;
-                                } else if (rawValue <= 9) {
-                                    nilaiSkala = 0.2;
+                        $.each(response.alterantives, function(key, item) {
+                            $.each(response.headers, function(indexHeader,
+                                itemHeader) {
+                                if (indexHeader === 0)
+                                    return;
+
+                                let kriteriaData = item
+                                    .alterantive_criterias ? item
+                                    .alterantive_criterias[
+                                        indexHeader - 1] : null;
+                                let nilaiSkala =
+                                    0.2;
+
+                                if (kriteriaData && kriteriaData
+                                    .value !== undefined &&
+                                    kriteriaData.value !== null) {
+                                    var rawValue = parseFloat(
+                                        kriteriaData.value);
+                                    if (rawValue >= 60) nilaiSkala =
+                                        1;
+                                    else if (rawValue >= 50 &&
+                                        rawValue <= 59) nilaiSkala =
+                                        0.8;
+                                    else if (rawValue >= 30 &&
+                                        rawValue <= 49) nilaiSkala =
+                                        0.6;
+                                    else if (rawValue >= 10 &&
+                                        rawValue <= 29) nilaiSkala =
+                                        0.4;
                                 }
 
-                                if (cmin[key2] === undefined) {
-                                    cmin[key2] = nilaiSkala;
-                                    cmax[key2] = nilaiSkala;
+                                let currentKey = 'kriteria_' +
+                                    indexHeader;
+
+                                if (cmin[currentKey] ===
+                                    undefined) {
+                                    cmin[currentKey] = nilaiSkala;
+                                    cmax[currentKey] = nilaiSkala;
                                 } else {
-                                    if (nilaiSkala < cmin[key2])
-                                        cmin[key2] = nilaiSkala;
-                                    if (nilaiSkala > cmax[key2])
-                                        cmax[key2] = nilaiSkala;
+                                    if (nilaiSkala < cmin[
+                                            currentKey]) cmin[
+                                        currentKey] = nilaiSkala;
+                                    if (nilaiSkala > cmax[
+                                            currentKey]) cmax[
+                                        currentKey] = nilaiSkala;
                                 }
                             });
                         });
@@ -1499,54 +1571,91 @@
                         var listAlternatifSelesai = [];
 
                         $.each(response.alterantives, function(key, item) {
-                            var ArrayNilai = [];
-                            var TotalNilai = 0;
+                            var ArrayStringRumus = [];
+                            var TotalNilaiAkhir = 0;
 
-                            $.each(item.alterantive_criterias, function(
-                                key2, item2) {
-                                var rawValue = parseFloat(item2
-                                    .value);
-                                var nilaiini = 0;
+                            $.each(response.headers, function(indexHeader,
+                                itemHeader) {
+                                if (indexHeader === 0)
+                                    return;
 
-                                if (rawValue >= 60) {
-                                    nilaiini = 1;
-                                } else if (rawValue >= 50 &&
-                                    rawValue <= 59) {
-                                    nilaiini = 0.8;
-                                } else if (rawValue >= 30 &&
-                                    rawValue <= 49) {
-                                    nilaiini = 0.6;
-                                } else if (rawValue >= 10 &&
-                                    rawValue <= 29) {
-                                    nilaiini = 0.4;
-                                } else if (rawValue <= 9) {
-                                    nilaiini = 0.2;
+                                let kriteriaData = item
+                                    .alterantive_criterias ? item
+                                    .alterantive_criterias[
+                                        indexHeader - 1] : null;
+                                let nilaiini =
+                                    0.2;
+                                let normalisasiBobot = 0;
+
+                                if (kriteriaData && kriteriaData
+                                    .value !== undefined &&
+                                    kriteriaData.value !== null) {
+                                    var rawValue = parseFloat(
+                                        kriteriaData.value);
+                                    if (rawValue >= 60) nilaiini =
+                                        1;
+                                    else if (rawValue >= 50 &&
+                                        rawValue <= 59) nilaiini =
+                                        0.8;
+                                    else if (rawValue >= 30 &&
+                                        rawValue <= 49) nilaiini =
+                                        0.6;
+                                    else if (rawValue >= 10 &&
+                                        rawValue <= 29) nilaiini =
+                                        0.4;
+
+                                    normalisasiBobot = kriteriaData
+                                        .normalisasi ? parseFloat(
+                                            kriteriaData.normalisasi
+                                        ) : 0;
+                                } else {
+                                    if (response.alterantives[0] &&
+                                        response.alterantives[0]
+                                        .alterantive_criterias[
+                                            indexHeader - 1]) {
+                                        normalisasiBobot =
+                                            parseFloat(response
+                                                .alterantives[0]
+                                                .alterantive_criterias[
+                                                    indexHeader - 1]
+                                                .normalisasi || 0);
+                                    }
                                 }
 
+                                let currentKey = 'kriteria_' +
+                                    indexHeader;
+                                let maxVal = cmax[currentKey] !==
+                                    undefined ? cmax[currentKey] :
+                                    0.2;
+                                let minVal = cmin[currentKey] !==
+                                    undefined ? cmin[currentKey] :
+                                    0.2;
+
                                 var nilaiUtility = 0;
-                                var pembagi = cmax[key2] - cmin[
-                                    key2];
+                                var pembagi = maxVal - minVal;
 
                                 if (pembagi === 0) {
                                     nilaiUtility = 1;
                                 } else {
-                                    nilaiUtility = (nilaiini - cmin[
-                                        key2]) / pembagi;
+                                    nilaiUtility = (nilaiini -
+                                        minVal) / pembagi;
                                 }
 
-                                var nilaiUtilityFormatted =
-                                    nilaiUtility.toFixed(4);
-                                ArrayNilai[key2] =
-                                    nilaiUtilityFormatted;
-                                TotalNilai += nilaiUtility;
+                                var hasilPerkalianBobot =
+                                    nilaiUtility * normalisasiBobot;
+
+                                ArrayStringRumus.push(
+                                    hasilPerkalianBobot.toFixed(
+                                        4));
+                                TotalNilaiAkhir +=
+                                    hasilPerkalianBobot;
                             });
 
-                            var stringNilai = Object.values(ArrayNilai)
-                                .join(' + ');
+                            var stringNilai = ArrayStringRumus.join(' + ');
 
                             listAlternatifSelesai.push({
                                 name: item.name,
-                                total: TotalNilai,
+                                total: TotalNilaiAkhir,
                                 prosesString: stringNilai
                             });
                         });
@@ -1563,26 +1672,25 @@
                         var body_ranking = "";
 
                         $.each(listAlternatifSelesai, function(index, alternatif) {
-                            var rankSekarang = index +
-                                1;
+                            var rankSekarang = index + 1;
 
                             if (rankSekarang == 1) {
                                 $('#nama_produk_1').text(alternatif.name);
                                 $('#skor_produk_1').text('Nilai akhir: ' +
                                     alternatif.total.toFixed(
-                                        2));
+                                        4));
                             }
                             if (rankSekarang == 2) {
                                 $('#nama_produk_2').text(alternatif.name);
                                 $('#skor_produk_2').text('Nilai akhir: ' +
                                     alternatif.total.toFixed(
-                                        2));
+                                        4));
                             }
                             if (rankSekarang == 3) {
                                 $('#nama_produk_3').text(alternatif.name);
                                 $('#skor_produk_3').text('Nilai akhir: ' +
                                     alternatif.total.toFixed(
-                                        2));
+                                        4));
                             }
 
                             body_ranking += `
@@ -1590,7 +1698,7 @@
                                     <tr>
                                         <td class="py-3 px-4 text-dark fw-bold">#${rankSekarang}</td>
                                         <td class="py-3 px-4 text-dark">${alternatif.name}</td>
-                                        <td class="py-3 px-4 mono-font fw-bold text-indigo-custom bg-indigo-light">${alternatif.total.toFixed(2)}</td>
+                                        <td class="py-3 px-4 mono-font fw-bold text-indigo-custom bg-indigo-light">${alternatif.total.toFixed(4)}</td>
                                     </tr>
                                 </tr>
                             `;

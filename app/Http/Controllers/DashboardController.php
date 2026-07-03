@@ -77,6 +77,7 @@ class DashboardController extends Controller
 
     public function nilai_asli($type)
     {
+        $type = 'all';
         $periodeAlternatives = Periode::where('name', 'satu')->value('alternatives');
         $raw_alterantives = Alternative::with(['alternativecriteria.criteria'])
             ->when($periodeAlternatives !== null, function ($query) use ($periodeAlternatives) {
@@ -88,7 +89,7 @@ class DashboardController extends Controller
                     ->where('category', $type);
             })
             ->get();
-        $raw_alterantives = Alternative::with(['alternativecriteria.criteria'])->where('category', $type)->get();
+        // $raw_alterantives = Alternative::with(['alternativecriteria.criteria'])->where('category', $type)->get();
         $Alternatives = [];
         $headers = [];
         $headers[] = 'Nama Alternatif';
@@ -108,6 +109,7 @@ class DashboardController extends Controller
             }
             $Alternatives[] = [
                 'name' => $alternative->name,
+                'category' => $alternative->category,
                 'alterantive_criterias' => $alterantive_criterias,
             ];
         }
