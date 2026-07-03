@@ -50,6 +50,12 @@ class CriteriaController extends Controller
                     'weight.required' => 'Bobot kriteria wajib diisi.',
                 ]
             );
+
+            $sumBobot = Criteria::sum('weight');
+            if (($sumBobot + $request->weight) > 100) {
+                throw new Exception('Total bobot kriteria melebihi 100%, perubahan tidak dapat disimpan | Bobot total : ' . $sumBobot + $request->weight . '%');
+            }
+
             DB::beginTransaction();
 
             Criteria::create([
