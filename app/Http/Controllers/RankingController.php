@@ -178,6 +178,16 @@ class RankingController extends Controller
             return redirect(route('admin.kriteria.index'));
         }
 
+        try {
+            $alterantifcount = Alternative::count();
+            if ($alterantifcount < 1) {
+                throw new Exception('Tidak ada alternatif tersedia pada sistem.');
+            }
+        } catch (Throwable $e) {
+            flash()->error($e->getMessage());
+            return redirect(route('admin.alternatif.index'));
+        }
+
         $periodeAlternatives = Periode::where('name', 'satu')->value('alternatives');
         $latestPeriode = Periode::where('name', 'satu')->value('updated_at');
         $formattedDate = $latestPeriode ? Carbon::parse($latestPeriode)->format('d/m/Y H:i') : '-';

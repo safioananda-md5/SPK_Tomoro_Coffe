@@ -184,7 +184,7 @@
 
                     <!-- Button trigger modal -->
 
-                    @if (!$someempty && $totalwieght == 100 && $adaPeriode == 'ada')
+                    @if (!$someempty && $totalwieght == 100 && $adaPeriode == 'ada' && $CountAlternative > 0)
                         <div class="col-12 text-center">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#staticBackdrop">
@@ -194,8 +194,10 @@
                     @else
                         @if ($someempty || $totalwieght != 100)
                             <p class="text-center">Terdapat kesalah sistem terkait kriteria data.</p>
-                        @else
+                        @elseif($adaPeriode == 'tidak')
                             <p class="text-center">Perhitungan perangkingan belum di lakukan.</p>
+                        @elseif($CountAlternative < 1)
+                            <p class="text-center">Tidak ada menu pada sistem.</p>
                         @endif
                     @endif
                 </div>

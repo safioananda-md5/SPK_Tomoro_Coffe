@@ -44,6 +44,7 @@ class DashboardController extends Controller
             return redirect(route('login'));
         }
 
+        $CountAlternative = Alternative::count();
         $alternativescoffe = Alternative::where('category', 0)->get();
         $alternativesnoncoffe = Alternative::where('category', 1)->get();
         $Setting = Setting::latest()->first();
@@ -67,7 +68,7 @@ class DashboardController extends Controller
             $adaPeriode = 'ada';
         }
 
-        return view('Owner.dashboard', compact(['alternativescoffe', 'alternativesnoncoffe', 'Setting', 'someempty', 'totalwieght', 'adaPeriode']));
+        return view('Owner.dashboard', compact(['alternativescoffe', 'alternativesnoncoffe', 'Setting', 'someempty', 'totalwieght', 'adaPeriode', 'CountAlternative']));
     }
 
     public function perhitungan($type)
