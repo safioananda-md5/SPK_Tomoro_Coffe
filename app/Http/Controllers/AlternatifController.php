@@ -37,7 +37,6 @@ class AlternatifController extends Controller
                 throw new Exception('Bobot kriteria tidak 100%, Nilai bobot: ' . $totalwieght . '%.');
             }
         } catch (Throwable $e) {
-            DB::rollback();
             flash()->error($e->getMessage());
             return redirect(route('admin.kriteria.index'));
         }

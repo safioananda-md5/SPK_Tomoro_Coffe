@@ -25,7 +25,7 @@
                                 Import Alternatif
                             </a>
                             <a href="{{ route('admin.alternatif.create') }}" class="btn btn-primary">
-                                Tambah Alternatif
+                                Tambah Manual Alternatif
                             </a>
                         </div>
                     </div>

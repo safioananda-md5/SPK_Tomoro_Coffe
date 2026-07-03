@@ -154,6 +154,30 @@ class RankingController extends Controller
 
     public function show()
     {
+        try {
+            $criterias = Criteria::all();
+            $totalwieght = 0;
+            $someempty = false;
+            foreach ($criterias as $criteria) {
+                if ($criteria->weight <= 0 || $criteria->weight == null) {
+                    $someempty = true;
+                } else {
+                    $totalwieght = bcadd($totalwieght, $criteria->weight);
+                }
+            }
+
+            if ($someempty) {
+                throw new Exception('Terdapat bobot kriteria bernilai 0.');
+            }
+
+            if ($totalwieght != 100) {
+                throw new Exception('Bobot kriteria tidak 100%, Nilai bobot: ' . $totalwieght . '%.');
+            }
+        } catch (Throwable $e) {
+            flash()->error($e->getMessage());
+            return redirect(route('admin.kriteria.index'));
+        }
+
         $periodeAlternatives = Periode::where('name', 'satu')->value('alternatives');
         $latestPeriode = Periode::where('name', 'satu')->value('updated_at');
         $formattedDate = $latestPeriode ? Carbon::parse($latestPeriode)->format('d/m/Y H:i') : '-';

@@ -118,7 +118,7 @@
         $(document).ready(function() {
             $('#nilai-asli-nav').on('click', function() {
                 $('#nilai-asli').html(loaderContent);
-                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
@@ -142,7 +142,6 @@
                             `;
 
                             $('#nilai-asli').html(table_nilai_asli);
-
                             let c = 0;
                             $.each(response.headers, function(key, item) {
                                 if (key !== 0) {
@@ -153,15 +152,28 @@
                                         `<th>${item}</th>`);
                                 }
                             });
-
                             var body_nilai_asli = "";
                             $.each(response.alterantives, function(key, item) {
                                 body_nilai_asli += `<tr><td>${item.name}</td>`;
-                                $.each(item.alterantive_criterias, function(
-                                    key2, item2) {
+                                $.each(response.headers, function(indexHeader,
+                                    itemHeader) {
+                                    if (indexHeader === 0)
+                                        return;
+                                    let kriteriaData = item
+                                        .alterantive_criterias ? item
+                                        .alterantive_criterias[
+                                            indexHeader - 1] : null;
+                                    let nilaiKriteria = (kriteriaData &&
+                                            kriteriaData.value !==
+                                            undefined && kriteriaData
+                                            .value !== null) ?
+                                        kriteriaData.value + '%' :
+                                        '0';
+
                                     body_nilai_asli +=
-                                        `<td>${item2.value}%</td>`;
+                                        `<td>${nilaiKriteria}</td>`;
                                 });
+
                                 body_nilai_asli += '</tr>';
                             });
 
@@ -172,11 +184,11 @@
                         }
                     });
                 }, 1500);
-            })
+            });
 
             $('#nilai-skalar-nav').on('click', function() {
                 $('#nilai-skalar').html(loaderContent);
-                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
@@ -197,26 +209,11 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr>
-                                            <td>&ge; 60%</td>
-                                            <td>1</td>
-                                        </tr>
-                                        <tr>
-                                            <td>50% - 59%</td>
-                                            <td>0.8</td>
-                                        </tr>
-                                        <tr>
-                                            <td>30% - 49%</td>
-                                            <td>0.6</td>
-                                        </tr>
-                                        <tr>
-                                            <td>10% - 29%</td>
-                                            <td>0.4</td>
-                                        </tr>
-                                        <tr>
-                                            <td>0% - 9%</td>
-                                            <td>0.2</td>
-                                        </tr>
+                                        <tr><td>&ge; 60%</td><td>1</td></tr>
+                                        <tr><td>50% - 59%</td><td>0.8</td></tr>
+                                        <tr><td>30% - 49%</td><td>0.6</td></tr>
+                                        <tr><td>10% - 29%</td><td>0.4</td></tr>
+                                        <tr><td>0% - 9%</td><td>0.2</td></tr>
                                     </tbody>
                                 </table>
                                 <div class="table-responsive mt-3">
@@ -246,28 +243,45 @@
                             $.each(response.alterantives, function(key, item) {
                                 body_nilai_skalar +=
                                     `<tr><td>${item.name}</td>`;
-                                $.each(item.alterantive_criterias, function(
-                                    key2, item2) {
-                                    if (item2.value >= 60) {
-                                        body_nilai_skalar +=
-                                            `<td>1</td>`;
-                                    } else if (item2.value >= 50 &&
-                                        item2.value <= 59) {
-                                        body_nilai_skalar +=
-                                            `<td>0.8</td>`;
-                                    } else if (item2.value >= 30 &&
-                                        item2.value <= 49) {
-                                        body_nilai_skalar +=
-                                            `<td>0.6</td>`;
-                                    } else if (item2.value >= 10 &&
-                                        item2.value <= 29) {
-                                        body_nilai_skalar +=
-                                            `<td>0.4</td>`;
-                                    } else if (item2.value <= 9) {
-                                        body_nilai_skalar +=
-                                            `<td>0.2</td>`;
+
+                                $.each(response.headers, function(indexHeader,
+                                    itemHeader) {
+                                    if (indexHeader === 0)
+                                        return;
+
+                                    let kriteriaData = item
+                                        .alterantive_criterias ? item
+                                        .alterantive_criterias[
+                                            indexHeader - 1] : null;
+
+                                    let skalarValue = "0.2";
+
+                                    if (kriteriaData && kriteriaData
+                                        .value !== undefined &&
+                                        kriteriaData.value !== null) {
+                                        let val = parseFloat(
+                                            kriteriaData.value);
+
+                                        if (val >= 60) {
+                                            skalarValue = "1";
+                                        } else if (val >= 50 && val <=
+                                            59) {
+                                            skalarValue = "0.8";
+                                        } else if (val >= 30 && val <=
+                                            49) {
+                                            skalarValue = "0.6";
+                                        } else if (val >= 10 && val <=
+                                            29) {
+                                            skalarValue = "0.4";
+                                        } else {
+                                            skalarValue = "0.2";
+                                        }
                                     }
+
+                                    body_nilai_skalar +=
+                                        `<td>${skalarValue}</td>`;
                                 });
+
                                 body_nilai_skalar += '</tr>';
                             });
 
@@ -278,11 +292,11 @@
                         }
                     });
                 }, 1500);
-            })
+            });
 
             $('#nilai-utility-nav').on('click', function() {
                 $('#nilai-utility').html(loaderContent);
-                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
@@ -316,92 +330,78 @@
                                 }
                             });
 
-                            var body_nilai_utility = "";
+                            var cmin = {};
+                            var cmax = {};
 
                             $.each(response.alterantives, function(key, item) {
-                                $.each(item.alterantive_criterias, function(
-                                    key2, item2) {
-                                    var nilaiSekarang = parseFloat(item2
-                                        .value);
-                                    if (cmin[key2] === undefined) {
-                                        cmin[key2] = nilaiSekarang;
-                                        cmax[key2] = nilaiSekarang;
+                                $.each(response.headers, function(indexHeader,
+                                    itemHeader) {
+                                    if (indexHeader === 0)
+                                        return;
+
+                                    let kriteriaData = item
+                                        .alterantive_criterias ? item
+                                        .alterantive_criterias[
+                                            indexHeader - 1] : null;
+
+                                    let skalarValue =
+                                        0.2;
+                                    if (kriteriaData && kriteriaData
+                                        .value !== undefined &&
+                                        kriteriaData.value !== null) {
+                                        let val = parseFloat(
+                                            kriteriaData.value);
+                                        if (val >= 60) skalarValue =
+                                            1.0;
+                                        else if (val >= 50 && val <= 59)
+                                            skalarValue = 0.8;
+                                        else if (val >= 30 && val <= 49)
+                                            skalarValue = 0.6;
+                                        else if (val >= 10 && val <= 29)
+                                            skalarValue = 0.4;
+                                    }
+
+                                    let currentKey = 'kriteria_' +
+                                        indexHeader;
+
+                                    if (cmin[currentKey] ===
+                                        undefined) {
+                                        cmin[currentKey] = skalarValue;
+                                        cmax[currentKey] = skalarValue;
                                     } else {
-                                        if (nilaiSekarang < cmin[
-                                                key2]) {
-                                            cmin[key2] =
-                                                nilaiSekarang;
-                                        }
-                                        if (nilaiSekarang > cmax[
-                                                key2]) {
-                                            cmax[key2] =
-                                                nilaiSekarang;
-                                        }
+                                        if (skalarValue < cmin[
+                                                currentKey]) cmin[
+                                                currentKey] =
+                                            skalarValue;
+                                        if (skalarValue > cmax[
+                                                currentKey]) cmax[
+                                                currentKey] =
+                                            skalarValue;
                                     }
                                 });
                             });
 
-                            body_nilai_utility += `
-                                <tr>
-                                    <td>C max</td>
-                            `;
+                            var body_nilai_utility = "";
 
-                            $.each(cmax, function(key3, item3) {
-                                if (item3 >= 60) {
-                                    body_nilai_utility +=
-                                        `<td>1</td>`;
-                                } else if (item3 >= 50 &&
-                                    item3 <= 59) {
-                                    body_nilai_utility +=
-                                        `<td>0.8</td>`;
-                                } else if (item3 >= 30 &&
-                                    item3 <= 49) {
-                                    body_nilai_utility +=
-                                        `<td>0.6</td>`;
-                                } else if (item3 >= 10 &&
-                                    item3 <= 29) {
-                                    body_nilai_utility +=
-                                        `<td>0.4</td>`;
-                                } else if (item3 <= 9) {
-                                    body_nilai_utility +=
-                                        `<td>0.2</td>`;
-                                }
+                            body_nilai_utility += `<tr><td>C max</td>`;
+                            $.each(response.headers, function(indexHeader, itemHeader) {
+                                if (indexHeader === 0) return;
+                                let currentKey = 'kriteria_' + indexHeader;
+                                let valueMax = cmax[currentKey] !== undefined ?
+                                    cmax[currentKey] : 0.2;
+                                body_nilai_utility += `<td>${valueMax}</td>`;
                             });
+                            body_nilai_utility += `</tr>`;
 
-                            body_nilai_utility += `
-                                </tr>
-                            `;
-
-                            body_nilai_utility += `
-                                <tr>
-                                    <td>C min</td>
-                            `;
-
-                            $.each(cmin, function(key4, item4) {
-                                if (item4 >= 60) {
-                                    body_nilai_utility +=
-                                        `<td>1</td>`;
-                                } else if (item4 >= 50 &&
-                                    item4 <= 59) {
-                                    body_nilai_utility +=
-                                        `<td>0.8</td>`;
-                                } else if (item4 >= 30 &&
-                                    item4 <= 49) {
-                                    body_nilai_utility +=
-                                        `<td>0.6</td>`;
-                                } else if (item4 >= 10 &&
-                                    item4 <= 29) {
-                                    body_nilai_utility +=
-                                        `<td>0.4</td>`;
-                                } else if (item4 <= 9) {
-                                    body_nilai_utility +=
-                                        `<td>0.2</td>`;
-                                }
+                            body_nilai_utility += `<tr><td>C min</td>`;
+                            $.each(response.headers, function(indexHeader, itemHeader) {
+                                if (indexHeader === 0) return;
+                                let currentKey = 'kriteria_' + indexHeader;
+                                let valueMin = cmin[currentKey] !== undefined ?
+                                    cmin[currentKey] : 0.2;
+                                body_nilai_utility += `<td>${valueMin}</td>`;
                             });
-
-                            body_nilai_utility += `
-                                </tr>
-                            `;
+                            body_nilai_utility += `</tr>`;
 
                             $('#body_nilai_utility').html(body_nilai_utility);
                         },
@@ -410,11 +410,11 @@
                         }
                     });
                 }, 1500);
-            })
+            });
 
             $('#bobot-utility-nav').on('click', function() {
                 $('#bobot-utility').html(loaderContent);
-                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
@@ -422,6 +422,7 @@
                         url: url_nilaiasli,
                         type: 'GET',
                         dataType: 'json',
+                        data: {},
                         success: function(response) {
                             $('#loader').remove();
 
@@ -449,39 +450,54 @@
                                 }
                             });
 
-                            cmin = [];
-                            cmax = [];
+                            var cmin = {};
+                            var cmax = {};
 
                             $.each(response.alterantives, function(key, item) {
-                                $.each(item.alterantive_criterias, function(
-                                    key2, item2) {
-                                    var rawValue = parseFloat(item2
-                                        .value);
-                                    var nilaiSkala = 0;
+                                $.each(response.headers, function(indexHeader,
+                                    itemHeader) {
+                                    if (indexHeader === 0)
+                                        return;
 
-                                    if (rawValue >= 60) {
-                                        nilaiSkala = 1;
-                                    } else if (rawValue >= 50 &&
-                                        rawValue <= 59) {
-                                        nilaiSkala = 0.8;
-                                    } else if (rawValue >= 30 &&
-                                        rawValue <= 49) {
-                                        nilaiSkala = 0.6;
-                                    } else if (rawValue >= 10 &&
-                                        rawValue <= 29) {
-                                        nilaiSkala = 0.4;
-                                    } else if (rawValue <= 9) {
-                                        nilaiSkala = 0.2;
+                                    let kriteriaData = item
+                                        .alterantive_criterias ? item
+                                        .alterantive_criterias[
+                                            indexHeader - 1] : null;
+                                    let nilaiSkala =
+                                        0.2;
+
+                                    if (kriteriaData && kriteriaData
+                                        .value !== undefined &&
+                                        kriteriaData.value !== null) {
+                                        var rawValue = parseFloat(
+                                            kriteriaData.value);
+                                        if (rawValue >= 60) nilaiSkala =
+                                            1;
+                                        else if (rawValue >= 50 &&
+                                            rawValue <= 59) nilaiSkala =
+                                            0.8;
+                                        else if (rawValue >= 30 &&
+                                            rawValue <= 49) nilaiSkala =
+                                            0.6;
+                                        else if (rawValue >= 10 &&
+                                            rawValue <= 29) nilaiSkala =
+                                            0.4;
                                     }
 
-                                    if (cmin[key2] === undefined) {
-                                        cmin[key2] = nilaiSkala;
-                                        cmax[key2] = nilaiSkala;
+                                    let currentKey = 'kriteria_' +
+                                        indexHeader;
+
+                                    if (cmin[currentKey] ===
+                                        undefined) {
+                                        cmin[currentKey] = nilaiSkala;
+                                        cmax[currentKey] = nilaiSkala;
                                     } else {
-                                        if (nilaiSkala < cmin[key2])
-                                            cmin[key2] = nilaiSkala;
-                                        if (nilaiSkala > cmax[key2])
-                                            cmax[key2] = nilaiSkala;
+                                        if (nilaiSkala < cmin[
+                                                currentKey]) cmin[
+                                            currentKey] = nilaiSkala;
+                                        if (nilaiSkala > cmax[
+                                                currentKey]) cmax[
+                                            currentKey] = nilaiSkala;
                                     }
                                 });
                             });
@@ -492,48 +508,65 @@
                                 body_bobot_utility +=
                                     `<tr><td>${item.name}</td>`;
 
-                                $.each(item.alterantive_criterias, function(
-                                    key2, item2) {
-                                    var rawValue = parseFloat(item2
-                                        .value);
-                                    var nilaiini = 0;
+                                $.each(response.headers, function(indexHeader,
+                                    itemHeader) {
+                                    if (indexHeader === 0)
+                                        return;
 
-                                    if (rawValue >= 60) {
-                                        nilaiini = 1;
-                                    } else if (rawValue >= 50 &&
-                                        rawValue <= 59) {
-                                        nilaiini = 0.8;
-                                    } else if (rawValue >= 30 &&
-                                        rawValue <= 49) {
-                                        nilaiini = 0.6;
-                                    } else if (rawValue >= 10 &&
-                                        rawValue <= 29) {
-                                        nilaiini = 0.4;
-                                    } else if (rawValue <= 9) {
-                                        nilaiini = 0.2;
+                                    let kriteriaData = item
+                                        .alterantive_criterias ? item
+                                        .alterantive_criterias[
+                                            indexHeader - 1] : null;
+                                    let nilaiini =
+                                        0.2;
+
+                                    if (kriteriaData && kriteriaData
+                                        .value !== undefined &&
+                                        kriteriaData.value !== null) {
+                                        var rawValue = parseFloat(
+                                            kriteriaData.value);
+                                        if (rawValue >= 60) nilaiini =
+                                            1;
+                                        else if (rawValue >= 50 &&
+                                            rawValue <= 59) nilaiini =
+                                            0.8;
+                                        else if (rawValue >= 30 &&
+                                            rawValue <= 49) nilaiini =
+                                            0.6;
+                                        else if (rawValue >= 10 &&
+                                            rawValue <= 29) nilaiini =
+                                            0.4;
                                     }
+
+                                    let currentKey = 'kriteria_' +
+                                        indexHeader;
+                                    let maxVal = cmax[currentKey] !==
+                                        undefined ? cmax[currentKey] :
+                                        0.2;
+                                    let minVal = cmin[currentKey] !==
+                                        undefined ? cmin[currentKey] :
+                                        0.2;
 
                                     var nilaiUtility = 0;
-                                    var pembagi = cmax[key2] - cmin[
-                                        key2];
+                                    var pembagi = maxVal - minVal;
 
                                     if (pembagi === 0) {
-                                        nilaiUtility =
-                                            1;
+                                        nilaiUtility = 1;
                                     } else {
-                                        nilaiUtility = (nilaiini - cmin[
-                                            key2]) / pembagi;
+                                        nilaiUtility = (nilaiini -
+                                            minVal) / pembagi;
                                     }
+
                                     var nilaiUtilityFormatted =
                                         nilaiUtility.toFixed(4);
 
-                                    body_bobot_utility +=
-                                        `<td>
-                                            <div class="d-flex flex-column gap-2">
-                                                <div><small>(${nilaiini} - ${cmin[key2]}) / (${cmax[key2]} - ${cmin[key2]})</small></div>
-                                                <div><strong>${nilaiUtilityFormatted}</strong></div>
-                                            </div>
-                                        </td>`;
+                                    body_bobot_utility += `
+                                    <td>
+                                        <div class="d-flex flex-column gap-2">
+                                            <div><small class="text-muted">(${nilaiini} - ${minVal}) / (${maxVal} - ${minVal})</small></div>
+                                            <div><strong>${nilaiUtilityFormatted}</strong></div>
+                                        </div>
+                                    </td>`;
                                 });
 
                                 body_bobot_utility += '</tr>';
@@ -550,7 +583,7 @@
 
             $('#nilai-akhir-nav').on('click', function() {
                 $('#nilai-akhir').html(loaderContent);
-                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
@@ -558,6 +591,7 @@
                         url: url_nilaiasli,
                         type: 'GET',
                         dataType: 'json',
+                        data: {},
                         success: function(response) {
                             $('#loader').remove();
 
@@ -584,106 +618,164 @@
                                         `<th>${item}</th>`);
                                 }
                             });
-                            $('#header_nilai_akhir').append(
-                                `<th>Nilai Akhir</th>`);
-                            cmin = [];
-                            cmax = [];
+                            $('#header_nilai_akhir').append(`<th>Nilai Akhir</th>`);
+
+                            var cmin = {};
+                            var cmax = {};
+
                             $.each(response.alterantives, function(key, item) {
-                                $.each(item.alterantive_criterias, function(
-                                    key2, item2) {
-                                    var rawValue = parseFloat(item2
-                                        .value);
-                                    var nilaiSkala = 0;
-                                    if (rawValue >= 60) {
-                                        nilaiSkala = 1;
-                                    } else if (rawValue >= 50 &&
-                                        rawValue <= 59) {
-                                        nilaiSkala = 0.8;
-                                    } else if (rawValue >= 30 &&
-                                        rawValue <= 49) {
-                                        nilaiSkala = 0.6;
-                                    } else if (rawValue >= 10 &&
-                                        rawValue <= 29) {
-                                        nilaiSkala = 0.4;
-                                    } else if (rawValue <= 9) {
-                                        nilaiSkala = 0.2;
+                                $.each(response.headers, function(indexHeader,
+                                    itemHeader) {
+                                    if (indexHeader === 0)
+                                        return;
+
+                                    let kriteriaData = item
+                                        .alterantive_criterias ? item
+                                        .alterantive_criterias[
+                                            indexHeader - 1] : null;
+                                    let nilaiSkala =
+                                        0.2;
+
+                                    if (kriteriaData && kriteriaData
+                                        .value !== undefined &&
+                                        kriteriaData.value !== null) {
+                                        var rawValue = parseFloat(
+                                            kriteriaData.value);
+                                        if (rawValue >= 60) nilaiSkala =
+                                            1;
+                                        else if (rawValue >= 50 &&
+                                            rawValue <= 59) nilaiSkala =
+                                            0.8;
+                                        else if (rawValue >= 30 &&
+                                            rawValue <= 49) nilaiSkala =
+                                            0.6;
+                                        else if (rawValue >= 10 &&
+                                            rawValue <= 29) nilaiSkala =
+                                            0.4;
                                     }
-                                    if (cmin[key2] === undefined) {
-                                        cmin[key2] = nilaiSkala;
-                                        cmax[key2] = nilaiSkala;
+
+                                    let currentKey = 'kriteria_' +
+                                        indexHeader;
+
+                                    if (cmin[currentKey] ===
+                                        undefined) {
+                                        cmin[currentKey] = nilaiSkala;
+                                        cmax[currentKey] = nilaiSkala;
                                     } else {
-                                        if (nilaiSkala < cmin[key2])
-                                            cmin[key2] = nilaiSkala;
-                                        if (nilaiSkala > cmax[key2])
-                                            cmax[key2] = nilaiSkala;
+                                        if (nilaiSkala < cmin[
+                                                currentKey]) cmin[
+                                            currentKey] = nilaiSkala;
+                                        if (nilaiSkala > cmax[
+                                                currentKey]) cmax[
+                                            currentKey] = nilaiSkala;
                                     }
                                 });
                             });
-                            var body_nilai_akhir = "";
-                            var ArrayNilai = [];
-                            var TotalNilai = 0;
-                            $.each(response.alterantives, function(key, item) {
-                                body_nilai_akhir +=
-                                    `<tr><td>${item.name}</td>`;
-                                ArrayNilai = [];
-                                TotalNilai = 0;
-                                $.each(item.alterantive_criterias, function(
-                                    key2, item2) {
-                                    var rawValue = parseFloat(item2
-                                        .value);
-                                    var nilaiini = 0;
 
-                                    if (rawValue >= 60) {
-                                        nilaiini = 1;
-                                    } else if (rawValue >= 50 &&
-                                        rawValue <= 59) {
-                                        nilaiini = 0.8;
-                                    } else if (rawValue >= 30 &&
-                                        rawValue <= 49) {
-                                        nilaiini = 0.6;
-                                    } else if (rawValue >= 10 &&
-                                        rawValue <= 29) {
-                                        nilaiini = 0.4;
-                                    } else if (rawValue <= 9) {
-                                        nilaiini = 0.2;
+                            var body_nilai_akhir = "";
+
+                            $.each(response.alterantives, function(key, item) {
+                                body_nilai_akhir += `<tr><td>${item.name}</td>`;
+
+                                var ArrayStringRumus = [];
+                                var TotalNilaiAkhir = 0;
+
+                                $.each(response.headers, function(indexHeader,
+                                    itemHeader) {
+                                    if (indexHeader === 0)
+                                        return;
+
+                                    let kriteriaData = item
+                                        .alterantive_criterias ? item
+                                        .alterantive_criterias[
+                                            indexHeader - 1] : null;
+                                    let nilaiini =
+                                        0.2;
+                                    let normalisasiBobot = 0;
+
+                                    if (kriteriaData && kriteriaData
+                                        .value !== undefined &&
+                                        kriteriaData.value !== null) {
+                                        var rawValue = parseFloat(
+                                            kriteriaData.value);
+                                        if (rawValue >= 60) nilaiini =
+                                            1;
+                                        else if (rawValue >= 50 &&
+                                            rawValue <= 59) nilaiini =
+                                            0.8;
+                                        else if (rawValue >= 30 &&
+                                            rawValue <= 49) nilaiini =
+                                            0.6;
+                                        else if (rawValue >= 10 &&
+                                            rawValue <= 29) nilaiini =
+                                            0.4;
+
+                                        normalisasiBobot = kriteriaData
+                                            .normalisasi ? parseFloat(
+                                                kriteriaData.normalisasi
+                                            ) : 0;
+                                    } else {
+                                        if (response.alterantives[0] &&
+                                            response.alterantives[0]
+                                            .alterantive_criterias[
+                                                indexHeader - 1]) {
+                                            normalisasiBobot =
+                                                parseFloat(response
+                                                    .alterantives[0]
+                                                    .alterantive_criterias[
+                                                        indexHeader - 1]
+                                                    .normalisasi || 0);
+                                        }
                                     }
 
-                                    var nilaiUtility = 0;
-                                    var pembagi = cmax[key2] - cmin[
-                                        key2];
+                                    let currentKey = 'kriteria_' +
+                                        indexHeader;
+                                    let maxVal = cmax[currentKey] !==
+                                        undefined ? cmax[currentKey] :
+                                        0.2;
+                                    let minVal = cmin[currentKey] !==
+                                        undefined ? cmin[currentKey] :
+                                        0.2;
 
+                                    var nilaiUtility = 0;
+                                    var pembagi = maxVal - minVal;
                                     if (pembagi === 0) {
-                                        nilaiUtility =
-                                            1;
+                                        nilaiUtility = 1;
                                     } else {
-                                        nilaiUtility = (nilaiini - cmin[
-                                            key2]) / pembagi;
+                                        nilaiUtility = (nilaiini -
+                                            minVal) / pembagi;
                                     }
 
                                     var nilaiUtilityFormatted =
                                         nilaiUtility.toFixed(4);
+                                    var hasilPerkalianBobot =
+                                        nilaiUtility * normalisasiBobot;
 
-                                    body_nilai_akhir +=
-                                        `<td>
-                                            <div class="d-flex flex-column gap-2">
-                                                <div><small>(${nilaiUtilityFormatted} × ${item2.normalisasi})</small></div>
-                                                <div><strong>${nilaiUtilityFormatted * item2.normalisasi}</strong></div>
-                                            </div>
-                                        </td>`;
-                                    ArrayNilai[key2] =
-                                        nilaiUtilityFormatted;
-                                    TotalNilai += nilaiUtility;
-                                });
-                                var stringNilai = Object.values(ArrayNilai)
-                                    .join(' + ');
-
-                                body_nilai_akhir +=
-                                    `<td>
+                                    body_nilai_akhir += `
+                                    <td>
                                         <div class="d-flex flex-column gap-2">
-                                            <div><small>(${stringNilai})</small></div>
-                                            <div><strong>${TotalNilai.toFixed(4)}</strong></div>
+                                            <div><small class="text-muted">(${nilaiUtilityFormatted} × ${normalisasiBobot})</small></div>
+                                            <div><strong>${hasilPerkalianBobot.toFixed(4)}</strong></div>
                                         </div>
                                     </td>`;
+
+                                    ArrayStringRumus.push(
+                                        hasilPerkalianBobot.toFixed(
+                                            4));
+                                    TotalNilaiAkhir +=
+                                        hasilPerkalianBobot;
+                                });
+
+                                var stringNilaiBerjalan = ArrayStringRumus.join(
+                                    ' + ');
+                                body_nilai_akhir += `
+                                <td>
+                                    <div class="d-flex flex-column gap-2">
+                                        <div><small class="text-muted">(${stringNilaiBerjalan})</small></div>
+                                        <div class="text-primary"><strong>${TotalNilaiAkhir.toFixed(4)}</strong></div>
+                                    </div>
+                                </td>`;
+
                                 body_nilai_akhir += '</tr>';
                             });
 
@@ -698,7 +790,7 @@
 
             $('#rangking-nav').on('click', function() {
                 $('#rangking').html(loaderContent);
-                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
@@ -706,6 +798,7 @@
                         url: url_nilaiasli,
                         type: 'GET',
                         dataType: 'json',
+                        data: {},
                         success: function(response) {
                             $('#loader').remove();
 
@@ -726,38 +819,54 @@
 
                             $('#rangking').html(table_rangking);
 
-                            cmin = [];
-                            cmax = [];
-                            $.each(response.alterantives, function(key, item) {
-                                $.each(item.alterantive_criterias, function(
-                                    key2, item2) {
-                                    var rawValue = parseFloat(item2
-                                        .value);
-                                    var nilaiSkala = 0;
+                            var cmin = {};
+                            var cmax = {};
 
-                                    if (rawValue >= 60) {
-                                        nilaiSkala = 1;
-                                    } else if (rawValue >= 50 &&
-                                        rawValue <= 59) {
-                                        nilaiSkala = 0.8;
-                                    } else if (rawValue >= 30 &&
-                                        rawValue <= 49) {
-                                        nilaiSkala = 0.6;
-                                    } else if (rawValue >= 10 &&
-                                        rawValue <= 29) {
-                                        nilaiSkala = 0.4;
-                                    } else if (rawValue <= 9) {
-                                        nilaiSkala = 0.2;
+                            $.each(response.alterantives, function(key, item) {
+                                $.each(response.headers, function(indexHeader,
+                                    itemHeader) {
+                                    if (indexHeader === 0)
+                                        return;
+
+                                    let kriteriaData = item
+                                        .alterantive_criterias ? item
+                                        .alterantive_criterias[
+                                            indexHeader - 1] : null;
+                                    let nilaiSkala =
+                                        0.2;
+
+                                    if (kriteriaData && kriteriaData
+                                        .value !== undefined &&
+                                        kriteriaData.value !== null) {
+                                        var rawValue = parseFloat(
+                                            kriteriaData.value);
+                                        if (rawValue >= 60) nilaiSkala =
+                                            1;
+                                        else if (rawValue >= 50 &&
+                                            rawValue <= 59) nilaiSkala =
+                                            0.8;
+                                        else if (rawValue >= 30 &&
+                                            rawValue <= 49) nilaiSkala =
+                                            0.6;
+                                        else if (rawValue >= 10 &&
+                                            rawValue <= 29) nilaiSkala =
+                                            0.4;
                                     }
 
-                                    if (cmin[key2] === undefined) {
-                                        cmin[key2] = nilaiSkala;
-                                        cmax[key2] = nilaiSkala;
+                                    let currentKey = 'kriteria_' +
+                                        indexHeader;
+
+                                    if (cmin[currentKey] ===
+                                        undefined) {
+                                        cmin[currentKey] = nilaiSkala;
+                                        cmax[currentKey] = nilaiSkala;
                                     } else {
-                                        if (nilaiSkala < cmin[key2])
-                                            cmin[key2] = nilaiSkala;
-                                        if (nilaiSkala > cmax[key2])
-                                            cmax[key2] = nilaiSkala;
+                                        if (nilaiSkala < cmin[
+                                                currentKey]) cmin[
+                                            currentKey] = nilaiSkala;
+                                        if (nilaiSkala > cmax[
+                                                currentKey]) cmax[
+                                            currentKey] = nilaiSkala;
                                     }
                                 });
                             });
@@ -765,77 +874,115 @@
                             var listAlternatifSelesai = [];
 
                             $.each(response.alterantives, function(key, item) {
-                                var ArrayNilai = [];
-                                var TotalNilai = 0;
+                                var ArrayStringRumus = [];
+                                var TotalNilaiAkhir = 0;
 
-                                $.each(item.alterantive_criterias, function(
-                                    key2, item2) {
-                                    var rawValue = parseFloat(item2
-                                        .value);
-                                    var nilaiini = 0;
+                                $.each(response.headers, function(indexHeader,
+                                    itemHeader) {
+                                    if (indexHeader === 0)
+                                        return;
 
-                                    if (rawValue >= 60) {
-                                        nilaiini = 1;
-                                    } else if (rawValue >= 50 &&
-                                        rawValue <= 59) {
-                                        nilaiini = 0.8;
-                                    } else if (rawValue >= 30 &&
-                                        rawValue <= 49) {
-                                        nilaiini = 0.6;
-                                    } else if (rawValue >= 10 &&
-                                        rawValue <= 29) {
-                                        nilaiini = 0.4;
-                                    } else if (rawValue <= 9) {
-                                        nilaiini = 0.2;
+                                    let kriteriaData = item
+                                        .alterantive_criterias ? item
+                                        .alterantive_criterias[
+                                            indexHeader - 1] : null;
+                                    let nilaiini =
+                                        0.2;
+                                    let normalisasiBobot = 0;
+
+                                    if (kriteriaData && kriteriaData
+                                        .value !== undefined &&
+                                        kriteriaData.value !== null) {
+                                        var rawValue = parseFloat(
+                                            kriteriaData.value);
+                                        if (rawValue >= 60) nilaiini =
+                                            1;
+                                        else if (rawValue >= 50 &&
+                                            rawValue <= 59) nilaiini =
+                                            0.8;
+                                        else if (rawValue >= 30 &&
+                                            rawValue <= 49) nilaiini =
+                                            0.6;
+                                        else if (rawValue >= 10 &&
+                                            rawValue <= 29) nilaiini =
+                                            0.4;
+
+                                        normalisasiBobot = kriteriaData
+                                            .normalisasi ? parseFloat(
+                                                kriteriaData.normalisasi
+                                            ) : 0;
+                                    } else {
+                                        if (response.alterantives[0] &&
+                                            response.alterantives[0]
+                                            .alterantive_criterias[
+                                                indexHeader - 1]) {
+                                            normalisasiBobot =
+                                                parseFloat(response
+                                                    .alterantives[0]
+                                                    .alterantive_criterias[
+                                                        indexHeader - 1]
+                                                    .normalisasi || 0);
+                                        }
                                     }
 
+                                    let currentKey = 'kriteria_' +
+                                        indexHeader;
+                                    let maxVal = cmax[currentKey] !==
+                                        undefined ? cmax[currentKey] :
+                                        0.2;
+                                    let minVal = cmin[currentKey] !==
+                                        undefined ? cmin[currentKey] :
+                                        0.2;
+
                                     var nilaiUtility = 0;
-                                    var pembagi = cmax[key2] - cmin[
-                                        key2];
+                                    var pembagi = maxVal - minVal;
 
                                     if (pembagi === 0) {
                                         nilaiUtility = 1;
                                     } else {
-                                        nilaiUtility = (nilaiini - cmin[
-                                            key2]) / pembagi;
+                                        nilaiUtility = (nilaiini -
+                                            minVal) / pembagi;
                                     }
 
-                                    var nilaiUtilityFormatted =
-                                        nilaiUtility.toFixed(4);
-                                    ArrayNilai[key2] =
-                                        nilaiUtilityFormatted;
-                                    TotalNilai += nilaiUtility;
+                                    var hasilPerkalianBobot =
+                                        nilaiUtility * normalisasiBobot;
+
+                                    ArrayStringRumus.push(
+                                        hasilPerkalianBobot.toFixed(
+                                            4));
+                                    TotalNilaiAkhir +=
+                                        hasilPerkalianBobot;
                                 });
 
-                                var stringNilai = Object.values(ArrayNilai)
-                                    .join(' + ');
+                                var stringNilai = ArrayStringRumus.join(' + ');
 
                                 listAlternatifSelesai.push({
                                     name: item.name,
-                                    total: TotalNilai,
+                                    total: TotalNilaiAkhir,
                                     prosesString: stringNilai
                                 });
                             });
 
                             listAlternatifSelesai.sort(function(a, b) {
                                 var selisihTotal = b.total - a.total;
+
                                 if (selisihTotal !== 0) {
                                     return selisihTotal;
                                 }
-
                                 return a.name.localeCompare(b.name);
                             });
 
                             var body_ranking = "";
 
                             $.each(listAlternatifSelesai, function(index, alternatif) {
-                                var rankSekarang = index +
-                                    1;
+                                var rankSekarang = index + 1;
 
                                 body_ranking += `
                                     <tr>
                                         <td class="text-center font-weight-bold" style="width: 80px;">
-                                            ${rankSekarang}
+                                            <span class="badge ${rankSekarang === 1 ? 'badge-success' : 'badge-secondary'}" style="font-size: 14px;">
+                                                ${rankSekarang}
+                                            </span>
                                         </td>
                                         <td><strong>${alternatif.name}</strong></td>
                                         <td>
