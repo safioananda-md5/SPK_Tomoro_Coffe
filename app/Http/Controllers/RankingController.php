@@ -221,6 +221,7 @@ class RankingController extends Controller
             }
             $Alternatives[] = [
                 'name' => $alternative->name,
+                'category' => $alternative->category,
                 'alterantive_criterias' => $alterantive_criterias,
             ];
         }

@@ -35,10 +35,10 @@
                                             <div class="card-body">
                                                 <div class="d-sm-flex justify-content-between align-items-start">
                                                     <div>
-                                                        <h4 class="card-title card-title-dash">10 Menu Terbaru
+                                                        <h4 class="card-title card-title-dash">Ranking Menu
                                                         </h4>
-                                                        <p class="card-subtitle card-subtitle-dash">Daftar menu yang baru
-                                                            dimasukkan ke dalam sistem.</p>
+                                                        <p class="card-subtitle card-subtitle-dash">Daftar menu berdasarkan
+                                                            ranking.</p>
                                                     </div>
                                                 </div>
                                                 <div class="table-responsive  mt-1">
@@ -46,45 +46,17 @@
                                                         <thead>
                                                             <tr>
                                                                 <th class="text-center">
-                                                                    <h6>No.</h6>
+                                                                    <h6>Rank</h6>
                                                                 </th>
                                                                 <th>
                                                                     <h6>Nama Menu</h6>
                                                                 </th>
-                                                                <th class="text-center">
+                                                                <th>
                                                                     <h6>Kategori</h6>
                                                                 </th>
                                                             </tr>
                                                         </thead>
-                                                        <tbody>
-                                                            @if ($top10newalterantives)
-                                                                @php
-                                                                    $i = 1;
-                                                                @endphp
-                                                                @foreach ($top10newalterantives as $item)
-                                                                    @if ($i <= 10)
-                                                                        <tr>
-                                                                            <td class="text-center">
-                                                                                <h6>{{ $loop->iteration }}</h6>
-                                                                            </td>
-                                                                            <td>
-                                                                                <h6>{{ $item->name }}</h6>
-                                                                            </td>
-                                                                            <td class="text-center">
-                                                                                <h6>
-                                                                                    {{ $item->category == 1 ? 'Non-Coffe' : 'Coffe' }}
-                                                                                </h6>
-                                                                            </td>
-                                                                        </tr>
-                                                                        @php
-                                                                            $i++;
-                                                                        @endphp
-                                                                    @endif
-                                                                @endforeach
-                                                            @else
-                                                                <td colspan="3" class="text-center">Periode belum
-                                                                    ditentukan</td>
-                                                            @endif
+                                                        <tbody id="body-overview">
                                                         </tbody>
                                                     </table>
                                                 </div>
@@ -99,4 +71,196 @@
             </div>
         </div>
     </div>
+@endsection
+@section('scripts')
+    <script>
+        var category = 'all';
+        $(document).ready(function() {
+            let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
+            url_nilaiasli = url_nilaiasli.replace(':type', category);
+
+            $.ajax({
+                url: url_nilaiasli,
+                type: 'GET',
+                dataType: 'json',
+                data: {},
+                success: function(response) {
+                    var cmin = {};
+                    var cmax = {};
+
+                    $.each(response.alterantives, function(key, item) {
+                        $.each(response.headers, function(indexHeader,
+                            itemHeader) {
+                            if (indexHeader === 0)
+                                return;
+
+                            let kriteriaData = item
+                                .alterantive_criterias ? item
+                                .alterantive_criterias[
+                                    indexHeader - 1] : null;
+                            let nilaiSkala =
+                                0.2;
+
+                            if (kriteriaData && kriteriaData
+                                .value !== undefined &&
+                                kriteriaData.value !== null) {
+                                var rawValue = parseFloat(
+                                    kriteriaData.value);
+                                if (rawValue >= 60) nilaiSkala =
+                                    1;
+                                else if (rawValue >= 50 &&
+                                    rawValue <= 59) nilaiSkala =
+                                    0.8;
+                                else if (rawValue >= 30 &&
+                                    rawValue <= 49) nilaiSkala =
+                                    0.6;
+                                else if (rawValue >= 10 &&
+                                    rawValue <= 29) nilaiSkala =
+                                    0.4;
+                            }
+
+                            let currentKey = 'kriteria_' +
+                                indexHeader;
+
+                            if (cmin[currentKey] ===
+                                undefined) {
+                                cmin[currentKey] = nilaiSkala;
+                                cmax[currentKey] = nilaiSkala;
+                            } else {
+                                if (nilaiSkala < cmin[
+                                        currentKey]) cmin[
+                                    currentKey] = nilaiSkala;
+                                if (nilaiSkala > cmax[
+                                        currentKey]) cmax[
+                                    currentKey] = nilaiSkala;
+                            }
+                        });
+                    });
+
+                    var listAlternatifSelesai = [];
+
+                    $.each(response.alterantives, function(key, item) {
+                        var ArrayStringRumus = [];
+                        var TotalNilaiAkhir = 0;
+
+                        $.each(response.headers, function(indexHeader,
+                            itemHeader) {
+                            if (indexHeader === 0)
+                                return;
+
+                            let kriteriaData = item
+                                .alterantive_criterias ? item
+                                .alterantive_criterias[
+                                    indexHeader - 1] : null;
+                            let nilaiini =
+                                0.2;
+                            let normalisasiBobot = 0;
+
+                            if (kriteriaData && kriteriaData
+                                .value !== undefined &&
+                                kriteriaData.value !== null) {
+                                var rawValue = parseFloat(
+                                    kriteriaData.value);
+                                if (rawValue >= 60) nilaiini =
+                                    1;
+                                else if (rawValue >= 50 &&
+                                    rawValue <= 59) nilaiini =
+                                    0.8;
+                                else if (rawValue >= 30 &&
+                                    rawValue <= 49) nilaiini =
+                                    0.6;
+                                else if (rawValue >= 10 &&
+                                    rawValue <= 29) nilaiini =
+                                    0.4;
+
+                                normalisasiBobot = kriteriaData
+                                    .normalisasi ? parseFloat(
+                                        kriteriaData.normalisasi
+                                    ) : 0;
+                            } else {
+                                if (response.alterantives[0] &&
+                                    response.alterantives[0]
+                                    .alterantive_criterias[
+                                        indexHeader - 1]) {
+                                    normalisasiBobot =
+                                        parseFloat(response
+                                            .alterantives[0]
+                                            .alterantive_criterias[
+                                                indexHeader - 1]
+                                            .normalisasi || 0);
+                                }
+                            }
+
+                            let currentKey = 'kriteria_' +
+                                indexHeader;
+                            let maxVal = cmax[currentKey] !==
+                                undefined ? cmax[currentKey] :
+                                0.2;
+                            let minVal = cmin[currentKey] !==
+                                undefined ? cmin[currentKey] :
+                                0.2;
+
+                            var nilaiUtility = 0;
+                            var pembagi = maxVal - minVal;
+
+                            if (pembagi === 0) {
+                                nilaiUtility = 1;
+                            } else {
+                                nilaiUtility = (nilaiini -
+                                    minVal) / pembagi;
+                            }
+
+                            var hasilPerkalianBobot =
+                                nilaiUtility * normalisasiBobot;
+
+                            ArrayStringRumus.push(
+                                hasilPerkalianBobot.toFixed(
+                                    4));
+                            TotalNilaiAkhir +=
+                                hasilPerkalianBobot;
+                        });
+
+                        var stringNilai = ArrayStringRumus.join(' + ');
+
+                        listAlternatifSelesai.push({
+                            name: item.name,
+                            category: item.category,
+                            total: TotalNilaiAkhir,
+                            prosesString: stringNilai
+                        });
+                    });
+
+                    listAlternatifSelesai.sort(function(a, b) {
+                        var selisihTotal = b.total - a.total;
+
+                        if (selisihTotal !== 0) {
+                            return selisihTotal;
+                        }
+                        return a.name.localeCompare(b.name);
+                    });
+
+                    var body_ranking = "";
+
+                    $.each(listAlternatifSelesai, function(index, alternatif) {
+                        var rankSekarang = index + 1;
+
+                        body_ranking += `
+                            <tr>
+                                <tr>
+                                    <td class="py-3 px-4 text-dark fw-bold text-center">${rankSekarang}</td>
+                                    <td class="py-3 px-4 text-dark">${alternatif.name}</td>
+                                    <td class="py-3 px-4 mono-font fw-bold text-indigo-custom bg-indigo-light">${alternatif.category == 0 ? 'Coffe' : 'Non-Coffe'}</td>
+                                </tr>
+                            </tr>
+                        `;
+                    });
+
+                    $('#body-overview').html(body_ranking);
+                },
+                error: function(xhr, status, error) {
+                    console.error('Terjadi kesalahan:', error);
+                }
+            });
+        });
+    </script>
 @endsection
