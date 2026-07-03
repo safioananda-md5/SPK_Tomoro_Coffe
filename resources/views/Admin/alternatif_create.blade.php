@@ -87,7 +87,7 @@
                         @endforeach
                         <div class="text-end">
                             <a href="{{ route('admin.alternatif.index') }}" class="btn btn-outline-danger"
-                                id="cancel">Batal</a>
+                                id="cancel">Kembali</a>
                             <button type="submit" class="btn btn-primary me-2" id="SubmitForm">
                                 @if ($edit)
                                     Edit

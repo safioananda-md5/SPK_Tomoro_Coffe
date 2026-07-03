@@ -9,6 +9,7 @@
             <li class="breadcrumb-item active" aria-current="page">Alternatif</li>
         </ol>
     </nav>
+    <a href="{{ route('admin.dashboard') }}" class="btn btn-dark">&leftarrow; <span class="ms-2">Kembali</span></a>
     <div class="row mt-3">
         <div class="col-sm-12 grid-margin stretch-card">
             <div class="card">

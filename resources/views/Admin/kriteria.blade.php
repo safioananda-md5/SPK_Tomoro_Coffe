@@ -9,12 +9,18 @@
             <li class="breadcrumb-item active" aria-current="page">Kriteria</li>
         </ol>
     </nav>
+    <a href="{{ route('admin.dashboard') }}" class="btn btn-dark">&leftarrow; <span class="ms-2">Kembali</span></a>
     <div class="row mt-3">
         <div class="col-sm-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">
-                        <h5 class="card-title m-0 p-0" style="fw-bold">Data Kriteria</h5>
+                        <div class="d-flex align-items-center">
+                            <h5 class="card-title m-0 p-0" style="fw-bold">Data Kriteria</h5>
+                            @if ($totalwieght == 100)
+                                <span class="badge bg-success rounded-pill ms-3">Total Bobot Sudah 100%</span>
+                            @endif
+                        </div>
                         <div>
                             {{-- <!-- Button trigger modal -->
                             <button type="button" class="btn btn-info" data-bs-toggle="modal" data-bs-target="#bobot">

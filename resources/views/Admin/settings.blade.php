@@ -41,7 +41,8 @@
                             <textarea class="form-control" name="second_desc" id="second_desc" rows="3">{{ $Setting->second_desc ?? '' }}</textarea>
                         </div>
                         <div class="text-end">
-                            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-danger" id="cancel">Batal</a>
+                            <a href="{{ route('admin.dashboard') }}" class="btn btn-outline-danger"
+                                id="cancel">Kembali</a>
                             <button type="submit" class="btn btn-primary me-2">Update</button>
                         </div>
                     </form>

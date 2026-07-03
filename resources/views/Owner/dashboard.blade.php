@@ -337,11 +337,11 @@
                     if (category == 0) {
                         let urlcoffe = "{{ route('perhitungan', ':type') }}";
                         urlcoffe = urlcoffe.replace(':type', category);
-                        window.open(urlcoffe, '_blank');
+                        window.location.href = urlcoffe;
                     } else {
                         let urlnoncoffe = "{{ route('perhitungan', ':type') }}";
                         urlnoncoffe = urlnoncoffe.replace(':type', category);
-                        window.open(urlnoncoffe, '_blank');
+                        window.location.href = urlnoncoffe;
                     }
                 } else {
                     location.reload();

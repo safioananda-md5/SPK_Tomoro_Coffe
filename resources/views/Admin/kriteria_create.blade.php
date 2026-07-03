@@ -67,7 +67,7 @@
                     </div>
                     <div class="text-end">
                         <a href="{{ route('admin.kriteria.index') }}" class="btn btn-outline-danger"
-                            id="cancel">Batal</a>
+                            id="cancel">Kembali</a>
                         @if ($edit)
                             <button type="button" id="SubmitForm" class="btn btn-primary me-2">Edit</button>
                         @else

@@ -39,7 +39,7 @@
                         </div>
                         <div class="text-end">
                             <a href="{{ route('admin.alternatif.index') }}" class="btn btn-outline-danger"
-                                id="cancel">Batal</a>
+                                id="cancel">Kembali</a>
                             <button type="button" id="SubmitForm" class="btn btn-primary me-2" disabled="true">Pilih file
                                 dahulu</button>
                         </div>

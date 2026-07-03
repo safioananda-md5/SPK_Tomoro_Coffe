@@ -10,6 +10,8 @@
     <div class="card card-body mx-3 mx-md-4" style="margin-top: 120px; margin-bottom: 120px;">
         <section class="pt-3 pb-4" id="technologies">
             <div class="container">
+                <a href="{{ route('home') }}" class="btn btn-dark">&leftarrow; <span class="ms-2">Kembali</span></a>
+
                 <div class="row mb-5">
                     <div class="col-lg-7 mx-auto text-center">
                         <h2 class="mb-3">Menu @if ($type == 0)
@@ -20,8 +22,13 @@
                         </h2>
                     </div>
                 </div>
-                <div class="row" id="body-overview">
+                <div class="row" id="body-overview"></div>
 
+                <div class="text-center mb-3 mb-5" id="container-selengkapnya" style="display: none;">
+                    <button type="button" id="btn-toggle-view" class="btn btn-primary rounded-pill px-4"
+                        data-status="less">
+                        Lihat Selengkapnya
+                    </button>
                 </div>
                 <h4>Perhitungan SPK</h4>
                 <div class="row border-top">
@@ -73,8 +80,8 @@
                         <div class="tab-pane fade show active p-4" id="nilai-asli" role="tabpanel"
                             aria-labelledby="nilai-asli-tab" tabindex="0">
                         </div>
-                        <div class="tab-pane fade p-4" id="nilai-skalar" role="tabpanel" aria-labelledby="nilai-skalar-tab"
-                            tabindex="0">
+                        <div class="tab-pane fade p-4" id="nilai-skalar" role="tabpanel"
+                            aria-labelledby="nilai-skalar-tab" tabindex="0">
                         </div>
                         <div class="tab-pane fade p-4" id="nilai-utility" role="tabpanel"
                             aria-labelledby="nilai-utility-tab" tabindex="0">
@@ -117,6 +124,27 @@
                 </div>
             </div>
         `;
+
+        $(document).on('click', '#btn-toggle-view', function(e) {
+            e.preventDefault();
+
+            let status = $(this).data('status'); // Cek status tombol saat ini
+
+            if (status === 'less') {
+                // PROSES MENAMPILKAN SEMUA
+                $('#body-overview .hidden-item').removeClass('d-none');
+                $(this).text('Lihat Lebih Sedikit').data('status', 'more');
+            } else {
+                // PROSES MENSEMBUNYIKAN KEMBALI
+                $('#body-overview .hidden-item').addClass('d-none');
+                $(this).text('Lihat Selengkapnya').data('status', 'less');
+
+                // Opsional: Scroll otomatis ke atas div biar user gak bingung setelah data menciut
+                $('html, body').animate({
+                    scrollTop: $("#body-overview").offset().top - 100
+                }, 200);
+            }
+        });
 
         $(document).ready(function() {
             $('#nilai-asli-nav').on('click', function() {
@@ -1069,117 +1097,83 @@
                     var cmin = {};
                     var cmax = {};
 
+                    // 1. HITUNG MIN & MAX UNTUK SETIAP KRITERIA
                     $.each(response.alterantives, function(key, item) {
-                        $.each(response.headers, function(indexHeader,
-                            itemHeader) {
-                            if (indexHeader === 0)
-                                return;
+                        $.each(response.headers, function(indexHeader, itemHeader) {
+                            if (indexHeader === 0) return;
 
-                            let kriteriaData = item
-                                .alterantive_criterias ? item
-                                .alterantive_criterias[
-                                    indexHeader - 1] : null;
-                            let nilaiSkala =
-                                0.2;
+                            let kriteriaData = item.alterantive_criterias ? item
+                                .alterantive_criterias[indexHeader - 1] : null;
+                            let nilaiSkala = 0.2;
 
-                            if (kriteriaData && kriteriaData
-                                .value !== undefined &&
+                            if (kriteriaData && kriteriaData.value !== undefined &&
                                 kriteriaData.value !== null) {
-                                var rawValue = parseFloat(
-                                    kriteriaData.value);
-                                if (rawValue >= 60) nilaiSkala =
-                                    1;
-                                else if (rawValue >= 50 &&
-                                    rawValue <= 59) nilaiSkala =
+                                var rawValue = parseFloat(kriteriaData.value);
+                                if (rawValue >= 60) nilaiSkala = 1;
+                                else if (rawValue >= 50 && rawValue <= 59) nilaiSkala =
                                     0.8;
-                                else if (rawValue >= 30 &&
-                                    rawValue <= 49) nilaiSkala =
+                                else if (rawValue >= 30 && rawValue <= 49) nilaiSkala =
                                     0.6;
-                                else if (rawValue >= 10 &&
-                                    rawValue <= 29) nilaiSkala =
+                                else if (rawValue >= 10 && rawValue <= 29) nilaiSkala =
                                     0.4;
                             }
 
-                            let currentKey = 'kriteria_' +
-                                indexHeader;
+                            let currentKey = 'kriteria_' + indexHeader;
 
-                            if (cmin[currentKey] ===
-                                undefined) {
+                            if (cmin[currentKey] === undefined) {
                                 cmin[currentKey] = nilaiSkala;
                                 cmax[currentKey] = nilaiSkala;
                             } else {
-                                if (nilaiSkala < cmin[
-                                        currentKey]) cmin[
-                                    currentKey] = nilaiSkala;
-                                if (nilaiSkala > cmax[
-                                        currentKey]) cmax[
-                                    currentKey] = nilaiSkala;
+                                if (nilaiSkala < cmin[currentKey]) cmin[currentKey] =
+                                    nilaiSkala;
+                                if (nilaiSkala > cmax[currentKey]) cmax[currentKey] =
+                                    nilaiSkala;
                             }
                         });
                     });
 
+                    // 2. HITUNG TOTAL NILAI AKHIR (UTILITY * BOBOT)
                     var listAlternatifSelesai = [];
 
                     $.each(response.alterantives, function(key, item) {
                         var ArrayStringRumus = [];
                         var TotalNilaiAkhir = 0;
 
-                        $.each(response.headers, function(indexHeader,
-                            itemHeader) {
-                            if (indexHeader === 0)
-                                return;
+                        $.each(response.headers, function(indexHeader, itemHeader) {
+                            if (indexHeader === 0) return;
 
-                            let kriteriaData = item
-                                .alterantive_criterias ? item
-                                .alterantive_criterias[
-                                    indexHeader - 1] : null;
-                            let nilaiini =
-                                0.2;
+                            let kriteriaData = item.alterantive_criterias ? item
+                                .alterantive_criterias[indexHeader - 1] : null;
+                            let nilaiini = 0.2;
                             let normalisasiBobot = 0;
 
-                            if (kriteriaData && kriteriaData
-                                .value !== undefined &&
+                            if (kriteriaData && kriteriaData.value !== undefined &&
                                 kriteriaData.value !== null) {
-                                var rawValue = parseFloat(
-                                    kriteriaData.value);
-                                if (rawValue >= 60) nilaiini =
-                                    1;
-                                else if (rawValue >= 50 &&
-                                    rawValue <= 59) nilaiini =
+                                var rawValue = parseFloat(kriteriaData.value);
+                                if (rawValue >= 60) nilaiini = 1;
+                                else if (rawValue >= 50 && rawValue <= 59) nilaiini =
                                     0.8;
-                                else if (rawValue >= 30 &&
-                                    rawValue <= 49) nilaiini =
+                                else if (rawValue >= 30 && rawValue <= 49) nilaiini =
                                     0.6;
-                                else if (rawValue >= 10 &&
-                                    rawValue <= 29) nilaiini =
+                                else if (rawValue >= 10 && rawValue <= 29) nilaiini =
                                     0.4;
 
-                                normalisasiBobot = kriteriaData
-                                    .normalisasi ? parseFloat(
-                                        kriteriaData.normalisasi
-                                    ) : 0;
+                                normalisasiBobot = kriteriaData.normalisasi ?
+                                    parseFloat(kriteriaData.normalisasi) : 0;
                             } else {
-                                if (response.alterantives[0] &&
-                                    response.alterantives[0]
-                                    .alterantive_criterias[
-                                        indexHeader - 1]) {
-                                    normalisasiBobot =
-                                        parseFloat(response
-                                            .alterantives[0]
-                                            .alterantive_criterias[
-                                                indexHeader - 1]
-                                            .normalisasi || 0);
+                                if (response.alterantives[0] && response.alterantives[0]
+                                    .alterantive_criterias[indexHeader - 1]) {
+                                    normalisasiBobot = parseFloat(response.alterantives[
+                                        0].alterantive_criterias[indexHeader -
+                                        1].normalisasi || 0);
                                 }
                             }
 
-                            let currentKey = 'kriteria_' +
-                                indexHeader;
-                            let maxVal = cmax[currentKey] !==
-                                undefined ? cmax[currentKey] :
-                                0.2;
-                            let minVal = cmin[currentKey] !==
-                                undefined ? cmin[currentKey] :
-                                0.2;
+                            let currentKey = 'kriteria_' + indexHeader;
+                            let maxVal = cmax[currentKey] !== undefined ? cmax[
+                                currentKey] : 0.2;
+                            let minVal = cmin[currentKey] !== undefined ? cmin[
+                                currentKey] : 0.2;
 
                             var nilaiUtility = 0;
                             var pembagi = maxVal - minVal;
@@ -1187,18 +1181,13 @@
                             if (pembagi === 0) {
                                 nilaiUtility = 1;
                             } else {
-                                nilaiUtility = (nilaiini -
-                                    minVal) / pembagi;
+                                nilaiUtility = (nilaiini - minVal) / pembagi;
                             }
 
-                            var hasilPerkalianBobot =
-                                nilaiUtility * normalisasiBobot;
+                            var hasilPerkalianBobot = nilaiUtility * normalisasiBobot;
 
-                            ArrayStringRumus.push(
-                                hasilPerkalianBobot.toFixed(
-                                    4));
-                            TotalNilaiAkhir +=
-                                hasilPerkalianBobot;
+                            ArrayStringRumus.push(hasilPerkalianBobot.toFixed(4));
+                            TotalNilaiAkhir += hasilPerkalianBobot;
                         });
 
                         var stringNilai = ArrayStringRumus.join(' + ');
@@ -1213,41 +1202,43 @@
                         });
                     });
 
+                    // 3. SORTING BERDASARKAN TOTAL NILAI TERTINGGI (RANKING)
                     listAlternatifSelesai.sort(function(a, b) {
                         var selisihTotal = b.total - a.total;
-
                         if (selisihTotal !== 0) {
                             return selisihTotal;
                         }
                         return a.name.localeCompare(b.name);
                     });
 
+                    // 4. RENDER KE HTML DENGAN LIMITASI SHOW MORE/LESS
                     var body_ranking = "";
                     let counting = 0;
+                    let limitAwal = 6; // Jumlah card yang tampil di awal sebelum diklik selengkapnya
+
                     $.each(listAlternatifSelesai, function(index, alternatif) {
                         if (alternatif.category == category) {
+                            counting++;
+
+                            // Data di atas limitAwal (7 ke atas) otomatis diberi class 'hidden-item d-none'
+                            let hiddenClass = (counting > limitAwal) ? 'hidden-item d-none' :
+                                '';
+
                             body_ranking += `
-                                <div class="col-md-4 col-lg-2 mb-5 d-flex selengkapnya"><a
-                                        class="card h-100 w-100 shadow-none border border-radius-lg text-center d-flex flex-column"
-                                        href="#" style="width: 200px; text-decoration: none; color: inherit;">
-                                        <div class="avatar rounded-circle bg-white shadow mx-auto mt-n4 mb-3"
-                                            style="min-height: 50px;">
-                                            <div class="d-flex align-items-center justify-content-center bg-secondary"
-                                                style="width: 50px; height: 50px; border-radius: 50%;">
-                                                <span class="text-white h4 mb-0">${++counting}</span>
+                                <div class="col-md-4 col-lg-2 mb-5 d-flex ${hiddenClass}">
+                                    <a class="card h-100 w-100 shadow-none border border-radius-lg text-center d-flex flex-column"
+                                    href="#" style="width: 200px; text-decoration: none; color: inherit;">
+                                        <div class="avatar rounded-circle bg-white shadow mx-auto mt-n4 mb-3" style="min-height: 50px;">
+                                            <div class="d-flex align-items-center justify-content-center bg-secondary" style="width: 50px; height: 50px; border-radius: 50%;">
+                                                <span class="text-white h4 mb-0">${counting}</span>
                                             </div>
                                         </div>
                                         <div class="flex-grow-1 d-flex flex-column">
-                                            <img class="w-100 px-2" alt="Image placeholder"
-                                                src="{{ asset('assets/material/img/coffee.jpg') }}"
-                                                style="border-radius: 15px !important; display: block;">
-
+                                            <img class="w-100 px-2" alt="Image placeholder" src="{{ asset('assets/material/img/coffee.jpg') }}" style="border-radius: 15px !important; display: block;">
                                             <h6 class="font-weight-bold mt-3">${alternatif.price}</h6>
                                             <h5 class="p-2 text-lg mb-0">${alternatif.name}</h5>
-
                                             <div class="mt-auto pb-3 d-flex flex-column">
-                                                <small class="text-muted font-weight-bold">Kombinasi
-                                                ${alternatif.komposisi}</small>
+                                                <small class="text-muted font-weight-bold">Kombinasi ${alternatif.komposisi}</small>
                                             </div>
                                         </div>
                                     </a>
@@ -1256,7 +1247,18 @@
                         }
                     });
 
+                    // Tampilkan hasil ke ID container
                     $('#body-overview').html(body_ranking);
+
+                    // Reset tombol ke kondisi teks awal setiap kali AJAX dipanggil / kategori berubah
+                    $('#btn-toggle-view').text('Lihat Selengkapnya').data('status', 'less');
+
+                    // Tampilkan atau sembunyikan tombol toggle berdasarkan jumlah data
+                    if (counting > limitAwal) {
+                        $('#container-selengkapnya').show();
+                    } else {
+                        $('#container-selengkapnya').hide();
+                    }
                 },
                 error: function(xhr, status, error) {
                     console.error('Terjadi kesalahan:', error);
