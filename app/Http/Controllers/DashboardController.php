@@ -60,7 +60,14 @@ class DashboardController extends Controller
             }
         }
 
-        return view('Owner.dashboard', compact(['alternativescoffe', 'alternativesnoncoffe', 'Setting', 'someempty', 'totalwieght']));
+        $periode = Periode::where('name', 'satu')->first();
+
+        $adaPeriode = 'tidak';
+        if ($periode) {
+            $adaPeriode = 'ada';
+        }
+
+        return view('Owner.dashboard', compact(['alternativescoffe', 'alternativesnoncoffe', 'Setting', 'someempty', 'totalwieght', 'adaPeriode']));
     }
 
     public function perhitungan($type)
@@ -70,6 +77,17 @@ class DashboardController extends Controller
 
     public function nilai_asli($type)
     {
+        $periodeAlternatives = Periode::where('name', 'satu')->value('alternatives');
+        $raw_alterantives = Alternative::with(['alternativecriteria.criteria'])
+            ->when($periodeAlternatives !== null, function ($query) use ($periodeAlternatives) {
+                return $query
+                    ->whereIn('id', $periodeAlternatives);
+            })
+            ->when($type !== 'all', function ($query) use ($type) {
+                return $query
+                    ->where('category', $type);
+            })
+            ->get();
         $raw_alterantives = Alternative::with(['alternativecriteria.criteria'])->where('category', $type)->get();
         $Alternatives = [];
         $headers = [];
@@ -100,6 +118,25 @@ class DashboardController extends Controller
             'message' => 'Berhasil!',
             'headers' => $headers,
             'alterantives' => $Alternatives,
+        ], 200);
+    }
+
+    public function periode(Request $request)
+    {
+        $AlterantifArray = Alternative::pluck('id')->toArray();
+        $periodeUpdate = Periode::updateOrCreate([
+            'name' => 'satu',
+        ], [
+            'alternatives' => $AlterantifArray,
+        ]);
+
+        if (!$periodeUpdate->wasRecentlyCreated && !$periodeUpdate->wasChanged()) {
+            $periodeUpdate->touch();
+        }
+
+        return response()->json([
+            'message' => 'Berhasil Membuat Periode!',
+            'update' => $periodeUpdate->updated_at->format('d/m/Y H:i'),
         ], 200);
     }
 

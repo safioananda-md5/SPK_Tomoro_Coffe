@@ -108,12 +108,8 @@
                     </div>
 
                     <h5 class="card-title fw-bold text-dark mb-2 text-pulse">
-                        Sistem Sedang Melakukan Perhitungan
+                        Sistem Sedang Menampilkan Perhitungan
                     </h5>
-
-                    <p class="text-muted small px-3 mb-0">
-                        Mohon tunggu sebentar, kalkulasi secara realtime oleh sistem.
-                    </p>
 
                 </div>
             </div>

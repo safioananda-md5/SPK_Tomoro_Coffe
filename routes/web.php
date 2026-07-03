@@ -23,6 +23,7 @@ Route::group([
     'middleware' => ['auth', 'role:admin', 'decrypt:id']
 ], function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/periode', [DashboardController::class, 'periode'])->name('periode_store');
 
     Route::group([
         'prefix' => '/kriteria',

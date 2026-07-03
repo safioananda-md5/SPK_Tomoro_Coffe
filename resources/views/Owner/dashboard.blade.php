@@ -15,13 +15,9 @@
                         <div class="d-flex align-items-center mb-4">
                             <p class="mb-0">{{ $Setting->main_desc_2 ?? '' }}</p>
                         </div>
-                        <div class="d-block d-md-flex">
-                            <a href="https://www.tomoro-coffee.id/home" target="_blank"
-                                class="btn w-100 w-md-auto text-white btn-warning">Beli Sekarang</a>
-                        </div>
                     </div>
-                    <svg class="position-absolute top-0" width="1231" height="1421" viewBox="0 0 1231 1421"
-                        fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <svg class="position-absolute top-0" width="1231" height="1421" viewBox="0 0 1231 1421" fill="none"
+                        xmlns="http://www.w3.org/2000/svg">
                         <g opacity="0.12786" filter="url(#filter0_f_31_15)">
                             <ellipse cx="811.5" cy="602.5" rx="675.5" ry="682.5"
                                 fill="url(#paint0_linear_31_15)" />
@@ -188,7 +184,7 @@
 
                     <!-- Button trigger modal -->
 
-                    @if (!$someempty && $totalwieght == 100)
+                    @if (!$someempty && $totalwieght == 100 && $adaPeriode == 'ada')
                         <div class="col-12 text-center">
                             <button type="button" class="btn btn-primary" data-bs-toggle="modal"
                                 data-bs-target="#staticBackdrop">
@@ -196,7 +192,11 @@
                             </button>
                         </div>
                     @else
-                        <p class="text-center">Terdapat kesalah sistem terkait kriteria data.</p>
+                        @if ($someempty || $totalwieght != 100)
+                            <p class="text-center">Terdapat kesalah sistem terkait kriteria data.</p>
+                        @else
+                            <p class="text-center">Perhitungan perangkingan belum di lakukan.</p>
+                        @endif
                     @endif
                 </div>
                 {{-- @if ($i > 10)
@@ -303,7 +303,7 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-outline-danger" data-bs-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="buat">Hitung SPK</button>
+                    <button type="button" class="btn btn-primary" id="buat">Lihat Perangkingan</button>
                 </div>
             </div>
         </div>

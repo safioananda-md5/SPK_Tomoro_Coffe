@@ -6,6 +6,7 @@ use App\Models\Alternative;
 use App\Models\AlternativeCriteria;
 use App\Models\Criteria;
 use App\Models\Periode;
+use Carbon\Carbon;
 use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -153,12 +154,30 @@ class RankingController extends Controller
 
     public function show()
     {
-        return view('Admin.show');
+        $periodeAlternatives = Periode::where('name', 'satu')->value('alternatives');
+        $latestPeriode = Periode::where('name', 'satu')->value('updated_at');
+        $formattedDate = $latestPeriode ? Carbon::parse($latestPeriode)->format('d/m/Y H:i') : '-';
+
+        $sudahrank = 'belum';
+        if ($periodeAlternatives !== null) {
+            $sudahrank = 'sudah';
+        }
+        return view('Admin.show', compact(['sudahrank', 'formattedDate']));
     }
 
     public function nilai_asli($type)
     {
-        $raw_alterantives = Alternative::with(['alternativecriteria.criteria'])->where('category', $type)->get();
+        $periodeAlternatives = Periode::where('name', 'satu')->value('alternatives');
+        $raw_alterantives = Alternative::with(['alternativecriteria.criteria'])
+            ->when($periodeAlternatives !== null, function ($query) use ($periodeAlternatives) {
+                return $query
+                    ->whereIn('id', $periodeAlternatives);
+            })
+            ->when($type !== 'all', function ($query) use ($type) {
+                return $query
+                    ->where('category', $type);
+            })
+            ->get();
         $Alternatives = [];
         $headers = [];
         $headers[] = 'Nama Alternatif';

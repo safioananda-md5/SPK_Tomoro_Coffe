@@ -1,6 +1,6 @@
 @extends('layouts.main')
 @push('title')
-    Perangkinagn
+    Perangkingan
 @endpush
 @section('content')
     <nav aria-label="breadcrumb">
@@ -15,10 +15,18 @@
                 <div class="card-header">
                     <div class="d-flex align-items-center justify-content-between">
                         <h5 class="card-title m-0 my-3 p-0" style="fw-bold">Perangkingan <span id="title_menu"></span></h5>
+                        <div class="d-flex align-items-start justify-content-between gap-3">
+                            <div class="d-flex flex-column">
+                                <button class="btn btn-warning d-none" id="update-spk">Update Perhitungan SPK</button>
+                                <small>Terakhir diperbarui: <span id="last-update">{{ $formattedDate }}</span></small>
+                            </div>
+                            <button class="btn btn-primary d-none" id="lihat-spk">Lihat Perhitungan</button>
+                            <button class="btn btn-primary d-none" id="lihat-overview">Lihat Overview</button>
+                        </div>
                     </div>
                 </div>
                 <div class="card-body">
-                    <div id="state-awal" class="card-body d-flex flex-column align-items-center justify-content-center"
+                    <div id="state-awal" class="d-flex flex-column align-items-center justify-content-center"
                         style="min-height: 450px; background: linear-gradient(180deg, #ffffff 0%, #f9fafb 100%);">
                         <div class="mb-4 d-flex align-items-center justify-content-center"
                             style="width: 90px; height: 90px; background-color: #fef3c7; border-radius: 50%; box-shadow: 0 0 20px rgba(251, 191, 36, 0.2);">
@@ -30,14 +38,15 @@
                             klik tombol
                             di bawah untuk memulai pembobotan & perangkingan metode SMART.
                         </p>
-                        <button type="button" class="btn btn-warning btn-lg" data-bs-toggle="modal"
-                            data-bs-target="#exampleModal">
+                        {{-- data-bs-toggle="modal" --}}
+                        {{-- data-bs-target="#exampleModal" --}}
+                        <button type="button" class="btn btn-warning btn-lg" id="btn-hitung-spk">
                             <div class="d-flex align-items-center">
                                 <i class="fa fa-play-circle me-3" style="font-size: 1.4rem;"></i>
                                 Mulai Hitung SPK SMART
                             </div>
                         </button>
-                        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
+                        {{-- <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel"
                             aria-hidden="true">
                             <div class="modal-dialog">
                                 <div class="modal-content">
@@ -68,6 +77,91 @@
                                             data-bs-dismiss="modal">Hitung
                                             SPK</button>
                                     </div>
+                                </div>
+                            </div>
+                        </div> --}}
+                    </div>
+                    <div class="d-none" id="overview">
+                        <div class="container" style="max-width: 1140px;">
+
+                            <div class="row g-4 mb-4">
+
+                                <div class="col-12 col-md-4">
+                                    <div
+                                        class="card card-custom bg-indigo-custom text-white p-4 shadow-lg position-relative overflow-hidden h-100">
+                                        <div class="position-relative" style="z-index: 2;">
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <span class="badge-rank bg-white text-indigo-custom">1</span>
+                                                <small class="text-white fw-semibold">Peringkat 1</small>
+                                            </div>
+                                            <h3 class="fw-bold mb-1" id="nama_produk_1">loading..</h3>
+                                            <p class="fs-3 fw-bold mono-font mb-0 text-white" id="skor_produk_1">loading..
+                                            </p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div
+                                        class="card card-custom bg-white p-4 shadow-sm position-relative overflow-hidden h-100">
+                                        <div class="position-relative" style="z-index: 2;">
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <span class="badge-rank bg-light text-dark">2</span>
+                                                <small class="text-muted fw-semibold">Peringkat 2</small>
+                                            </div>
+                                            <h3 class="fw-bold text-dark mb-1" id="nama_produk_2">loading..</h3>
+                                            <p class="fs-3 fw-bold mono-font mb-0 text-indigo-custom" id="skor_produk_2">
+                                                loading..</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-4">
+                                    <div
+                                        class="card card-custom bg-white p-4 shadow-sm position-relative overflow-hidden h-100">
+                                        <div class="position-relative" style="z-index: 2;">
+                                            <div class="d-flex align-items-center gap-2 mb-2">
+                                                <span class="badge-rank bg-light text-dark">3</span>
+                                                <small class="text-muted fw-semibold">Peringkat 3</small>
+                                            </div>
+                                            <h3 class="fw-bold text-dark mb-1" id="nama_produk_3">loading..</h3>
+                                            <p class="fs-3 fw-bold mono-font mb-0 text-indigo-custom" id="skor_produk_3">
+                                                loading..</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="card card-custom bg-white shadow-sm overflow-hidden mb-3">
+
+                                <div
+                                    class="card-header bg-white p-4 d-flex flex-column flex-sm-row justify-content-between align-items-start align-items-sm-center border-bottom-0 gap-2">
+                                    <h5 class="fw-bold text-dark mb-0">Tabel Hasil Perhitungan SMART</h5>
+                                    <span class="badge bg-primary rounded text-ligth fw-medium py-2 px-3">Diurutkan
+                                        berdasarkan
+                                        Nilai Akhir Tertinggi</span>
+                                </div>
+
+                                <div class="table-responsive">
+                                    <table class="table align-middle mb-0">
+                                        <thead class="table-light border-bottom text-uppercase fs-7 fw-bold text-secondary">
+                                            <tr>
+                                                <th class="py-3 px-4" style="width: 100px;">Rank</th>
+                                                <th class="py-3 px-4">Nama</th>
+                                                <th class="py-3 px-4 text-indigo-custom bg-indigo-light"
+                                                    style="width: 180px;">Nilai Akhir</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="fw-semibold text-secondary" id="body-overview">
+                                            <tr>
+                                                <td class="py-3 px-4 text-dark fw-bold">#loading..</td>
+                                                <td class="py-3 px-4 text-dark">loading..</td>
+                                                <td class="py-3 px-4 mono-font fw-bold text-indigo-custom bg-indigo-light">
+                                                    loading..</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
                                 </div>
                             </div>
                         </div>
@@ -162,13 +256,56 @@
         .text-pulse {
             animation: pulse-animation 1.8s infinite ease-in-out;
         }
+
+        /* Custom styling untuk kemiripan warna & shadow di gambar */
+        .bg-indigo-custom {
+            background-color: #4f46e5 !important;
+        }
+
+        .text-indigo-custom {
+            color: #4f46e5 !important;
+        }
+
+        .bg-indigo-light {
+            background-color: rgba(79, 70, 229, 0.05) !important;
+        }
+
+        .card-custom {
+            border-radius: 1rem;
+            border: 1px solid #f1f5f9;
+        }
+
+        .badge-rank {
+            width: 24px;
+            height: 24px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            font-weight: bold;
+            font-size: 12px;
+        }
+
+        .trophy-icon {
+            position: absolute;
+            right: 24px;
+            bottom: 24px;
+            width: 70px;
+            height: 70px;
+            opacity: 0.15;
+        }
+
+        .trophy-icon-active {
+            opacity: 0.35;
+        }
     </style>
 @endsection
 @section('scripts')
     <script>
-        var category = null;
+        var category = 'all';
         var cmin = [];
         var cmax = [];
+        var sudahrank = @json($sudahrank);
 
         const loaderContent = `
             <div class="card border-0 shadow-sm text-center py-5"
@@ -180,20 +317,172 @@
                         style="width: 3.5rem; height: 3.5rem; border-width: 0.25em;">
                         <span class="visually-hidden">Loading...</span>
                     </div>
-
                     <h5 class="card-title fw-bold text-dark mb-2 text-pulse">
                         Sistem Sedang Melakukan Perhitungan
                     </h5>
-
-                    <p class="text-muted small px-3 mb-0">
-                        Mohon tunggu sebentar, kalkulasi secara realtime oleh sistem.
-                    </p>
-
                 </div>
             </div>
         `;
 
         $(document).ready(function() {
+            if (sudahrank == 'sudah') {
+                $('#state-awal').addClass('d-none');
+                $('#overview').removeClass('d-none');
+                $('#update-spk').removeClass('d-none');
+                $('#lihat-spk').removeClass('d-none');
+
+                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
+                url_nilaiasli = url_nilaiasli.replace(':type', category);
+
+                $.ajax({
+                    url: url_nilaiasli,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        cmin = [];
+                        cmax = [];
+                        $.each(response.alterantives, function(key, item) {
+                            $.each(item.alterantive_criterias, function(
+                                key2, item2) {
+                                var rawValue = parseFloat(item2
+                                    .value);
+                                var nilaiSkala = 0;
+
+                                if (rawValue >= 60) {
+                                    nilaiSkala = 1;
+                                } else if (rawValue >= 50 &&
+                                    rawValue <= 59) {
+                                    nilaiSkala = 0.8;
+                                } else if (rawValue >= 30 &&
+                                    rawValue <= 49) {
+                                    nilaiSkala = 0.6;
+                                } else if (rawValue >= 10 &&
+                                    rawValue <= 29) {
+                                    nilaiSkala = 0.4;
+                                } else if (rawValue <= 9) {
+                                    nilaiSkala = 0.2;
+                                }
+
+                                if (cmin[key2] === undefined) {
+                                    cmin[key2] = nilaiSkala;
+                                    cmax[key2] = nilaiSkala;
+                                } else {
+                                    if (nilaiSkala < cmin[key2])
+                                        cmin[key2] = nilaiSkala;
+                                    if (nilaiSkala > cmax[key2])
+                                        cmax[key2] = nilaiSkala;
+                                }
+                            });
+                        });
+
+                        var listAlternatifSelesai = [];
+
+                        $.each(response.alterantives, function(key, item) {
+                            var ArrayNilai = [];
+                            var TotalNilai = 0;
+
+                            $.each(item.alterantive_criterias, function(
+                                key2, item2) {
+                                var rawValue = parseFloat(item2
+                                    .value);
+                                var nilaiini = 0;
+
+                                if (rawValue >= 60) {
+                                    nilaiini = 1;
+                                } else if (rawValue >= 50 &&
+                                    rawValue <= 59) {
+                                    nilaiini = 0.8;
+                                } else if (rawValue >= 30 &&
+                                    rawValue <= 49) {
+                                    nilaiini = 0.6;
+                                } else if (rawValue >= 10 &&
+                                    rawValue <= 29) {
+                                    nilaiini = 0.4;
+                                } else if (rawValue <= 9) {
+                                    nilaiini = 0.2;
+                                }
+
+                                var nilaiUtility = 0;
+                                var pembagi = cmax[key2] - cmin[
+                                    key2];
+
+                                if (pembagi === 0) {
+                                    nilaiUtility = 1;
+                                } else {
+                                    nilaiUtility = (nilaiini - cmin[
+                                        key2]) / pembagi;
+                                }
+
+                                var nilaiUtilityFormatted =
+                                    nilaiUtility.toFixed(4);
+                                ArrayNilai[key2] =
+                                    nilaiUtilityFormatted;
+                                TotalNilai += nilaiUtility;
+                            });
+
+                            var stringNilai = Object.values(ArrayNilai)
+                                .join(' + ');
+
+                            listAlternatifSelesai.push({
+                                name: item.name,
+                                total: TotalNilai,
+                                prosesString: stringNilai
+                            });
+                        });
+
+                        listAlternatifSelesai.sort(function(a, b) {
+                            var selisihTotal = b.total - a.total;
+
+                            if (selisihTotal !== 0) {
+                                return selisihTotal;
+                            }
+                            return a.name.localeCompare(b.name);
+                        });
+
+                        var body_ranking = "";
+
+                        $.each(listAlternatifSelesai, function(index, alternatif) {
+                            var rankSekarang = index +
+                                1;
+
+                            if (rankSekarang == 1) {
+                                $('#nama_produk_1').text(alternatif.name);
+                                $('#skor_produk_1').text('Nilai akhir: ' +
+                                    alternatif.total.toFixed(
+                                        2));
+                            }
+                            if (rankSekarang == 2) {
+                                $('#nama_produk_2').text(alternatif.name);
+                                $('#skor_produk_2').text('Nilai akhir: ' +
+                                    alternatif.total.toFixed(
+                                        2));
+                            }
+                            if (rankSekarang == 3) {
+                                $('#nama_produk_3').text(alternatif.name);
+                                $('#skor_produk_3').text('Nilai akhir: ' +
+                                    alternatif.total.toFixed(
+                                        2));
+                            }
+
+                            body_ranking += `
+                                <tr>
+                                    <tr>
+                                        <td class="py-3 px-4 text-dark fw-bold">#${rankSekarang}</td>
+                                        <td class="py-3 px-4 text-dark">${alternatif.name}</td>
+                                        <td class="py-3 px-4 mono-font fw-bold text-indigo-custom bg-indigo-light">${alternatif.total.toFixed(2)}</td>
+                                    </tr>
+                                </tr>
+                            `;
+                        });
+
+                        $('#body-overview').html(body_ranking);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Terjadi kesalahan:', error);
+                    }
+                });
+            }
+
             $('#nilai-asli-nav').on('click', function() {
                 $('#nilai-asli').html(loaderContent);
                 let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
@@ -942,18 +1231,238 @@
                 }, 1500);
             });
 
-
             $('#btn-hitung-spk').on('click', function() {
                 $('#state-awal').addClass('d-none');
                 $('#content').removeClass('d-none');
-                category = $('#kategori_menu').val();
-                if (category == 0) {
-                    $('#title_menu').text('Coffe');
-                } else {
-                    $('#title_menu').text('Non-Coffe');
+                // category = $('#kategori_menu').val();
+                // if (category == 0) {
+                //     $('#title_menu').text('Coffe');
+                // } else {
+                //     $('#title_menu').text('Non-Coffe');
+                // }
+
+                if (sudahrank == 'belum') {
+                    $.ajax({
+                        url: "{{ route('admin.periode_store') }}",
+                        type: 'POST',
+                        data: {
+                            _token: $('meta[name="csrf-token"]').attr('content'),
+                        },
+                        dataType: 'json',
+                        success: function(response) {
+                            category = 'all';
+                            $('#nilai-asli-nav').trigger('click');
+                            $('#last-update').text(response.update);
+                            $('#update-spk').removeClass('d-none');
+                            $('#lihat-overview').removeClass('d-none');
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('Error:', error);
+                        }
+                    });
                 }
+            });
+
+            $('#update-spk').on('click', function() {
+                $.ajax({
+                    url: "{{ route('admin.periode_store') }}",
+                    type: 'POST',
+                    data: {
+                        _token: $('meta[name="csrf-token"]').attr('content'),
+                    },
+                    dataType: 'json',
+                    success: function(response) {
+                        $('#last-update').text(response.update);
+                        $('#lihat-spk').trigger('click');
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Error:', error);
+                    }
+                });
+            });
+
+            $('#lihat-spk').on('click', function() {
+                $('#state-awal').addClass('d-none');
+                $('#overview').addClass('d-none');
+                $('#content').removeClass('d-none');
+                $(this).addClass('d-none');
+                $('#lihat-overview').removeClass('d-none');
                 $('#nilai-asli-nav').trigger('click');
             });
+
+            $('#lihat-overview').on('click', function() {
+                $('#state-awal').addClass('d-none');
+                $('#overview').removeClass('d-none');
+                $('#content').addClass('d-none');
+                $(this).addClass('d-none');
+                $('#lihat-spk').removeClass('d-none');
+
+                $('#nama_produk_1').text('loading...');
+                $('#skor_produk_1').text('loading...');
+                $('#nama_produk_2').text('loading...');
+                $('#skor_produk_2').text('loading...');
+                $('#nama_produk_3').text('loading...');
+                $('#skor_produk_3').text('loading...');
+                $('#body-overview').html(`
+                    <tr>
+                        <td class="py-3 px-4 text-dark fw-bold">#loading..</td>
+                        <td class="py-3 px-4 text-dark">loading..</td>
+                        <td class="py-3 px-4 mono-font fw-bold text-indigo-custom bg-indigo-light">
+                            loading..</td>
+                    </tr>
+                `);
+
+                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
+                url_nilaiasli = url_nilaiasli.replace(':type', category);
+
+                $.ajax({
+                    url: url_nilaiasli,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(response) {
+                        cmin = [];
+                        cmax = [];
+                        $.each(response.alterantives, function(key, item) {
+                            $.each(item.alterantive_criterias, function(
+                                key2, item2) {
+                                var rawValue = parseFloat(item2
+                                    .value);
+                                var nilaiSkala = 0;
+
+                                if (rawValue >= 60) {
+                                    nilaiSkala = 1;
+                                } else if (rawValue >= 50 &&
+                                    rawValue <= 59) {
+                                    nilaiSkala = 0.8;
+                                } else if (rawValue >= 30 &&
+                                    rawValue <= 49) {
+                                    nilaiSkala = 0.6;
+                                } else if (rawValue >= 10 &&
+                                    rawValue <= 29) {
+                                    nilaiSkala = 0.4;
+                                } else if (rawValue <= 9) {
+                                    nilaiSkala = 0.2;
+                                }
+
+                                if (cmin[key2] === undefined) {
+                                    cmin[key2] = nilaiSkala;
+                                    cmax[key2] = nilaiSkala;
+                                } else {
+                                    if (nilaiSkala < cmin[key2])
+                                        cmin[key2] = nilaiSkala;
+                                    if (nilaiSkala > cmax[key2])
+                                        cmax[key2] = nilaiSkala;
+                                }
+                            });
+                        });
+
+                        var listAlternatifSelesai = [];
+
+                        $.each(response.alterantives, function(key, item) {
+                            var ArrayNilai = [];
+                            var TotalNilai = 0;
+
+                            $.each(item.alterantive_criterias, function(
+                                key2, item2) {
+                                var rawValue = parseFloat(item2
+                                    .value);
+                                var nilaiini = 0;
+
+                                if (rawValue >= 60) {
+                                    nilaiini = 1;
+                                } else if (rawValue >= 50 &&
+                                    rawValue <= 59) {
+                                    nilaiini = 0.8;
+                                } else if (rawValue >= 30 &&
+                                    rawValue <= 49) {
+                                    nilaiini = 0.6;
+                                } else if (rawValue >= 10 &&
+                                    rawValue <= 29) {
+                                    nilaiini = 0.4;
+                                } else if (rawValue <= 9) {
+                                    nilaiini = 0.2;
+                                }
+
+                                var nilaiUtility = 0;
+                                var pembagi = cmax[key2] - cmin[
+                                    key2];
+
+                                if (pembagi === 0) {
+                                    nilaiUtility = 1;
+                                } else {
+                                    nilaiUtility = (nilaiini - cmin[
+                                        key2]) / pembagi;
+                                }
+
+                                var nilaiUtilityFormatted =
+                                    nilaiUtility.toFixed(4);
+                                ArrayNilai[key2] =
+                                    nilaiUtilityFormatted;
+                                TotalNilai += nilaiUtility;
+                            });
+
+                            var stringNilai = Object.values(ArrayNilai)
+                                .join(' + ');
+
+                            listAlternatifSelesai.push({
+                                name: item.name,
+                                total: TotalNilai,
+                                prosesString: stringNilai
+                            });
+                        });
+
+                        listAlternatifSelesai.sort(function(a, b) {
+                            var selisihTotal = b.total - a.total;
+
+                            if (selisihTotal !== 0) {
+                                return selisihTotal;
+                            }
+                            return a.name.localeCompare(b.name);
+                        });
+
+                        var body_ranking = "";
+
+                        $.each(listAlternatifSelesai, function(index, alternatif) {
+                            var rankSekarang = index +
+                                1;
+
+                            if (rankSekarang == 1) {
+                                $('#nama_produk_1').text(alternatif.name);
+                                $('#skor_produk_1').text('Nilai akhir: ' +
+                                    alternatif.total.toFixed(
+                                        2));
+                            }
+                            if (rankSekarang == 2) {
+                                $('#nama_produk_2').text(alternatif.name);
+                                $('#skor_produk_2').text('Nilai akhir: ' +
+                                    alternatif.total.toFixed(
+                                        2));
+                            }
+                            if (rankSekarang == 3) {
+                                $('#nama_produk_3').text(alternatif.name);
+                                $('#skor_produk_3').text('Nilai akhir: ' +
+                                    alternatif.total.toFixed(
+                                        2));
+                            }
+
+                            body_ranking += `
+                                <tr>
+                                    <tr>
+                                        <td class="py-3 px-4 text-dark fw-bold">#${rankSekarang}</td>
+                                        <td class="py-3 px-4 text-dark">${alternatif.name}</td>
+                                        <td class="py-3 px-4 mono-font fw-bold text-indigo-custom bg-indigo-light">${alternatif.total.toFixed(2)}</td>
+                                    </tr>
+                                </tr>
+                            `;
+                        });
+
+                        $('#body-overview').html(body_ranking);
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Terjadi kesalahan:', error);
+                    }
+                });
+            })
         });
     </script>
 @endsection
