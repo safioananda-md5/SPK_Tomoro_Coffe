@@ -118,7 +118,7 @@
         $(document).ready(function() {
             $('#nilai-asli-nav').on('click', function() {
                 $('#nilai-asli').html(loaderContent);
-                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
@@ -188,7 +188,7 @@
 
             $('#nilai-skalar-nav').on('click', function() {
                 $('#nilai-skalar').html(loaderContent);
-                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
@@ -296,7 +296,7 @@
 
             $('#nilai-utility-nav').on('click', function() {
                 $('#nilai-utility').html(loaderContent);
-                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
@@ -414,7 +414,7 @@
 
             $('#bobot-utility-nav').on('click', function() {
                 $('#bobot-utility').html(loaderContent);
-                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
@@ -583,7 +583,7 @@
 
             $('#nilai-akhir-nav').on('click', function() {
                 $('#nilai-akhir').html(loaderContent);
-                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
@@ -790,7 +790,7 @@
 
             $('#rangking-nav').on('click', function() {
                 $('#rangking').html(loaderContent);
-                let url_nilaiasli = "{{ route('admin.perangkingan.nilai_asli', ':type') }}";
+                let url_nilaiasli = "{{ route('nilai_asli', ':type') }}";
                 url_nilaiasli = url_nilaiasli.replace(':type', category);
 
                 setTimeout(function() {
