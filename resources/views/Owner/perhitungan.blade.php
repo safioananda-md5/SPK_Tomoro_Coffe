@@ -980,9 +980,7 @@
                                 body_ranking += `
                                     <tr>
                                         <td class="text-center font-weight-bold" style="width: 80px;">
-                                            <span class="badge ${rankSekarang === 1 ? 'badge-success' : 'badge-secondary'}" style="font-size: 14px;">
-                                                ${rankSekarang}
-                                            </span>
+                                            ${rankSekarang}
                                         </td>
                                         <td><strong>${alternatif.name}</strong></td>
                                         <td>
