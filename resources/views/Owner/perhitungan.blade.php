@@ -1224,6 +1224,12 @@
                             let hiddenClass = (counting > limitAwal) ? 'hidden-item d-none' :
                                 '';
 
+                            let rupiah = new Intl.NumberFormat('id-ID', {
+                                style: 'currency',
+                                currency: 'IDR',
+                                minimumFractionDigits: 0
+                            }).format(alternatif.price);
+
                             body_ranking += `
                                 <div class="col-md-4 col-lg-2 mb-5 d-flex ${hiddenClass}">
                                     <a class="card h-100 w-100 shadow-none border border-radius-lg text-center d-flex flex-column"
@@ -1235,7 +1241,7 @@
                                         </div>
                                         <div class="flex-grow-1 d-flex flex-column">
                                             <img class="w-100 px-2" alt="Image placeholder" src="{{ asset('assets/material/img/coffee.jpg') }}" style="border-radius: 15px !important; display: block;">
-                                            <h6 class="font-weight-bold mt-3">${alternatif.price}</h6>
+                                            <h6 class="font-weight-bold mt-3">${rupiah}</h6>
                                             <h5 class="p-2 text-lg mb-0">${alternatif.name}</h5>
                                             <div class="mt-auto pb-3 d-flex flex-column">
                                                 <small class="text-muted font-weight-bold">Kombinasi ${alternatif.komposisi}</small>
