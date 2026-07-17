@@ -295,12 +295,31 @@
                 </div>
                 <div class="modal-body">
                     <div class="mb-3">
+                        <label for="kategori" class="form-label">Kategori</label>
                         <div class="input-group input-group-outline">
                             <select class="form-select px-3" id="kategori">
                                 <option value="0">Coffe</option>
                                 <option value="1">Non-Coffe</option>
                             </select>
                         </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="divider" class="form-label">
+                            Kandungan <br>
+                            <small class="text-muted fw-normal">Centang jika ingin memfilter berdasarkan kondisi di bawah
+                                ini.</small>
+                        </label>
+                    </div>
+                    <div class="mb-3">
+                        @foreach ($criterias as $criteria)
+                            <div class="form-check">
+                                <input class="form-check-input kandungan" type="checkbox" value="{{ $criteria->id }}"
+                                    id="kandungan_{{ $criteria->id }}">
+                                <label class="form-check-label" for="kandungan_{{ $criteria->id }}">
+                                    {{ $criteria->name }} &gt; 0%
+                                </label>
+                            </div>
+                        @endforeach
                     </div>
                 </div>
                 <div class="modal-footer">
@@ -335,12 +354,30 @@
                 let category = $('#kategori').val();
                 if (category) {
                     if (category == 0) {
+                        let selectedKandungan = $('.kandungan:checked').map(function() {
+                            return $(this).val();
+                        }).get();
                         let urlcoffe = "{{ route('perhitungan', ':type') }}";
                         urlcoffe = urlcoffe.replace(':type', category);
+                        if (selectedKandungan.length > 0) {
+                            let queryString = $.param({
+                                kandungan: selectedKandungan
+                            });
+                            urlcoffe += '?' + queryString;
+                        }
                         window.location.href = urlcoffe;
                     } else {
+                        let selectedKandungan = $('.kandungan:checked').map(function() {
+                            return $(this).val();
+                        }).get();
                         let urlnoncoffe = "{{ route('perhitungan', ':type') }}";
                         urlnoncoffe = urlnoncoffe.replace(':type', category);
+                        if (selectedKandungan.length > 0) {
+                            let queryString = $.param({
+                                kandungan: selectedKandungan
+                            });
+                            urlnoncoffe += '?' + queryString;
+                        }
                         window.location.href = urlnoncoffe;
                     }
                 } else {

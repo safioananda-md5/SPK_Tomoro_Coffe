@@ -12,6 +12,17 @@
             <div class="container">
                 <a href="{{ route('home') }}" class="btn btn-dark">&leftarrow; <span class="ms-2">Kembali</span></a>
 
+                @if (!empty($criteriasFiltered))
+                    <div class="alert alert-warning text-white" role="alert">
+                        Alternatif telah difilter berdasarkan kondisi:
+                        <ul>
+                            @foreach ($criteriasFiltered as $item)
+                                <li>{{ $item->name }} &gt; 0%</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <div class="row mb-5">
                     <div class="col-lg-7 mx-auto text-center">
                         <h2 class="mb-3">Menu @if ($type == 0)

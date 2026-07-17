@@ -10,7 +10,25 @@
         </ol>
     </nav>
     <a href="{{ route('admin.dashboard') }}" class="btn btn-dark">&leftarrow; <span class="ms-2">Kembali</span></a>
-    <div class="row mt-3">
+    <div class="row mt-3" id="filter">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body d-flex flex-column">
+                    <div class="mb-3 w-50 text-center mx-auto">
+                        <label for="kategori_admin" class="form-label">Pilih Kategori</label>
+                        <select class="form-select" id="kategori_admin" name="kategori_admin" required>
+                            <option value="0">Coffe</option>
+                            <option value="1">Non-Coffe</option>
+                        </select>
+                    </div>
+                    <div class="d-flex justify-content-center">
+                        <button type="button" class="btn btn-primary" id="mulai_hitung">Mulai Hitung</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row mt-3 d-none" id="result">
         <div class="col-sm-12 grid-margin stretch-card">
             <div class="card">
                 <div class="card-header">
@@ -146,7 +164,8 @@
 
                                 <div class="table-responsive">
                                     <table class="table align-middle mb-0">
-                                        <thead class="table-light border-bottom text-uppercase fs-7 fw-bold text-secondary">
+                                        <thead
+                                            class="table-light border-bottom text-uppercase fs-7 fw-bold text-secondary">
                                             <tr>
                                                 <th class="py-3 px-4" style="width: 100px;">Rank</th>
                                                 <th class="py-3 px-4">Nama</th>
@@ -303,10 +322,40 @@
 @endsection
 @section('scripts')
     <script>
-        var category = 'all';
+        var category = 0;
         var cmin = [];
         var cmax = [];
         var sudahrank = @json($sudahrank);
+
+        $(document).on('click', '#update-spk', function() {
+            $.ajax({
+                url: "{{ route('admin.periode_store') }}",
+                type: 'POST',
+                data: {
+                    _token: $('meta[name="csrf-token"]').attr('content'),
+                    kategori_admin: category
+                },
+                dataType: 'json',
+                success: function(response) {
+                    $('#last-update').text(response.update);
+                    $('#lihat-spk').trigger('click');
+                },
+                error: function(xhr, status, error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+
+        $(document).on('change', '#kategori_admin', function() {
+            category = $(this).val();
+        });
+
+        $(document).on('click', '#mulai_hitung', function() {
+            $('#filter').addClass('d-none');
+            $('#result').removeClass('d-none');
+            $('#update-spk').trigger('click');
+        });
+
 
         const loaderContent = `
             <div class="card border-0 shadow-sm text-center py-5"
@@ -1443,10 +1492,10 @@
                         type: 'POST',
                         data: {
                             _token: $('meta[name="csrf-token"]').attr('content'),
+                            kategori_admin: category
                         },
                         dataType: 'json',
                         success: function(response) {
-                            category = 'all';
                             $('#nilai-asli-nav').trigger('click');
                             $('#last-update').text(response.update);
                             $('#update-spk').removeClass('d-none');
@@ -1457,24 +1506,6 @@
                         }
                     });
                 }
-            });
-
-            $('#update-spk').on('click', function() {
-                $.ajax({
-                    url: "{{ route('admin.periode_store') }}",
-                    type: 'POST',
-                    data: {
-                        _token: $('meta[name="csrf-token"]').attr('content'),
-                    },
-                    dataType: 'json',
-                    success: function(response) {
-                        $('#last-update').text(response.update);
-                        $('#lihat-spk').trigger('click');
-                    },
-                    error: function(xhr, status, error) {
-                        console.error('Error:', error);
-                    }
-                });
             });
 
             $('#lihat-spk').on('click', function() {

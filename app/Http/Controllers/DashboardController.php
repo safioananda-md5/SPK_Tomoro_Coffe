@@ -16,6 +16,8 @@ use Illuminate\Support\Facades\Crypt;
 
 class DashboardController extends Controller
 {
+    protected $selectedCriteriaIds;
+
     public function index()
     {
         $hour = Carbon::now('Asia/Jakarta')->format('H');
@@ -68,54 +70,98 @@ class DashboardController extends Controller
             $adaPeriode = 'ada';
         }
 
-        return view('Owner.dashboard', compact(['alternativescoffe', 'alternativesnoncoffe', 'Setting', 'someempty', 'totalwieght', 'adaPeriode', 'CountAlternative']));
+        session()->forget('selected_kandungan');
+        return view('Owner.dashboard', compact(['alternativescoffe', 'alternativesnoncoffe', 'Setting', 'someempty', 'totalwieght', 'adaPeriode', 'CountAlternative', 'criterias']));
     }
 
-    public function perhitungan($type)
+    public function perhitungan(Request $request, $type)
     {
-        return view('Owner.perhitungan', compact(['type']));
+        $selectedCriteriaIds = $request->input('kandungan', []);
+        $request->session()->put('selected_kandungan', $selectedCriteriaIds);
+        $type = (int) $type;
+
+        if (!empty($selectedCriteriaIds)) {
+            $criteriasFiltered = Criteria::whereIn('id', $selectedCriteriaIds)->get();
+        } else {
+            $criteriasFiltered = [];
+        }
+        return view('Owner.perhitungan', compact(['type', 'criteriasFiltered']));
     }
 
     public function nilai_asli($type)
     {
-        $type = 'all';
+        $originalType = $type;
+        if ($type !== 'all') {
+            $type = (int) $type;
+        }
+
+        $selectedCriteriaIds = session('selected_kandungan', []);
         $periodeAlternatives = Periode::where('name', 'satu')->value('alternatives');
-        $raw_alterantives = Alternative::with(['alternativecriteria.criteria'])
-            ->when($periodeAlternatives !== null, function ($query) use ($periodeAlternatives) {
-                return $query
-                    ->whereIn('id', $periodeAlternatives);
-            })
-            ->when($type !== 'all', function ($query) use ($type) {
-                return $query
-                    ->where('category', $type);
+
+        // 1. Definisikan query dasar Alternative
+        $query_alternatives = Alternative::query();
+
+        // 2. Filter "AND" (Penyaringan Utama): 
+        // Alternatif yang ditarik WAJIB memiliki kriteria terpilih dengan nilai > 0
+        if (!empty($selectedCriteriaIds)) {
+            foreach ($selectedCriteriaIds as $id) {
+                $query_alternatives->whereHas('alternativecriteria', function ($q) use ($id) {
+                    $q->where('criteria_id', $id)
+                        ->where('value', '>', 0);
+                });
+            }
+        }
+
+        // 3. Eager Load SEMUA kriteria secara utuh (Agar kriteria selain yang difilter tetap muncul di tabel)
+        $raw_alterantives = $query_alternatives->with(['alternativecriteria.criteria'])
+            ->when($originalType !== 'all', function ($query) use ($type) {
+                return $query->where('category', $type);
             })
             ->get();
-        // $raw_alterantives = Alternative::with(['alternativecriteria.criteria'])->where('category', $type)->get();
+
+        // Antisipasi jika memang datanya kosong setelah difilter
+        if ($raw_alterantives->isEmpty()) {
+            return response()->json([
+                'message' => 'Tidak ada alternatif yang memenuhi kriteria.',
+                'headers' => ['Nama Alternatif'],
+                'alterantives' => [],
+            ], 200);
+        }
+
         $Alternatives = [];
         $headers = [];
         $headers[] = 'Nama Alternatif';
+
+        // Ambil header kolom dari alternatif pertama (semua kriteria akan muncul sebagai kolom)
         foreach ($raw_alterantives->first()->alternativecriteria as $alternativecriteria) {
-            $headers[] = $alternativecriteria->criteria->name;
+            if ($alternativecriteria->criteria) {
+                $headers[] = $alternativecriteria->criteria->name;
+            }
         }
 
         foreach ($raw_alterantives as $alternative) {
             $alterantive_criterias = [];
             foreach ($alternative->alternativecriteria as $alternativecriteria) {
-                $alterantive_criterias[] = [
-                    'name' => $alternativecriteria->criteria->name,
-                    'value' => $alternativecriteria->value,
-                    'bobot' => $alternativecriteria->criteria->weight,
-                    'normalisasi' => $alternativecriteria->criteria->weight / 100,
-                ];
+                if ($alternativecriteria->criteria) {
+                    $alterantive_criterias[] = [
+                        'name' => $alternativecriteria->criteria->name,
+                        'value' => $alternativecriteria->value,
+                        'bobot' => $alternativecriteria->criteria->weight,
+                        'normalisasi' => $alternativecriteria->criteria->weight / 100,
+                    ];
+                }
             }
 
+            // Untuk komposisi text di akhir, kita hanya menampilkan kriteria yang nilainya > 0
             $Incriteria = [];
             foreach ($alternative->alternativecriteria as $AC) {
                 if ($AC->value > 0) {
                     $Incriteria[] = $AC->criteria_id;
                 }
             }
+
             $nameCriterias = implode(', ', Criteria::whereIn('id', $Incriteria)->whereNotNull('short_name')->pluck('short_name')->toArray());
+
             $Alternatives[] = [
                 'name' => $alternative->name,
                 'category' => $alternative->category,
@@ -134,7 +180,8 @@ class DashboardController extends Controller
 
     public function periode(Request $request)
     {
-        $AlterantifArray = Alternative::pluck('id')->toArray();
+        $kategory = $request->kategori_admin;
+        $AlterantifArray = Alternative::where('category', $kategory)->pluck('id')->toArray();
         $periodeUpdate = Periode::updateOrCreate([
             'name' => 'satu',
         ], [
